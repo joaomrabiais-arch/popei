@@ -100,6 +100,9 @@
   .ba .handle { position:absolute; top:0; bottom:0; width:4px; background:#fff; left:50%; transform:translateX(-50%); pointer-events:none; }
   .ba .handle::after { content:"⟷"; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:46px; height:46px; border-radius:50%; background:#fff; color:#16201e; display:grid; place-items:center; font-weight:800; box-shadow:0 2px 10px rgba(0,0,0,.2); }
 
+  .adbanner { display:block; width:100%; padding:0; border:0; background:none; border-radius:20px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,.08); }
+  .adbanner img { width:100%; aspect-ratio:2/1; object-fit:cover; }
+  .adwrap { padding-block:8px 40px; }
   .benefits { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:14px; }
   @media (max-width:860px) { .benefits { grid-template-columns:repeat(2, minmax(0,1fr)); } }
   .benefit { background:var(--bg); border:1px solid var(--line); border-radius:16px; padding:20px; }
@@ -117,7 +120,8 @@
   .step h3 { font-size:1.2rem; } .step p { margin:2px 0 0; color:var(--muted); }
 
   .compare { overflow-x:auto; border:1px solid var(--line); border-radius:16px; background:var(--bg); max-width:760px; margin:0 auto; }
-  table { width:100%; border-collapse:collapse; min-width:440px; }
+  table { width:100%; border-collapse:collapse; }
+  @media (max-width:520px) { th, td { padding:12px 8px; font-size:.88rem; } }
   th, td { padding:14px 16px; border-bottom:1px solid var(--line); text-align:center; }
   th:first-child, td:first-child { text-align:left; color:var(--muted); }
   th.us { background:var(--mint); color:var(--brand); font-family:var(--display); font-size:1.1rem; }
@@ -222,6 +226,7 @@
           <div><b>Tracked</b>delivery</div>
         </div>
         <div class="pay">Secure checkout · Visa · Mastercard · Apple Pay · Google Pay</div>
+        <div class="pay" style="margin-top:4px">In the box: Shedless roller(s), ready to use. No refills needed.</div>
       </div>
     </section>
   </div>
@@ -236,6 +241,9 @@
       </div>
     </div>
   </section>
+
+
+  <div class="wrap adwrap"><button class="adbanner" type="button" data-ad="top" aria-label="Stop buying refills. Shop now"><img src="img/ad1.jpg" alt="Stop buying refills. Shop now" loading="lazy" width="1600" height="800"></button></div>
 
   <section class="block">
     <div class="wrap">
@@ -260,6 +268,8 @@
       </div>
     </div>
   </section>
+
+  <div class="wrap adwrap"><button class="adbanner" type="button" data-ad="top" aria-label="Dog hair? Gone. Try it for 30 days"><img src="img/ad2.jpg" alt="Dog hair? Gone. Try it for 30 days" loading="lazy" width="1600" height="800"></button></div>
 
   <section class="block">
     <div class="wrap split">
@@ -300,6 +310,9 @@
       </div>
     </div>
   </section>
+
+  <div style="height:40px"></div>
+  <div class="wrap adwrap"><button class="adbanner" type="button" data-ad="three" aria-label="Buy 2, get 1 FREE. Get the 3-pack"><img src="img/ad3.jpg" alt="Buy 2, get 1 FREE. Get the 3-pack" loading="lazy" width="1600" height="800"></button></div>
 
   <section class="block alt">
     <div class="wrap">
@@ -452,6 +465,12 @@ $("checkout").addEventListener("click", () => {
   else $("checkoutNote").textContent = "This is a preview. Checkout goes live when the store is connected to Shopify.";
 });
 renderCart();
+
+// faixas de anúncio: levam à oferta
+document.querySelectorAll("[data-ad]").forEach(b => b.addEventListener("click", () => {
+  if (b.dataset.ad === "three") { sel = "three"; renderBundles(); addToCart("three"); }
+  else document.getElementById("top").scrollIntoView({ behavior: "smooth" });
+}));
 
 // barra de compra fixa no telemóvel, depois de passar o botão principal
 new IntersectionObserver(([en]) => $("stickyBuy").classList.toggle("show", !en.isIntersecting && en.boundingClientRect.top < 0)).observe($("add"));

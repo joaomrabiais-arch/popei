@@ -54,3 +54,11 @@ Behaviour:
 - SEO title: "Shedless – Reusable Pet Hair Remover for Sofa, Bed & Car | Ireland". Meta description: "Remove dog and cat hair from sofas, beds and car seats in seconds. No refills, no batteries. Free shipping to Ireland."
 - Create these pages: Refund policy, Shipping policy, Privacy policy, Terms of service, Contact.
 ```
+
+## Faixas de anúncio espalhadas pela página
+Entre as secções há 3 faixas clicáveis (`loja-en/img/ad1.jpg`, `ad2.jpg`, `ad3.jpg`, formato 2:1):
+- depois dos vídeos: "Stop buying refills" → leva à oferta;
+- antes de "How it works": "Dog hair? Gone." → leva à oferta;
+- antes das perguntas: "Buy 2, get 1 FREE" → põe o pack de 3 no carrinho.
+
+Quando descarregares do Canva as páginas do design "Shedless: all ads", podes usá-las nestas faixas ou na galeria. No Lovable, diz: "Replace the 3 ad banners with these images".
