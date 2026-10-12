@@ -1,0 +1,340 @@
+<title>Shedless Store</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+  /* Layout: one-product store. Announcement bar → sticky header → product hero (gallery + buy box) → proof sections → FAQ → footer. Cart drawer on the right. */
+  :root {
+    --bg:#f6f7f4; --surface:#ffffff; --ink:#16201e; --muted:#5d6a67; --line:#dde3e0;
+    --brand:#1f6f68; --brand-ink:#ffffff; --brand-soft:#e2f0ec; --accent:#f2b544; --bad:#b4442e;
+    --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --body:"Figtree", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg:#101614; --surface:#18201e; --ink:#e8eeec; --muted:#9aa8a4; --line:#2a3532;
+    --brand:#5cc0b2; --brand-ink:#0d1a18; --brand-soft:#1b2d29; --accent:#f2b544; --bad:#f08a72; color-scheme:dark; } }
+  :root[data-theme="dark"] {
+    --bg:#101614; --surface:#18201e; --ink:#e8eeec; --muted:#9aa8a4; --line:#2a3532;
+    --brand:#5cc0b2; --brand-ink:#0d1a18; --brand-soft:#1b2d29; --accent:#f2b544; --bad:#f08a72; color-scheme:dark; }
+  * { box-sizing:border-box; }
+  [hidden] { display:none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.6 var(--body); }
+  .wrap { max-width:1120px; margin:0 auto; padding-inline:16px; }
+  h1, h2, h3 { font-family:var(--display); line-height:1.1; text-wrap:balance; margin:0; }
+  a { color:inherit; }
+  button { font:inherit; cursor:pointer; }
+  :focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
+
+  .bar { background:var(--brand); color:var(--brand-ink); text-align:center; font-size:.85rem; font-weight:600; padding:8px 16px; }
+  header { position:sticky; top:env(safe-area-inset-top, 0px); z-index:5; background:var(--bg); border-bottom:1px solid var(--line); }
+  header .wrap { display:flex; align-items:center; justify-content:space-between; height:64px; }
+  .logo { font:800 1.5rem var(--display); letter-spacing:-.02em; display:flex; align-items:center; gap:8px; }
+  .logo span { width:14px; height:14px; border-radius:50%; background:var(--brand); display:inline-block; }
+  nav { display:flex; gap:24px; font-weight:500; }
+  nav a { text-decoration:none; color:var(--muted); }
+  @media (max-width:720px) { nav { display:none; } }
+  .cart-btn { position:relative; border:1px solid var(--line); background:var(--surface); color:var(--ink); border-radius:999px; padding:8px 16px; font-weight:600; }
+  .cart-btn b { background:var(--brand); color:var(--brand-ink); border-radius:999px; padding:0 8px; margin-left:6px; font-size:.8rem; }
+
+  .hero { display:grid; grid-template-columns:1.05fr 1fr; gap:40px; padding-block:32px 48px; }
+  @media (max-width:880px) { .hero { grid-template-columns:1fr; gap:24px; } }
+  .hero > * { min-width:0; }
+  .stage { background:var(--brand-soft); border-radius:20px; aspect-ratio:1; max-width:100%; display:grid; place-items:center; position:relative; overflow:hidden; }
+  .stage svg { width:78%; height:auto; }
+  .stage .tag { position:absolute; top:16px; left:16px; background:var(--surface); border-radius:999px; padding:6px 12px; font-size:.8rem; font-weight:600; }
+  .thumbs { display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-top:10px; }
+  .thumbs button { aspect-ratio:1; border-radius:12px; border:2px solid transparent; background:var(--surface); color:var(--muted); font-size:.72rem; font-weight:600; padding:6px; }
+  .thumbs button { display:grid; place-items:center; gap:2px; }
+  .thumbs svg { width:70%; height:auto; pointer-events:none; }
+  .thumbs button span { pointer-events:none; }
+  .thumbs button[aria-pressed="true"] { border-color:var(--brand); color:var(--ink); }
+
+  .eyebrow { font-size:.8rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--brand); }
+  .buy h1 { font-size:clamp(2rem, 4.5vw, 2.9rem); margin-top:6px; }
+  .buy .sub { color:var(--muted); font-size:1.08rem; margin:12px 0 18px; max-width:52ch; }
+  .points { list-style:none; padding:0; margin:0 0 20px; display:grid; gap:8px; }
+  .points li { display:flex; gap:10px; align-items:flex-start; }
+  .points li::before { content:""; flex:0 0 20px; height:20px; margin-top:2px; border-radius:50%; background:var(--brand-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3 3 7-7' fill='none' stroke='%231f6f68' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat; }
+  .bundles { display:grid; gap:10px; margin-bottom:16px; }
+  .bundle { display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center; background:var(--surface); border:2px solid var(--line); border-radius:14px; padding:14px 16px; }
+  .bundle input { accent-color:var(--brand); width:18px; height:18px; margin:0; }
+  .bundle.on { border-color:var(--brand); }
+  .bundle .t { font-weight:700; }
+  .bundle .d { font-size:.85rem; color:var(--muted); }
+  .bundle .p { text-align:right; font-weight:700; font-variant-numeric:tabular-nums; }
+  .bundle .p small { display:block; font-weight:500; color:var(--brand); font-size:.78rem; }
+  .pill { display:inline-block; margin-left:8px; background:var(--accent); color:#2a1d00; font-size:.7rem; font-weight:700; border-radius:999px; padding:2px 8px; vertical-align:2px; }
+  .add { width:100%; border:0; border-radius:14px; background:var(--brand); color:var(--brand-ink); font-weight:700; font-size:1.08rem; padding:17px; }
+  .add:hover { filter:brightness(1.05); }
+  .trust { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-top:14px; font-size:.82rem; color:var(--muted); text-align:center; }
+  .trust div { background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:10px 6px; }
+  .trust b { display:block; color:var(--ink); font-size:.9rem; }
+
+  section.block { padding-block:56px; border-top:1px solid var(--line); }
+  section.block h2 { font-size:clamp(1.6rem, 3.4vw, 2.2rem); margin-bottom:24px; }
+  .steps { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+  @media (max-width:760px) { .steps { grid-template-columns:1fr; } }
+  .step { background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:20px; }
+  .step .n { font:800 2rem var(--display); color:var(--brand); }
+  .step h3 { font-size:1.2rem; margin:6px 0; }
+  .step p { margin:0; color:var(--muted); }
+
+  .compare { overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:16px; }
+  table { width:100%; border-collapse:collapse; min-width:520px; }
+  th, td { padding:14px 16px; text-align:left; border-bottom:1px solid var(--line); }
+  th { font-family:var(--display); font-size:1.05rem; }
+  th.us { color:var(--brand); }
+  tr:last-child td { border-bottom:0; }
+  .yes { color:var(--brand); font-weight:700; } .no { color:var(--bad); font-weight:600; }
+
+  .where { display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; }
+  @media (max-width:760px) { .where { grid-template-columns:repeat(2, 1fr); } }
+  .where div { background:var(--brand-soft); border-radius:14px; padding:18px; font-weight:700; }
+  .where small { display:block; font-weight:400; color:var(--muted); margin-top:4px; }
+
+  .reviews { background:var(--surface); border:1px dashed var(--line); border-radius:16px; padding:24px; color:var(--muted); }
+
+  details { border-bottom:1px solid var(--line); padding:16px 0; }
+  summary { font-weight:700; cursor:pointer; list-style:none; display:flex; justify-content:space-between; gap:16px; }
+  summary::after { content:"+"; font-weight:400; font-size:1.3rem; line-height:1; color:var(--brand); }
+  details[open] summary::after { content:"–"; }
+  details p { margin:10px 0 0; color:var(--muted); max-width:70ch; }
+
+  footer { background:var(--surface); border-top:1px solid var(--line); padding-block:40px; font-size:.9rem; color:var(--muted); }
+  footer .cols { display:grid; grid-template-columns:2fr 1fr 1fr; gap:24px; }
+  @media (max-width:760px) { footer .cols { grid-template-columns:1fr; } }
+  footer h4 { color:var(--ink); margin:0 0 8px; }
+  footer ul { list-style:none; padding:0; margin:0; display:grid; gap:6px; }
+  .todo { background:#fff1c7; color:#5c4400; border-radius:4px; padding:0 4px; }
+
+  .sticky-buy { position:fixed; left:0; right:0; bottom:0; padding:10px 16px calc(10px + env(safe-area-inset-bottom, 0px)); background:var(--surface); border-top:1px solid var(--line); display:none; z-index:6; }
+  .sticky-buy .add { padding:14px; }
+  @media (max-width:880px) { .sticky-buy.show { display:block; } }
+
+  .drawer-bg { position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:9; }
+  .drawer { position:fixed; top:0; right:0; bottom:0; width:min(420px, 100%); background:var(--surface); z-index:10; display:flex; flex-direction:column; padding:20px 20px calc(20px + env(safe-area-inset-bottom, 0px)); }
+  .drawer h3 { font-size:1.4rem; display:flex; justify-content:space-between; align-items:center; }
+  .drawer .x { border:0; background:none; font-size:1.6rem; color:var(--muted); }
+  .lines { flex:1; overflow:auto; margin-top:16px; display:grid; gap:12px; align-content:start; }
+  .line { display:grid; grid-template-columns:1fr auto; gap:6px; padding:12px; border:1px solid var(--line); border-radius:12px; }
+  .line .qty { display:flex; gap:6px; align-items:center; }
+  .line .qty button { width:28px; height:28px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--ink); }
+  .free { font-size:.88rem; color:var(--brand); font-weight:600; margin:12px 0; }
+  .total { display:flex; justify-content:space-between; font-weight:700; font-size:1.1rem; margin-bottom:12px; font-variant-numeric:tabular-nums; }
+  .note { font-size:.82rem; color:var(--muted); margin-top:10px; }
+  @media (prefers-reduced-motion: no-preference) { .drawer { animation:slide .22s ease-out; } @keyframes slide { from { transform:translateX(30px); opacity:.6; } } }
+</style>
+
+<div class="bar">Free shipping to Ireland · 30-day money-back guarantee</div>
+<header>
+  <div class="wrap">
+    <div class="logo"><span></span>Shedless</div>
+    <nav><a href="#how">How it works</a><a href="#compare">Why Shedless</a><a href="#faq">FAQ</a></nav>
+    <button class="cart-btn" id="openCart" type="button">Cart<b id="count">0</b></button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero" id="top">
+    <div>
+      <div class="stage" id="stage"></div>
+      <div class="thumbs" id="thumbs"></div>
+    </div>
+    <div class="buy">
+      <div class="eyebrow">Reusable pet hair remover</div>
+      <h1>Dog hair off the sofa in 10 seconds.</h1>
+      <p class="sub">Roll it back and forth, open the lid, bin the fur. No sticky sheets, no refills, no batteries.</p>
+      <ul class="points">
+        <li>Works on sofas, beds, blankets, carpets and car seats</li>
+        <li>Pulls out hair the vacuum leaves woven in the fabric</li>
+        <li>Never buy lint roller refills again</li>
+      </ul>
+      <div class="bundles" id="bundles" role="radiogroup" aria-label="Choose a pack"></div>
+      <button class="add" id="add" type="button">Add to cart</button>
+      <div class="trust">
+        <div><b>Free</b>shipping to Ireland</div>
+        <div><b>30 days</b>money back</div>
+        <div><b>Secure</b>checkout</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="how">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h3>Roll</h3><p>Short back-and-forth strokes. The fabric bristles lift the hair and sweep it inside.</p></div>
+      <div class="step"><div class="n">2</div><h3>Open</h3><p>Press the button and the waste chamber opens. You will see exactly what came off your sofa.</p></div>
+      <div class="step"><div class="n">3</div><h3>Empty</h3><p>Tip the fur into the bin. It is ready to use again straight away.</p></div>
+    </div>
+  </section>
+
+  <section class="block" id="compare">
+    <h2>Shedless vs sticky lint rollers</h2>
+    <div class="compare">
+      <table>
+        <thead><tr><th></th><th class="us">Shedless</th><th>Sticky lint roller</th></tr></thead>
+        <tbody>
+          <tr><td>Refills</td><td class="yes">Never</td><td class="no">Every few uses</td></tr>
+          <tr><td>Waste</td><td class="yes">Just the fur</td><td class="no">Sheets of sticky paper</td></tr>
+          <tr><td>Large areas (sofa, bed)</td><td class="yes">Fast</td><td class="no">Slow, sheet fills up</td></tr>
+          <tr><td>Batteries or charging</td><td class="yes">None</td><td class="yes">None</td></tr>
+          <tr><td>Best on clothes</td><td class="no">Not ideal for fine knits</td><td class="yes">Good</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Where it works best</h2>
+    <div class="where">
+      <div>Sofas<small>Fabric and textured upholstery</small></div>
+      <div>Beds<small>Duvets, throws, pet blankets</small></div>
+      <div>Car seats<small>Back seat after the beach</small></div>
+      <div>Carpets<small>Rugs and stairs</small></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Reviews</h2>
+    <div class="reviews">Reviews from verified buyers will appear here once orders are delivered.</div>
+  </section>
+
+  <section class="block" id="faq">
+    <h2>Questions</h2>
+    <details><summary>How long does delivery take?</summary><p>Orders ship within 1–3 business days and usually arrive in 7–12 business days. You get a tracking number by email.</p></details>
+    <details><summary>Does it work on cat hair too?</summary><p>Yes. It works on dog and cat hair on fabric surfaces with some texture, like sofas, blankets and carpets.</p></details>
+    <details><summary>Will it damage my sofa?</summary><p>It uses no glue or blades. On delicate fabrics, test it first on a hidden area. We do not recommend it for silk or fine knits.</p></details>
+    <details><summary>What if it doesn't work for me?</summary><p>Send it back within 30 days of delivery for a full refund. EU law also gives you 14 days to cancel any online order without giving a reason.</p></details>
+    <details><summary>Why buy 2?</summary><p>Most people keep one at home and one in the car, so the back seat stays clean after every trip.</p></details>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap cols">
+    <div>
+      <div class="logo" style="color:var(--ink)"><span></span>Shedless</div>
+      <p>Operated by <span class="todo">YOUR NAME / COMPANY</span> · VAT/NIF <span class="todo">NUMBER</span> · <span class="todo">ADDRESS</span> · <span class="todo">support@yourdomain</span></p>
+      <p>EU responsible person (GPSR): <span class="todo">NAME AND ADDRESS FROM SUPPLIER</span></p>
+    </div>
+    <div><h4>Shop</h4><ul><li><a href="#top">Shedless roller</a></li><li><a href="#faq">Shipping</a></li><li><a href="#faq">Returns</a></li></ul></div>
+    <div><h4>Legal</h4><ul><li>Refund policy</li><li>Privacy policy</li><li>Terms of service</li><li>Prices include VAT</li></ul></div>
+  </div>
+</footer>
+
+<div class="sticky-buy" id="stickyBuy"><button class="add" id="add2" type="button">Add to cart</button></div>
+
+<div class="drawer-bg" id="bg" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Cart">
+  <h3>Your cart <button class="x" id="closeCart" type="button" aria-label="Close cart">×</button></h3>
+  <div class="lines" id="lines"></div>
+  <div class="free" id="free"></div>
+  <div class="total"><span>Total</span><span id="total">€0.00</span></div>
+  <button class="add" id="checkout" type="button">Checkout</button>
+  <p class="note" id="checkoutNote">Preview store: checkout connects to Shopify once your store is live.</p>
+</aside>
+
+<script>
+const PACKS = [
+  { id:"one",   name:"1 roller",              desc:"For the sofa",                     price:24.90 },
+  { id:"two",   name:"2 rollers: home + car", desc:"One for the house, one for the car", price:39.90, pill:"Most popular", save:"Save €9.90" },
+  { id:"three", name:"3 rollers",             desc:"Keep one, gift one",               price:49.90, save:"Save €24.80" },
+];
+const CHECKOUT_URL = ""; // Shopify checkout or cart permalink
+const eur = n => "€" + n.toFixed(2);
+
+// --- product illustration (SVG, themed) ---
+const VIEWS = [
+  { label:"Roller", svg: roller(false) },
+  { label:"Open lid", svg: roller(true) },
+  { label:"On the sofa", svg: sofa() },
+  { label:"Home + car", svg: pair() },
+];
+function roller(open) {
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="Shedless roller${open ? " with the lid open" : ""}">
+    <g transform="rotate(-18 200 200)">
+      <rect x="182" y="40" width="36" height="170" rx="18" fill="var(--ink)" opacity=".85"/>
+      <rect x="90" y="200" width="220" height="110" rx="46" fill="var(--brand)"/>
+      <rect x="110" y="214" width="180" height="16" rx="8" fill="#ffffff" opacity=".25"/>
+      ${open ? `<g transform="rotate(28 110 300)"><rect x="96" y="290" width="200" height="30" rx="12" fill="var(--ink)" opacity=".8"/></g>
+               <g fill="#9a6a3a">${Array.from({length:26},(_,i)=>`<circle cx="${150+((i*37)%110)}" cy="${318+((i*13)%26)}" r="${6+(i%4)}"/>`).join("")}</g>`
+             : `<rect x="96" y="290" width="208" height="26" rx="12" fill="var(--ink)" opacity=".8"/>`}
+    </g></svg>`;
+}
+function sofa() {
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="Roller cleaning a sofa">
+    <rect x="50" y="150" width="300" height="110" rx="30" fill="var(--muted)" opacity=".55"/>
+    <rect x="30" y="210" width="60" height="110" rx="24" fill="var(--muted)" opacity=".7"/>
+    <rect x="310" y="210" width="60" height="110" rx="24" fill="var(--muted)" opacity=".7"/>
+    <rect x="85" y="230" width="230" height="70" rx="20" fill="var(--muted)" opacity=".4"/>
+    <g stroke="#9a6a3a" stroke-width="3" stroke-linecap="round">${Array.from({length:30},(_,i)=>{const x=95+((i*41)%110), y=240+((i*17)%50); return `<path d="M${x} ${y} l${8+(i%5)} ${(i%3)-2}"/>`}).join("")}</g>
+    <g transform="translate(250 205) rotate(-10)"><rect x="-10" y="-90" width="20" height="90" rx="10" fill="var(--ink)" opacity=".85"/><rect x="-60" y="-6" width="120" height="58" rx="24" fill="var(--brand)"/></g>
+  </svg>`;
+}
+function pair() {
+  return `<svg viewBox="0 0 400 400" role="img" aria-label="Two Shedless rollers">
+    <g transform="translate(-55 10) scale(.8) rotate(-14 200 200)"><rect x="182" y="40" width="36" height="170" rx="18" fill="var(--ink)" opacity=".85"/><rect x="90" y="200" width="220" height="110" rx="46" fill="var(--brand)"/></g>
+    <g transform="translate(115 70) scale(.8) rotate(14 200 200)"><rect x="182" y="40" width="36" height="170" rx="18" fill="var(--ink)" opacity=".85"/><rect x="90" y="200" width="220" height="110" rx="46" fill="var(--brand)" opacity=".8"/></g>
+  </svg>`;
+}
+let view = 0;
+function renderGallery() {
+  document.getElementById("stage").innerHTML = `<span class="tag">Illustration · replace with your photos</span>` + VIEWS[view].svg;
+  document.getElementById("thumbs").innerHTML = VIEWS.map((v, i) =>
+    `<button type="button" aria-pressed="${i === view}" data-i="${i}" aria-label="${v.label}">${v.svg}<span>${v.label}</span></button>`).join("");
+}
+document.getElementById("thumbs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { view = +b.dataset.i; renderGallery(); } });
+renderGallery();
+
+// --- bundles ---
+let sel = "two";
+function renderBundles() {
+  document.getElementById("bundles").innerHTML = PACKS.map(p => `
+    <label class="bundle ${p.id === sel ? "on" : ""}">
+      <input type="radio" name="pack" id="pack-${p.id}" value="${p.id}" ${p.id === sel ? "checked" : ""}>
+      <span><span class="t">${p.name}</span>${p.pill ? `<span class="pill">${p.pill}</span>` : ""}<span class="d" style="display:block">${p.desc}</span></span>
+      <span class="p">${eur(p.price)}${p.save ? `<small>${p.save}</small>` : ""}</span>
+    </label>`).join("");
+}
+document.getElementById("bundles").addEventListener("change", e => { sel = e.target.value; renderBundles(); });
+renderBundles();
+
+// --- cart (kept in this browser only) ---
+let cart = {};
+try { cart = JSON.parse(localStorage.getItem("shedless-cart") || "{}"); } catch (e) { cart = {}; }
+const save = () => { try { localStorage.setItem("shedless-cart", JSON.stringify(cart)); } catch (e) {} };
+function renderCart() {
+  const ids = Object.keys(cart).filter(k => cart[k] > 0);
+  const total = ids.reduce((s, k) => s + PACKS.find(p => p.id === k).price * cart[k], 0);
+  document.getElementById("count").textContent = ids.reduce((s, k) => s + cart[k], 0);
+  document.getElementById("lines").innerHTML = ids.length ? ids.map(k => {
+    const p = PACKS.find(x => x.id === k);
+    return `<div class="line"><div><b>${p.name}</b><div class="d" style="color:var(--muted);font-size:.85rem">${eur(p.price)} each</div></div>
+      <div class="qty"><button type="button" data-k="${k}" data-d="-1" aria-label="Remove one">−</button><span>${cart[k]}</span><button type="button" data-k="${k}" data-d="1" aria-label="Add one">+</button></div></div>`;
+  }).join("") : `<p style="color:var(--muted)">Your cart is empty.</p>`;
+  document.getElementById("total").textContent = eur(total);
+  document.getElementById("free").textContent = ids.length ? "Free shipping to Ireland included" : "";
+  save();
+}
+document.getElementById("lines").addEventListener("click", e => {
+  const b = e.target.closest("button[data-k]"); if (!b) return;
+  cart[b.dataset.k] = Math.max(0, (cart[b.dataset.k] || 0) + +b.dataset.d); renderCart();
+});
+const drawer = document.getElementById("drawer"), bg = document.getElementById("bg");
+const open = () => { drawer.hidden = false; bg.hidden = false; renderCart(); };
+const close = () => { drawer.hidden = true; bg.hidden = true; };
+function addToCart() { cart[sel] = (cart[sel] || 0) + 1; open(); }
+document.getElementById("add").addEventListener("click", addToCart);
+document.getElementById("add2").addEventListener("click", addToCart);
+document.getElementById("openCart").addEventListener("click", open);
+document.getElementById("closeCart").addEventListener("click", close);
+bg.addEventListener("click", close);
+document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
+document.getElementById("checkout").addEventListener("click", () => {
+  if (CHECKOUT_URL) location.href = CHECKOUT_URL;
+  else document.getElementById("checkoutNote").textContent = "This is a preview. Checkout goes live when the store is connected to Shopify.";
+});
+renderCart();
+
+// mobile sticky add-to-cart once the main button scrolls away
+const sticky = document.getElementById("stickyBuy");
+new IntersectionObserver(([en]) => sticky.classList.toggle("show", !en.isIntersecting)).observe(document.getElementById("add"));
+</script>
