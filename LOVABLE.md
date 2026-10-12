@@ -10,7 +10,7 @@ O Lovable cria o aspeto da loja e liga-a à Shopify, que trata do checkout, dos 
 5. Substitui as ilustrações pelas tuas fotos e vídeos da amostra.
 6. Preenche o rodapé com os teus dados legais.
 
-A pré-visualização do aspeto que a loja deve ter está em `loja-en/index.html`.
+A pré-visualização do aspeto que a loja deve ter está em `loja-en/index.html`. As imagens da galeria estão em `loja-en/img/` e os vídeos em `loja-en/video/`. Carrega-os no Lovable quando ele pedir imagens.
 
 ---
 
@@ -23,27 +23,32 @@ Market: Ireland. Language: English (UK/IE spelling). Currency: EUR. Prices inclu
 
 Brand: clean, modern, friendly. Primary colour deep teal #1f6f68, soft mint #e2f0ec, warm accent #f2b544 for the "Most popular" badge only, off-white background #f6f7f4, near-black text #16201e. Headings in "Bricolage Grotesque", body in "Figtree". Rounded corners (14–20px), generous white space. Must support dark mode and look perfect on mobile (most traffic comes from Facebook/Instagram ads on phones).
 
-Product (one product, 3 variants):
-- "1 roller" – For the sofa – €24.90
-- "2 rollers: home + car" – One for the house, one for the car – €39.90 – badge "Most popular" – show "Save €9.90" – selected by default
-- "3 rollers" – Keep one, gift one – €49.90 – show "Save €24.80"
+Offer and variants (one product, 3 variants). Discounts are real, calculated from the single-roller price of €24.90. Do not show any made-up "was" price:
+- "1 roller" – Try it out – €24.90
+- "2 rollers" – 2nd roller 50% off – €37.35 (show €49.80 crossed out)
+- "Buy 2, get 1 FREE" – 3 rollers: home + car + one to give – €49.80 (show €74.70 crossed out, red "1 FREE" label, gold ribbon "Best value") – SELECTED BY DEFAULT
 
-Page structure (top to bottom):
-1. Announcement bar: "Free shipping to Ireland · 30-day money-back guarantee".
-2. Sticky header: logo "Shedless" (teal dot + wordmark), links How it works / Why Shedless / FAQ, cart button with item count.
-3. Hero, two columns on desktop, stacked on mobile:
-   - Left: product image gallery with 4 thumbnails (main photo, lid open showing hair in the chamber, in use on a sofa, two rollers). Use placeholders I can replace.
-   - Right: eyebrow "Reusable pet hair remover"; H1 "Dog hair off the sofa in 10 seconds."; subtitle "Roll it back and forth, open the lid, bin the fur. No sticky sheets, no refills, no batteries."; three check-mark bullets: "Works on sofas, beds, blankets, carpets and car seats", "Pulls out hair the vacuum leaves woven in the fabric", "Never buy lint roller refills again"; the 3 variants as large selectable cards (radio style); full-width "Add to cart" button; three trust tiles: Free shipping to Ireland / 30 days money back / Secure checkout.
-4. "How it works": 3 cards — 1 Roll, 2 Open, 3 Empty, with one short sentence each.
-5. Comparison table "Shedless vs sticky lint rollers": Refills (Never vs Every few uses), Waste (Just the fur vs Sheets of sticky paper), Large areas (Fast vs Slow, sheet fills up), Batteries (None vs None), Best on clothes (Not ideal for fine knits vs Good). Be honest — keep the row where the lint roller wins.
-6. "Where it works best": 4 tiles — Sofas, Beds, Car seats, Carpets.
-7. Reviews section: show only real reviews from verified buyers (connect a reviews app later). Until then show "Reviews from verified buyers will appear here once orders are delivered." Do NOT invent reviews, star ratings, "X people are viewing", fake countdown timers or fake stock counters.
-8. FAQ accordion: delivery time (ships in 1–3 business days, arrives in 7–12 business days, tracking by email); works on cat hair; will it damage my sofa (no glue or blades, test on hidden area, not for silk/fine knits); what if it doesn't work (30-day refund + 14-day EU right of withdrawal); why buy 2 (home + car).
-9. Footer: business name, VAT number, address, support email, EU responsible person (GPSR) — as editable placeholders; links to Refund policy, Privacy policy, Terms of service, Shipping policy.
+Page structure (top to bottom). IMAGES FIRST: on mobile the gallery is the very first thing under the header, full width, before any text.
+1. Dark announcement bar: "BUY 2, GET 1 FREE · Free shipping to Ireland · 30-day money-back guarantee" (offer in gold).
+2. Header: logo "Shedless" (teal dot + wordmark) and a Cart button with item count.
+3. Hero:
+   - Gallery (left on desktop, sticky while scrolling; top and full-width on mobile): big square main image with left/right arrows, swipe on mobile, dots, and 6 thumbnails below. Images in this order: product hero with "BUY 2, GET 1 FREE" badge; benefits infographic ("No refills. No batteries. No mess."); before/after sofa; lid open with collected fur; 3-pack "Buy 2, get 1 FREE"; comparison vs sticky roller. I will upload these images (and later replace them with real product photos).
+   - Buy box: eyebrow "Reusable pet hair remover"; H1 "Dog hair off the sofa in 10 seconds"; big price of the selected bundle + crossed-out full price + red "Save €X" tag; one-line description; 3 check bullets; "Choose your bundle" with the 3 variants as large cards; big "Add to cart" button; 3 assurance tiles (Free shipping to Ireland / 30 days money back / Tracked delivery); "Secure checkout · Visa · Mastercard · Apple Pay · Google Pay".
+4. "See it in action": 3 vertical 9:16 videos side by side (horizontal swipe carousel on mobile), autoplay, muted, loop, playsinline. I will upload the 3 MP4 files.
+5. "Before and after": interactive drag slider between a "before" image (sofa covered in hair) and an "after" image (clean sofa).
+6. "Why pet owners switch": 4 benefit cards — Reusable, Fast on big areas, No batteries, Car friendly.
+7. "How it works": image of the lid open on one side, 3 numbered steps (Roll, Open, Empty) on the other.
+8. Comparison table "Shedless vs sticky rollers": Refills (Never vs Every few uses), Waste (Just the fur vs Sticky sheets), Whole sofa (Fast vs Slow), Fine knits and clothes (Not ideal vs Better). Keep the honest last row.
+9. Guarantee banner (teal): round "30 DAY GUARANTEE" seal, "Try it on your sofa for 30 days", full refund + 14-day EU right to cancel.
+10. FAQ accordion: how "Buy 2, get 1 free" works; delivery (ships 1–3 business days, arrives 7–12, tracking); cat hair; will it damage my sofa; refunds.
+11. Final offer block (dark): 3-pack image + "Buy 2, get 1 FREE" + "3 rollers for €49.80 instead of €74.70. Free shipping to Ireland." + button "Get the 3-pack" that selects the 3-pack and adds it to the cart.
+12. Footer: business name, VAT number, address, support email, EU responsible person (GPSR) as editable placeholders; links to Shipping, Refund, Privacy, Terms, Contact.
+
+Never add: fake reviews or star ratings, "X people are viewing", fake countdown timers, fake low-stock counters, or invented "was" prices. Add a reviews app later and only show reviews from real buyers.
 
 Behaviour:
-- Slide-in cart drawer from the right with quantity +/- per line, total, "Free shipping to Ireland included", and a Checkout button that goes to Shopify checkout.
-- On mobile, show a sticky "Add to cart" bar at the bottom once the main button scrolls out of view.
+- Slide-in cart drawer from the right: product thumbnail, quantity +/- per line, an upsell box "Upgrade to Buy 2, get 1 FREE" when the cart has the 1- or 2-roller option, "✓ Free shipping to Ireland", total, and a Checkout button that goes to Shopify checkout.
+- On mobile, once the main Add to cart button scrolls past, show a sticky bottom bar with the selected bundle price + name and an "Add to cart" button.
 - Fast: compress images, lazy-load everything below the hero.
 - Add Meta (Facebook) Pixel placeholder for PageView, ViewContent, AddToCart, InitiateCheckout, Purchase.
 - SEO title: "Shedless – Reusable Pet Hair Remover for Sofa, Bed & Car | Ireland". Meta description: "Remove dog and cat hair from sofas, beds and car seats in seconds. No refills, no batteries. Free shipping to Ireland."

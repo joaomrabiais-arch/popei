@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Shedless: animations</title>
+<style>
+  html, body { margin:0; background:#000; }
+  canvas { display:block; width:540px; height:960px; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+// Animações 1080x1920 para TikTok/Reels. render(cena, t) desenha o frame no instante t (segundos).
+// Cenas: "sofa", "fita", "sitios". Usado por render.js (Playwright) para gerar os MP4.
+const W = 1080, H = 1920;
+const ctx = document.getElementById("c").getContext("2d");
+const C = { teal:"#1f6f68", tealD:"#14504b", mint:"#e3f1ef", cream:"#fbf8f6", ink:"#1d1a19",
+            hair:"#8a5a2b", hair2:"#c89a5e", sofa:"#7f8c99", sofaD:"#66727e", red:"#c0392b", white:"#ffffff" };
+const F = "'Inter Display', 'Inter', 'DejaVu Sans', sans-serif";
+
+// gerador aleatório com semente para os pelos serem iguais em todos os frames
+function rng(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = x => { x = clamp(x); return x < .5 ? 2*x*x : 1 - Math.pow(-2*x + 2, 2) / 2; };
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+
+function rr(x, y, w, h, r, fill) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.fillStyle = fill; ctx.fill(); }
+function text(s, x, y, size, color, weight = 800, align = "center") {
+  ctx.font = `${weight} ${size}px ${F}`; ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = "middle"; ctx.fillText(s, x, y);
+}
+// texto com caixa por trás (estilo legenda TikTok)
+function caption(s, y, size = 64, bg = C.white, fg = C.ink, alpha = 1) {
+  ctx.save(); ctx.globalAlpha = alpha;
+  ctx.font = `800 ${size}px ${F}`; const w = ctx.measureText(s).width + size * 0.9;
+  rr(W/2 - w/2, y - size * 0.8, w, size * 1.6, 18, bg); text(s, W/2, y + 2, size, fg);
+  ctx.restore();
+}
+function makeHairs(n, x, y, w, h, seed) {
+  const r = rng(seed); const a = [];
+  for (let i = 0; i < n; i++) a.push({ x: x + r()*w, y: y + r()*h, a: r()*Math.PI, l: 14 + r()*22, c: r() > .5 ? C.hair : C.hair2 });
+  return a;
+}
+function drawHair(h) {
+  ctx.strokeStyle = h.c; ctx.lineWidth = 3.2; ctx.lineCap = "round"; ctx.beginPath();
+  ctx.moveTo(h.x, h.y); ctx.quadraticCurveTo(h.x + Math.cos(h.a)*h.l*.5 + 6, h.y + Math.sin(h.a)*h.l*.5 - 6, h.x + Math.cos(h.a)*h.l, h.y + Math.sin(h.a)*h.l);
+  ctx.stroke();
+}
+function sofa(x, y, s = 1) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  rr(-420, -230, 840, 260, 60, C.sofaD);           // costas
+  rr(-470, -40, 120, 300, 50, C.sofaD);            // braço esq
+  rr(350, -40, 120, 300, 50, C.sofaD);             // braço dir
+  rr(-360, 10, 355, 190, 36, C.sofa);              // almofada esq
+  rr(5, 10, 355, 190, 36, C.sofa);                 // almofada dir
+  rr(-400, 200, 800, 70, 24, C.sofaD);             // base
+  rr(-380, 270, 30, 50, 8, C.tealD); rr(350, 270, 30, 50, 8, C.tealD);
+  ctx.restore();
+}
+// rolo: cilindro com cabo, centro em (x,y)
+function roller(x, y, s = 1, open = 0) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  ctx.save(); ctx.translate(0, -40); ctx.rotate(-0.15);
+  rr(-24, -260, 48, 240, 24, C.tealD);             // cabo
+  ctx.restore();
+  rr(-140, -60, 280, 120, 50, C.teal);             // corpo
+  ctx.save(); ctx.translate(-120, 40); ctx.rotate(-open * 0.9);
+  rr(0, -10, 240, 40, 16, C.tealD);                // tampa do depósito
+  ctx.restore();
+  rr(-110, -44, 220, 20, 10, "rgba(255,255,255,.25)");
+  ctx.restore();
+}
+function cta(t, t0) {
+  const k = ease(seg(t, t0, t0 + .6));
+  ctx.fillStyle = C.teal; ctx.fillRect(0, 0, W, H);
+  ctx.save(); ctx.globalAlpha = k; ctx.translate(0, (1 - k) * 60);
+  text("Shedless", W/2, 500, 170, C.white, 900);
+  text("Reusable pet hair remover", W/2, 630, 54, C.mint, 600);
+  rr(140, 740, 800, 4, 2, "rgba(255,255,255,.35)");
+  text("No refills · No batteries", W/2, 840, 56, C.white, 700);
+  text("Sofa · Bed · Car", W/2, 930, 56, C.white, 700);
+  rr(190, 1050, 700, 150, 75, C.white);
+  text("Buy 2, get 1 FREE", W/2, 1126, 52, C.teal, 800);
+  text("Free shipping to Ireland", W/2, 1280, 46, C.mint, 600);
+  const p = 1 + Math.sin(t * 6) * 0.03;
+  ctx.save(); ctx.translate(W/2, 1430); ctx.scale(p, p); text("Link in bio", 0, 0, 72, C.white, 900); ctx.restore();
+  ctx.restore();
+}
+
+// ---------- CENA 1: sofá cheio de pelos, o rolo limpa ----------
+const S1 = makeHairs(520, 230, 1010, 620, 180, 7);
+function sceneSofa(t) {
+  if (t >= 9.2) return cta(t, 9.2);
+  ctx.fillStyle = C.cream; ctx.fillRect(0, 0, W, H);
+  rr(0, 1350, W, 570, 0, "#e9e2dc");               // chão
+  if (t < 6.9) sofa(W/2, 1000);
+  // rolo varre 3 filas entre 2.0s e 6.6s
+  const p = seg(t, 2.0, 6.6), rows = 3, rowH = 180 / rows;
+  const row = Math.min(rows - 1, Math.floor(p * rows)), rp = (p * rows) - row;
+  const dir = row % 2 === 0 ? 1 : -1;
+  const rx = 230 + (dir > 0 ? rp : 1 - rp) * 620, ry = 1010 + rowH * (row + .5);
+  let removed = 0;
+  for (const h of S1) {
+    const hr = Math.min(rows - 1, Math.floor((h.y - 1010) / rowH));
+    const swept = p > 0 && (hr < row || (hr === row && (dir > 0 ? h.x < rx : h.x > rx)));
+    if (swept && t < 6.8) { removed++; continue; }
+    if (t >= 6.8 && p >= 1) { removed++; continue; }
+    drawHair(h);
+  }
+  if (t > 1.6 && t < 6.9) roller(rx, ry - 30, .8);
+  // legendas
+  if (t < 2.2) caption("Every dog owner's sofa", 330, 70, C.white, C.ink, ease(seg(t, 0, .4)));
+  if (t < 2.2) caption("(every single day)", 470, 52, C.ink, C.white, ease(seg(t, .6, 1)));
+  if (t >= 2.2 && t < 6.9) {
+    caption("10 seconds. No tape.", 330, 66, C.teal, C.white);
+    caption(`${removed} hairs picked up`, 470, 52, C.white, C.ink);
+  }
+  if (t >= 6.9) {
+    const k = seg(t, 6.9, 8.0);
+    caption("Open. Empty. Done.", 330, 66, C.teal, C.white);
+    roller(W/2, 980, 1.7, ease(k));
+    const r = rng(3);                                  // bola de pelos a cair
+    for (let i = 0; i < 90; i++) {
+      const hx = W/2 - 90 + r()*180, hy = 1050 + r()*40 + ease(seg(t, 7.3, 8.6)) * 280;
+      if (k > .4) drawHair({ x: hx, y: Math.min(hy, 1380), a: r()*3, l: 18, c: r() > .5 ? C.hair : C.hair2 });
+    }
+  }
+}
+
+// ---------- CENA 2: rolo de fita vs Pelinho ----------
+const S2a = makeHairs(220, 80, 900, 400, 260, 11), S2b = makeHairs(220, 600, 900, 400, 260, 11);
+function sceneFita(t) {
+  if (t >= 9.2) return cta(t, 9.2);
+  ctx.fillStyle = C.cream; ctx.fillRect(0, 0, W, H);
+  rr(538, 600, 4, 1250, 2, "#d8cfc8");
+  caption("Sticky roller vs Shedless", 300, 68, C.ink, C.white, ease(seg(t, 0, .4)));
+  text("Tape", 280, 520, 64, C.ink, 800); text("Shedless", 800, 520, 64, C.teal, 800);
+  rr(60, 880, 440, 300, 30, C.sofa); rr(580, 880, 440, 300, 30, C.sofa);
+  const p = seg(t, 1.0, 7.5);
+  const sheets = Math.min(12, Math.floor(p * 13));
+  S2a.forEach((h, i) => { if (i / S2a.length > p * .85) drawHair(h); });   // fita: lenta, nunca acaba
+  S2b.forEach((h, i) => { if (i / S2b.length > ease(p * 1.6)) drawHair(h); });
+  // folhas de fita amarrotadas a acumular
+  const r = rng(5);
+  for (let i = 0; i < sheets; i++) {
+    const x = 90 + r()*360, y = 1340 + r()*200;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(r()*2); rr(-45, -35, 90, 70, 10, "#f3f0c9"); ctx.restore();
+  }
+  text(`Sheets binned: ${sheets}`, 280, 1250, 46, C.red, 800);
+  text("Sheets binned: 0", 800, 1250, 46, C.teal, 800);
+  if (p > .1) roller(800, 1030 + Math.sin(t * 8) * 40, .7);
+  if (t > 7.6) caption("Stop buying refills.", 680, 62, C.teal, C.white, ease(seg(t, 7.6, 8.0)));
+}
+
+// ---------- CENA 3: 3 sítios onde os pelos se escondem ----------
+function bed(x, y) { rr(x-300, y-40, 600, 160, 30, "#b9a99a"); rr(x-300, y-150, 140, 120, 30, "#d8ccc0"); rr(x-150, y-70, 450, 60, 20, "#9fb3c8"); }
+function carSeat(x, y) { rr(x-150, y-260, 300, 300, 70, "#4b4f57"); rr(x-200, y+20, 400, 140, 50, "#5b6068"); rr(x-60, y-330, 120, 90, 30, "#4b4f57"); }
+const S3 = [makeHairs(160, 320, 950, 440, 180, 21), makeHairs(160, 250, 930, 560, 160, 22), makeHairs(160, 360, 880, 360, 280, 23)];
+function sceneSitios(t) {
+  if (t >= 10.2) return cta(t, 10.2);
+  ctx.fillStyle = C.mint; ctx.fillRect(0, 0, W, H);
+  if (t < 1.8) {
+    const k = ease(seg(t, 0, .5));
+    ctx.save(); ctx.globalAlpha = k;
+    text("3 places dog hair", W/2, 820, 78, C.ink, 900);
+    text("loves to hide", W/2, 920, 78, C.ink, 900);
+    text("(and how to get it out)", W/2, 1040, 56, C.teal, 700);
+    ctx.restore(); return;
+  }
+  const i = Math.min(2, Math.floor((t - 1.8) / 2.8)), lt = (t - 1.8) - i * 2.8;
+  const names = ["1. Sofa", "2. Bed", "3. Car seat"];
+  caption(names[i], 360, 84, C.teal, C.white, ease(seg(lt, 0, .3)));
+  if (i === 0) sofa(W/2, 1000, .8); if (i === 1) bed(W/2, 1060); if (i === 2) carSeat(W/2, 1120);
+  const p = ease(seg(lt, .8, 2.4));
+  S3[i].forEach((h, k) => { if (k / S3[i].length >= p) drawHair(h); });
+  if (lt > .7 && lt < 2.5) roller(W/2 - 200 + p * 400, 1040, .6);
+  if (lt > 2.4) caption("Clean.", 1500, 70, C.white, C.teal);
+}
+
+const SCENES = { sofa: [sceneSofa, 12], fita: [sceneFita, 12], sitios: [sceneSitios, 13] };
+window.render = (name, t) => SCENES[name][0](t);
+window.duration = name => SCENES[name][1];
+
+// pré-visualização em loop ao abrir no browser: animacao.html#sofa
+const pv = location.hash.slice(1);
+if (SCENES[pv]) { const s = performance.now(); (function loop(){ render(pv, ((performance.now() - s) / 1000) % SCENES[pv][1]); requestAnimationFrame(loop); })(); }
+</script>
+</body>
+</html>
