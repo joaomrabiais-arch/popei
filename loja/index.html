@@ -139,7 +139,7 @@ $("bundles").addEventListener("change", e => { sel = +e.target.dataset.i; render
 renderBundles();
 
 $("buy").addEventListener("click", () => {
-  if (!CONFIG.checkoutUrl) { alert("Falta configurar CONFIG.checkoutUrl (checkout da Shopify)."); return; }
+  if (!CONFIG.checkoutUrl) { $("buy").textContent = "Exemplo: falta ligar ao checkout da Shopify"; return; }
   location.href = CONFIG.checkoutUrl;
 });
 $("ticks").innerHTML = CONFIG.ticks.map(t => `<li>${esc(t)}</li>`).join("");
