@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Loja de Produto Único</title>
 <style>
-  :root { --bg:#fbf8f6; --card:#fff; --ink:#1d1a19; --muted:#6d6460; --line:#ece4df; --brand:#c2185b; --brand-ink:#fff; --soft:#fbe9f0; }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#151213; --card:#1f1b1c; --ink:#f1ecea; --muted:#a59c98; --line:#342d2e; --brand:#f06292; --brand-ink:#1a0d12; --soft:#2b1c22; } }
-  :root[data-theme="dark"] { --bg:#151213; --card:#1f1b1c; --ink:#f1ecea; --muted:#a59c98; --line:#342d2e; --brand:#f06292; --brand-ink:#1a0d12; --soft:#2b1c22; }
+  :root { --bg:#fbf8f6; --card:#fff; --ink:#1d1a19; --muted:#6d6460; --line:#ece4df; --brand:#1f6f68; --brand-ink:#fff; --soft:#e3f1ef; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#151213; --card:#1f1b1c; --ink:#f1ecea; --muted:#a59c98; --line:#342d2e; --brand:#5cc4b8; --brand-ink:#1a0d12; --soft:#16302d; } }
+  :root[data-theme="dark"] { --bg:#151213; --card:#1f1b1c; --ink:#f1ecea; --muted:#a59c98; --line:#342d2e; --brand:#5cc4b8; --brand-ink:#1a0d12; --soft:#16302d; }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 system-ui, sans-serif; }
   .wrap { max-width:1040px; margin:0 auto; padding:0 16px; }
@@ -76,36 +76,38 @@
 
 <script>
 const CONFIG = {
-  brand: "Vellora",                       // nome da tua marca (verifica no INPI/EUIPO que está livre)
-  product: "Escova a Vapor 2‑em‑1",
-  subtitle: "Alisa e dá volume em minutos, com menos calor direto no cabelo.",
-  images: [],                             // URLs das tuas fotos (ideal: fotos/vídeos teus, não do fornecedor)
+  brand: "Pelinho",                       // nome da tua marca (confirma no INPI/EUIPO que está livre)
+  product: "Rolo Tira-Pelos Reutilizável",
+  subtitle: "Tira os pelos do cão e do gato do sofá, da cama e do carro em segundos. Sem recargas, sem pilhas.",
+  images: [],                             // fotos/vídeos TEUS com a amostra, no teu sofá
   currency: "EUR",
-  compareAt: 79.90,                       // só usa um preço "antes" se o praticaste de facto (Diretiva Omnibus)
-  bundles: [                              // define os preços com calculadora/index.html
-    { qty: 1, price: 59.90, label: "1 unidade" },
-    { qty: 2, price: 99.90, label: "2 unidades", tag: "Mais escolhido" }
+  compareAt: 0,                           // não inventes preço "antes" (Diretiva Omnibus)
+  bundles: [                              // preços definidos com a calculadora
+    { qty: 1, price: 24.90, label: "1 rolo" },
+    { qty: 2, price: 39.90, label: "2 rolos: casa + carro", tag: "Mais escolhido" },
+    { qty: 3, price: 49.90, label: "3 rolos: oferece um" }
   ],
-  shippingDays: "7–14 dias úteis",        // sê honesto: envio do fornecedor, não "24h"
+  shippingDays: "7–12 dias úteis",        // confirma com a amostra; sê honesto
   checkoutUrl: "",                        // link do checkout Shopify
-  ticks: ["Envio grátis para Portugal", "14 dias para devolver (direito de livre resolução)", "Pagamento seguro"],
+  ticks: ["Envio grátis para Portugal", "Sem recargas: esvazia e volta a usar", "14 dias para devolver"],
   benefits: [
-    ["Rápida", "Aquece em segundos e faz o trabalho de duas ferramentas."],
-    ["Mais suave", "Vapor + cerdas para menos frizz. (Confirma esta alegação com o fornecedor.)"],
-    ["Fácil de levar", "Compacta para viagem e ginásio."]
+    ["Sem recargas", "Não usa fitas adesivas. Abres o depósito, deitas os pelos fora e está pronto."],
+    ["Sofá, cama, carro", "Funciona em tecidos e alcatifas onde o aspirador não apanha os pelos presos."],
+    ["Sem pilhas", "Mecânico. Não precisa de tomada nem de carregar."]
   ],
-  steps: [["1. Liga", "Enche o depósito e espera pela luz verde."], ["2. Escova", "Madeixas finas, da raiz às pontas."], ["3. Finaliza", "Rodar para dar volume."]],
+  steps: [["1. Rola", "Movimentos curtos para a frente e para trás."], ["2. Abre", "Carrega no botão e abre o depósito."], ["3. Esvazia", "Deita os pelos no lixo. Pronto para a próxima."]],
   faq: [
     ["Quanto tempo demora a entrega?", "Normalmente {ship}. Recebes o número de seguimento por email."],
     ["Posso devolver?", "Sim. Tens 14 dias após receção para devolver sem justificação, nos termos do DL 24/2014."],
-    ["É seguro?", "Produto com marcação CE e informação do responsável na UE na embalagem. (PREENCHER: confirma documentação do fornecedor.)"]
+    ["Funciona em todos os tecidos?", "Funciona melhor em tecidos com textura (sofás, mantas, alcatifas). Em seda ou malhas finas, não recomendamos."],
+    ["Estraga o tecido?", "Não usa cola nem lâminas. Testa primeiro numa zona escondida em tecidos delicados."]
   ],
   legal: {                                 // OBRIGATÓRIO antes de publicar
     company: "PREENCHER — nome / empresa",
     nif: "PREENCHER — NIF",
     address: "PREENCHER — morada",
     email: "PREENCHER — email de apoio",
-    euResponsible: "PREENCHER — pessoa responsável na UE (GPSR)",
+    euResponsible: "PREENCHER — pessoa responsável na UE (GPSR), pedir ao fornecedor",
     ral: "Em caso de litígio pode recorrer a uma entidade de Resolução Alternativa de Litígios de consumo: PREENCHER nome da entidade RAL (lista no Portal do Consumidor)"
   }
 };
