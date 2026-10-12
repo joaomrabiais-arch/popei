@@ -1,5 +1,7 @@
 # popei
 
+**Site base (novo):** [`site/`](site/) — base profissional e configurável para o negócio, enquanto o produto não está escolhido. Ver [`site/LEIA-ME.md`](site/LEIA-ME.md). Testes: `npm test`.
+
 Análise e kit de arranque a partir do vídeo TikTok "$12.5k this month — AI Dropshipping" (TeemDrop).
 
 - [`ANALISE.md`](ANALISE.md) — o que o vídeo mostra, o que esconde, pesquisa e fontes.

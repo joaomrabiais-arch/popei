@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+# Substitui o domínio quando o site estiver publicado:
+Sitemap: https://www.exemplo.pt/sitemap.xml

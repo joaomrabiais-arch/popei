@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Contacto — Popei</title>
+  <meta name="description" content="Fala connosco: dúvidas, encomendas ou parcerias.">
+  <meta name="theme-color" content="#f5f6f4">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script src="assets/js/config.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Saltar para o conteúdo</a>
+  <div data-site-header></div>
+  <main id="conteudo" class="container">
+    <div class="page-head">
+      <span class="eyebrow">Contacto</span>
+      <h1>Fala connosco</h1>
+      <p>Dúvidas sobre o produto, uma encomenda ou uma parceria. Respondemos em português.</p>
+    </div>
+    <div class="contact-grid">
+      <form class="form panel" data-form="contacto" novalidate>
+        <div class="field">
+          <label for="c-name">Nome</label>
+          <input class="input" id="c-name" name="nome" autocomplete="name" required minlength="2" aria-describedby="c-name-err">
+          <p class="field-error" id="c-name-err" aria-live="polite"></p>
+        </div>
+        <div class="field">
+          <label for="c-email">Email</label>
+          <input class="input" id="c-email" name="email" type="email" autocomplete="email" required aria-describedby="c-email-err">
+          <p class="field-error" id="c-email-err" aria-live="polite"></p>
+        </div>
+        <div class="field">
+          <label for="c-subject">Assunto</label>
+          <select class="input" id="c-subject" name="assunto" required aria-describedby="c-subject-err">
+            <option value="">Escolhe um assunto</option>
+            <option>Dúvida sobre o produto</option>
+            <option>Encomenda</option>
+            <option>Devolução</option>
+            <option>Parceria</option>
+            <option>Outro</option>
+          </select>
+          <p class="field-error" id="c-subject-err" aria-live="polite"></p>
+        </div>
+        <div class="field">
+          <label for="c-msg">Mensagem</label>
+          <textarea class="input" id="c-msg" name="mensagem" required minlength="10" aria-describedby="c-msg-err"></textarea>
+          <p class="field-error" id="c-msg-err" aria-live="polite"></p>
+        </div>
+        <label class="check"><input type="checkbox" name="consent" required aria-describedby="c-consent-err"> <span>Aceito que os meus dados sejam usados para responder a este pedido. Ver <a class="link" href="legal/privacidade.html">Privacidade</a>.</span></label>
+        <p class="field-error" id="c-consent-err" aria-live="polite"></p>
+        <div class="hp" aria-hidden="true"><label>Não preencher <input name="_gotcha" tabindex="-1" autocomplete="off"></label></div>
+        <input type="hidden" name="form" value="contacto">
+        <button class="btn btn--block" type="submit">Enviar mensagem</button>
+        <div data-status aria-live="polite"></div>
+      </form>
+      <aside class="aside" aria-label="Outras formas de contacto">
+        <div class="panel"><h2>Email</h2><p data-fill="contact.email"></p></div>
+        <div class="panel"><h2>Empresa</h2><p data-fill="legal.company"></p><p>NIF <span data-fill="legal.nif"></span></p><p data-fill="legal.address"></p></div>
+        <div class="panel"><h2>Reclamações</h2><p><a class="link" href="https://www.livroreclamacoes.pt" target="_blank" rel="noopener">Livro de Reclamações Eletrónico</a></p></div>
+      </aside>
+    </div>
+  </main>
+  <div data-site-footer></div>
+</body>
+</html>

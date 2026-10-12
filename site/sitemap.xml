@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Substitui https://www.exemplo.pt pelo domínio real antes de publicar. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://www.exemplo.pt/</loc></url>
+  <url><loc>https://www.exemplo.pt/contacto.html</loc></url>
+  <url><loc>https://www.exemplo.pt/legal/privacidade.html</loc></url>
+  <url><loc>https://www.exemplo.pt/legal/termos.html</loc></url>
+  <url><loc>https://www.exemplo.pt/legal/envios.html</loc></url>
+  <url><loc>https://www.exemplo.pt/legal/devolucoes.html</loc></url>
+</urlset>

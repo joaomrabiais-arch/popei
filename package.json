@@ -1,0 +1,12 @@
+{
+  "name": "popei",
+  "private": true,
+  "description": "Site base (HTML/CSS/JS estático) e materiais do projeto.",
+  "scripts": {
+    "start": "node tests/serve.js",
+    "test": "node tests/site.test.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
+}
