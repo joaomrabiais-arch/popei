@@ -117,6 +117,23 @@ const ok = (cond, msg) => { if (cond) passes++; else { failures++; console.error
     await page.close();
   }
 
+  console.log("• ofertas e anúncios");
+  {
+    const page = await browser.newPage();
+    await page.goto(base + "/");
+    const n = await page.locator("input[name=offer]").count();
+    if (n) {
+      ok(/49,80/.test(await page.textContent("#priceBox")), "a oferta por defeito devia ser o pack de 3");
+      await page.locator(".offer").first().click();
+      ok(/24,90/.test(await page.textContent("#priceBox")), "mudar de oferta não atualiza o preço");
+      await page.click("a[data-offer-qty='3']");
+      ok(/49,80/.test(await page.textContent("#priceBox")), "o anúncio do pack não escolhe o pack de 3");
+    }
+    const ads = await page.$$eval(".ad-banner img", (x) => x.map((i) => i.getAttribute("alt")));
+    ok(ads.every((a) => a && a.length > 10), "anúncios sem texto alternativo");
+    await page.close();
+  }
+
   console.log("• formulário de contacto");
   {
     const page = await browser.newPage();
@@ -140,7 +157,7 @@ const ok = (cond, msg) => { if (cond) passes++; else { failures++; console.error
     await page.goto(base + "/");
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(200);
-    const hidden = await page.$$eval("main *", (els) => els.filter((e) => getComputedStyle(e).opacity === "0").length);
+    const hidden = await page.$$eval("main *", (els) => els.filter((e) => !e.matches("input[type=range]") && getComputedStyle(e).opacity === "0").length);
     ok(hidden === 0, `${hidden} elementos com opacidade 0 com movimento reduzido`);
     await ctx.close();
   }

@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Popei: imagens do produto</title>
+<style>
+  /* Cada .shot é uma imagem 1200x1200 da galeria. render-imagens.js tira screenshot de cada uma. */
+  body { margin:0; background:#ccc; font-family:"Inter Display","Inter",sans-serif; }
+  .shot { width:1200px; height:1200px; position:relative; overflow:hidden; margin-bottom:20px; }
+  .h { font-weight:900; letter-spacing:-.02em; line-height:1; }
+  .center { position:absolute; inset:0; display:grid; place-items:center; }
+  .badge { position:absolute; background:#f2b544; color:#2a1d00; font-weight:900; border-radius:999px; padding:18px 34px; font-size:44px; }
+  .chip { display:inline-flex; align-items:center; gap:18px; background:#fff; border-radius:999px; padding:22px 36px; font-size:40px; font-weight:800; color:#16201e; box-shadow:0 10px 30px rgba(0,0,0,.08); }
+  .chip i { width:46px; height:46px; border-radius:50%; background:#1f6f68; display:inline-grid; place-items:center; color:#fff; font-style:normal; font-size:30px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2f8c84"/><stop offset=".45" stop-color="#1f6f68"/><stop offset="1" stop-color="#134843"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="handle" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2a2f2e"/><stop offset=".5" stop-color="#4a5150"/><stop offset="1" stop-color="#1c201f"/>
+    </linearGradient>
+    <linearGradient id="fabric" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8e9694"/><stop offset="1" stop-color="#5e6564"/>
+    </linearGradient>
+    <pattern id="weave" width="10" height="10" patternUnits="userSpaceOnUse">
+      <path d="M0 10 L10 0" stroke="#4d5352" stroke-width="2"/>
+    </pattern>
+    <radialGradient id="shadow"><stop offset="0" stop-color="#000" stop-opacity=".28"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <!-- o rolo: 600 x 520, base em y=470 -->
+    <g id="roller">
+      <ellipse cx="300" cy="478" rx="260" ry="26" fill="url(#shadow)"/>
+      <!-- cabo -->
+      <path d="M262 330 L330 40 Q340 6 372 14 L396 22 Q426 32 418 64 L352 340 Z" fill="url(#handle)"/>
+      <path d="M352 60 L372 64" stroke="#fff" stroke-opacity=".25" stroke-width="6" stroke-linecap="round"/>
+      <rect x="338" y="96" width="44" height="120" rx="20" transform="rotate(14 360 156)" fill="#1f6f68" opacity=".9"/>
+      <!-- corpo -->
+      <rect x="40" y="300" width="520" height="170" rx="84" fill="url(#body)"/>
+      <rect x="70" y="316" width="460" height="36" rx="18" fill="url(#shine)"/>
+      <!-- tecido do rolo -->
+      <rect x="78" y="408" width="444" height="58" rx="29" fill="url(#fabric)"/>
+      <rect x="78" y="408" width="444" height="58" rx="29" fill="url(#weave)" opacity=".5"/>
+      <!-- botão -->
+      <circle cx="300" cy="372" r="22" fill="#f2b544"/><circle cx="300" cy="372" r="10" fill="#d99a24"/>
+      <text x="300" y="455" text-anchor="middle" font-family="Inter Display" font-weight="900" font-size="30" fill="#fff" opacity=".9">POPEI</text>
+    </g>
+    <g id="hair">
+      <g stroke="#a36f3b" stroke-width="5" stroke-linecap="round" fill="none">
+        <path d="M0 0 q12 -10 26 2"/><path d="M30 14 q10 8 24 -2"/><path d="M-10 24 q14 -6 22 8"/><path d="M16 34 q14 4 22 -8"/><path d="M48 30 q6 -12 20 -6"/>
+      </g>
+    </g>
+  </defs>
+</svg>
+
+<!-- 1: herói estúdio -->
+<div class="shot" id="s1" style="background:radial-gradient(circle at 50% 40%, #ffffff, #e6efec)">
+  <svg class="center" viewBox="0 0 600 520" width="1000" style="left:100px;top:180px;position:absolute"><use href="#roller"/></svg>
+  <div class="badge" style="top:60px;left:60px">LEVE 3, PAGUE 2</div>
+  <div style="position:absolute;bottom:70px;left:0;right:0;text-align:center;font-size:42px;font-weight:800;color:#1f6f68">Rolo tira-pelos reutilizável</div>
+</div>
+
+<!-- 2: benefícios -->
+<div class="shot" id="s2" style="background:#e2f0ec">
+  <div class="h" style="position:absolute;top:80px;left:80px;font-size:96px;color:#16201e">Sem recargas.<br>Sem pilhas.<br><span style="color:#1f6f68">Sem lixo.</span></div>
+  <svg viewBox="0 0 600 520" width="760" style="position:absolute;right:-60px;bottom:120px;transform:rotate(-12deg)"><use href="#roller"/></svg>
+  <div style="position:absolute;left:80px;bottom:90px;display:grid;gap:22px">
+    <span class="chip"><i>✓</i>Sofás e camas</span>
+    <span class="chip"><i>✓</i>Bancos do carro</span>
+    <span class="chip"><i>✓</i>Pelo de cão e gato</span>
+  </div>
+</div>
+
+<!-- 3: antes / depois (sofá) -->
+<div class="shot" id="s3" style="background:#f6f1ea">
+  <div id="sofaWrap"></div>
+</div>
+
+<!-- 4: depósito aberto -->
+<div class="shot" id="s4" style="background:radial-gradient(circle at 50% 45%, #ffffff, #e9e2dc)">
+  <div class="h" style="position:absolute;top:80px;left:0;right:0;text-align:center;font-size:84px;color:#16201e">Abre. Esvazia. <span style="color:#1f6f68">Repete.</span></div>
+  <svg viewBox="0 0 600 520" width="900" style="position:absolute;left:150px;top:300px"><use href="#roller"/></svg>
+  <svg viewBox="0 0 400 200" width="620" style="position:absolute;left:290px;top:930px">
+    <g id="pile"></g>
+  </svg>
+</div>
+
+<!-- 5: pack -->
+<div class="shot" id="s5" style="background:linear-gradient(160deg,#1f6f68,#134843)">
+  <div class="h" style="position:absolute;top:80px;left:0;right:0;text-align:center;font-size:100px;color:#fff">Leve 3, <span style="color:#f2b544">pague 2</span></div>
+  <div style="position:absolute;top:210px;left:0;right:0;text-align:center;font-size:44px;color:#e2f0ec;font-weight:600">Casa · Carro · Oferta</div>
+  <svg viewBox="0 0 600 520" width="560" style="position:absolute;left:30px;top:520px;transform:rotate(-10deg)"><use href="#roller"/></svg>
+  <svg viewBox="0 0 600 520" width="560" style="position:absolute;left:330px;top:400px"><use href="#roller"/></svg>
+  <svg viewBox="0 0 600 520" width="560" style="position:absolute;left:620px;top:540px;transform:rotate(10deg)"><use href="#roller"/></svg>
+  <div class="badge" style="right:90px;top:430px;transform:rotate(8deg);font-size:54px">GRÁTIS</div>
+</div>
+
+<!-- 6: comparação -->
+<div class="shot" id="s6" style="background:#fff">
+  <div style="position:absolute;inset:0 600px 0 0;background:#f1f1ef"></div>
+  <div style="position:absolute;inset:0 0 0 600px;background:#e2f0ec"></div>
+  <div class="h" style="position:absolute;top:90px;left:0;width:600px;text-align:center;font-size:64px;color:#8a8f8d">Rolo de fita</div>
+  <div class="h" style="position:absolute;top:90px;left:600px;width:600px;text-align:center;font-size:64px;color:#1f6f68">Popei</div>
+  <div id="tape" style="position:absolute;left:120px;top:260px;width:360px;height:420px"></div>
+  <svg viewBox="0 0 600 520" width="520" style="position:absolute;left:640px;top:280px"><use href="#roller"/></svg>
+  <div style="position:absolute;top:780px;left:0;width:600px;display:grid;gap:26px;justify-items:center;font-size:44px;font-weight:700;color:#7b807e">
+    <div>✕ Recargas</div><div>✕ Folhas no lixo</div><div>✕ Lento no sofá</div></div>
+  <div style="position:absolute;top:780px;left:600px;width:600px;display:grid;gap:26px;justify-items:center;font-size:44px;font-weight:800;color:#1f6f68">
+    <div>✓ Sem recargas</div><div>✓ Só o pelo</div><div>✓ Rápido</div></div>
+</div>
+
+<!-- faixas de anúncio 1600x800 para espalhar pela loja (ad1-ad3). Trocar pelos PNG do Canva com o mesmo nome. -->
+<div class="shot" id="ad1" style="width:1600px;height:800px;background:linear-gradient(120deg,#134843,#1f6f68)">
+  <div class="h" style="position:absolute;left:90px;top:150px;font-size:120px;color:#fff">Chega de<br>recargas.</div>
+  <div style="position:absolute;left:94px;top:470px;font-size:46px;color:#e2f0ec;font-weight:600">Rola · Abre · Esvazia · Repete</div>
+  <div style="position:absolute;left:90px;top:580px;background:#f2b544;color:#2a1d00;font-weight:900;font-size:40px;border-radius:999px;padding:18px 36px">Comprar →</div>
+  <svg viewBox="0 0 600 520" width="820" style="position:absolute;right:40px;top:40px;transform:rotate(-10deg)"><use href="#roller"/></svg>
+</div>
+<div class="shot" id="ad2" style="width:1600px;height:800px;background:#f6f1ea">
+  <div id="ad2sofa" style="position:absolute;right:0;top:0;width:800px;height:800px;overflow:hidden"></div>
+  <div class="h" style="position:absolute;left:90px;top:170px;font-size:100px;color:#16201e">Pelos do cão?<br><span style="color:#1f6f68">Fora.</span></div>
+  <div style="position:absolute;left:94px;top:520px;font-size:46px;color:#5d6a67;font-weight:600">Sofá · Cama · Carro</div>
+  <div style="position:absolute;left:90px;top:610px;background:#1f6f68;color:#fff;font-weight:900;font-size:40px;border-radius:999px;padding:18px 36px">Ver como funciona →</div>
+</div>
+<div class="shot" id="ad3" style="width:1600px;height:800px;background:#16201e">
+  <div class="h" style="position:absolute;left:90px;top:140px;font-size:120px;color:#fff">Leve 3,<br><span style="color:#f2b544">pague 2</span></div>
+  <div style="position:absolute;left:94px;top:460px;font-size:46px;color:#cfd8d5;font-weight:600">Casa + carro + oferta · 49,80 €</div>
+  <div style="position:absolute;left:90px;top:570px;background:#f2b544;color:#2a1d00;font-weight:900;font-size:40px;border-radius:999px;padding:18px 36px">Quero o pack de 3 →</div>
+  <svg viewBox="0 0 600 520" width="520" style="position:absolute;left:820px;top:300px;transform:rotate(-10deg)"><use href="#roller"/></svg>
+  <svg viewBox="0 0 600 520" width="520" style="position:absolute;left:1040px;top:180px"><use href="#roller"/></svg>
+  <svg viewBox="0 0 600 520" width="520" style="position:absolute;left:1180px;top:340px;transform:rotate(10deg)"><use href="#roller"/></svg>
+</div>
+
+<!-- 7 e 8: antes / depois em imagens separadas (para o slider da loja) -->
+<div class="shot" id="s7"></div>
+<div class="shot" id="s8"></div>
+
+<script>
+// pelos espalhados
+function hairs(n, x, y, w, h, seed, color = "#a36f3b") {
+  let s = seed; const r = () => (s = (s * 16807) % 2147483647) / 2147483647; let out = "";
+  for (let i = 0; i < n; i++) { const px = x + r()*w, py = y + r()*h, a = r()*6.28, l = 16 + r()*22;
+    out += `<path d="M${px} ${py} q${Math.cos(a)*l/2+6} ${Math.sin(a)*l/2-6} ${Math.cos(a)*l} ${Math.sin(a)*l}" stroke="${r()>.5?color:"#c79a62"}" stroke-width="4" stroke-linecap="round" fill="none"/>`; }
+  return out;
+}
+function sofaSvg(dirty) {
+  return `<svg viewBox="0 0 600 600" width="600" height="1200" preserveAspectRatio="xMidYMid slice">
+    <rect width="600" height="600" fill="${dirty ? "#efe7de" : "#e2f0ec"}"/>
+    <rect x="-40" y="190" width="680" height="200" rx="40" fill="#7d8a96"/>
+    <rect x="-40" y="320" width="680" height="150" rx="34" fill="#93a0ab"/>
+    <rect x="-40" y="460" width="680" height="40" fill="#66727e"/>
+    ${dirty ? hairs(260, 10, 330, 580, 120, 7) + hairs(120, 10, 210, 580, 90, 9) : ""}
+  </svg>`;
+}
+document.getElementById("sofaWrap").innerHTML = `
+  <div style="position:absolute;left:0;top:0;width:600px;height:1200px;overflow:hidden">${sofaSvg(true)}</div>
+  <div style="position:absolute;left:600px;top:0;width:600px;height:1200px;overflow:hidden">${sofaSvg(false)}</div>
+  <div style="position:absolute;left:597px;top:0;width:6px;height:1200px;background:#fff"></div>
+  <div class="h" style="position:absolute;left:50px;top:70px;font-size:70px;color:#16201e;background:#fff;padding:14px 28px;border-radius:20px">ANTES</div>
+  <div class="h" style="position:absolute;right:50px;top:70px;font-size:70px;color:#fff;background:#1f6f68;padding:14px 28px;border-radius:20px">DEPOIS</div>
+  <div class="h" style="position:absolute;left:0;right:0;bottom:90px;text-align:center;font-size:72px;color:#16201e">10 segundos. <span style="color:#1f6f68">Sem fita.</span></div>
+  <svg viewBox="0 0 600 520" width="420" style="position:absolute;left:640px;top:520px;transform:rotate(-8deg)"><use href="#roller"/></svg>`;
+for (const [id, dirty] of [["s7", true], ["s8", false]]) {
+  document.getElementById(id).innerHTML = sofaSvg(dirty).replace('width="600" height="1200"', 'width="1200" height="1200"') +
+    `<div class="h" style="position:absolute;${dirty ? "left" : "right"}:50px;top:60px;font-size:70px;padding:14px 28px;border-radius:20px;${dirty ? "background:#fff;color:#16201e" : "background:#1f6f68;color:#fff"}">${dirty ? "ANTES" : "DEPOIS"}</div>`;
+}
+document.getElementById("ad2sofa").innerHTML = sofaSvg(true).replace('width="600" height="1200"', 'width="800" height="800"');
+document.getElementById("pile").innerHTML = hairs(260, 40, 20, 320, 120, 3);
+// rolo de fita com folhas usadas
+let t = `<svg viewBox="0 0 360 420" width="360" height="420">
+  <rect x="160" y="10" width="40" height="200" rx="18" fill="#9aa09e"/>
+  <rect x="60" y="200" width="240" height="120" rx="20" fill="#f3f0c9" stroke="#d9d4a0" stroke-width="4"/>`;
+for (let i = 0; i < 6; i++) t += `<rect x="${20 + i*52}" y="${340 + (i%2)*20}" width="70" height="56" rx="8" fill="#f3f0c9" stroke="#d9d4a0" stroke-width="3" transform="rotate(${(i*23)%40-20} ${55 + i*52} ${368})"/>`;
+document.getElementById("tape").innerHTML = t + `<g>${hairs(60, 70, 210, 220, 100, 4)}</g></svg>`;
+</script>
+</body>
+</html>

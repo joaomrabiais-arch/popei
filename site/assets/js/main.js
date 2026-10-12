@@ -61,7 +61,7 @@
     const navLinks = S.nav.map((l) => `<a href="${esc(url(l.href))}"${l.href.split("#")[0] === here && !l.href.includes("#") ? ' aria-current="page"' : ""}>${esc(l.label)}</a>`).join("");
     const ctaHref = url("index.html#interesse");
     header.outerHTML = `
-      ${S.demo ? `<div class="demo-bar" role="note">Versão de demonstração · os textos e imagens são provisórios</div>` : ""}
+      ${S.demo ? `<div class="demo-bar" role="note">${esc(S.demoMessage || "Versão de demonstração · os textos e imagens são provisórios")}</div>` : ""}
       <header class="site-header" id="siteHeader">
         <div class="container header-row">
           <a class="brand" href="${esc(url("index.html"))}" aria-label="${esc(S.brand.name)}, página inicial">${brandHTML()}</a>
@@ -105,6 +105,8 @@
   const hasProduct = !!product.name;
   const buyHref = product.checkoutUrl || "#interesse";
   const buyLabel = product.checkoutUrl ? "Comprar agora" : (S.interest.button || "Avisar-me");
+  const offers = product.offers || [];
+  let offerIdx = Math.max(0, offers.findIndex((o) => o.default));
   const placeholder = (label) => `<div class="placeholder-object">${'<div>' + icon("image") + esc(label) + "</div>"}</div>`;
 
   const R = {
@@ -133,7 +135,7 @@
     product: () => {
       const imgs = product.images || [];
       return `<div class="container">
-        <div class="section-head"><span class="eyebrow">O produto</span><h2>${hasProduct ? esc(product.name) : "Produto em preparação"}</h2></div>
+        <div class="section-head"><span class="eyebrow">O produto</span><h2>${hasProduct ? (offers.length ? "Escolhe a tua oferta" : esc(product.name)) : "Produto em preparação"}</h2></div>
         <div class="product">
           <div class="gallery" data-reveal>
             <div class="gallery-main">${imgs.length ? `<img id="galleryMain" src="${esc(url(imgs[0]))}" alt="${esc(product.name)}" width="1200" height="1200">` : placeholder("As fotografias reais do produto entram aqui")}</div>
@@ -142,11 +144,18 @@
           </div>
           <div class="product-info" data-reveal>
             ${hasProduct ? "" : `<span class="tag">${icon("info")}Produto ainda não definido</span>`}
+            ${product.imagesAreIllustrations ? `<span class="tag">${icon("image")}Imagens ilustrativas</span>` : ""}
             <h3>${hasProduct ? esc(product.name) : "O teu produto aparece aqui"}</h3>
-            ${product.price != null ? `<div class="price">${money(product.price)}${product.compareAtPrice ? `<s>${money(product.compareAtPrice)}</s>` : ""}</div>` : ""}
+            ${product.price != null ? `<div class="price" id="priceBox">${money(product.price)}${product.compareAtPrice ? `<s>${money(product.compareAtPrice)}</s>` : ""}</div>` : ""}
             <p class="product-desc">${hasProduct ? esc(product.description) : "Quando escolheres o produto, preenche o nome, a descrição, o preço e as fotografias em config.js. Esta secção monta-se sozinha."}</p>
             ${product.highlights?.length ? `<ul class="checklist">${product.highlights.map((h) => `<li>${icon("check")}${esc(h)}</li>`).join("")}</ul>` : ""}
-            <a class="btn" href="${esc(buyHref)}"${product.checkoutUrl ? ' rel="noopener"' : ""}>${esc(buyLabel)} ${icon("arrow")}</a>
+            ${offers.length ? `<fieldset class="offers"><legend>Escolhe a oferta</legend>${offers.map((o, i) => {
+              const full = o.qty * product.price, save = full - o.price;
+              return `<label class="offer"><input type="radio" name="offer" value="${i}" ${i === offerIdx ? "checked" : ""}>
+                <span class="offer-txt"><b>${esc(o.label)}</b><small>${esc(o.note || "")}</small></span>
+                <span class="offer-price"><b>${money(o.price)}</b>${save > 0.009 ? `<s>${money(full)}</s>` : ""}</span>
+                ${o.badge ? `<span class="offer-badge">${esc(o.badge)}</span>` : ""}</label>`; }).join("")}</fieldset>` : ""}
+            <a class="btn" id="buyBtn" href="${esc(buyHref)}"${product.checkoutUrl ? ' rel="noopener"' : ""}>${esc(buyLabel)} ${icon("arrow")}</a>
             ${product.checkoutUrl ? "" : `<p class="note">Ainda não há vendas online. O botão leva à lista de espera.</p>`}
           </div>
         </div>
@@ -164,13 +173,29 @@
       </div>` : null,
     media: () => {
       const m = S.media || {};
-      if (!m.video && !m.images?.length && !S.demo) return null;
-      const body = m.video
+      if (!m.video && !m.images?.length && !m.videos?.length && !S.demo) return null;
+      const body = m.videos?.length
+        ? `<div class="reels">${m.videos.map((v) => `<figure class="reel"><video src="${esc(url(v.src))}" ${v.poster ? `poster="${esc(url(v.poster))}"` : ""} muted loop playsinline preload="none" aria-label="${esc(v.label)}"></video><figcaption>${esc(v.label)}</figcaption></figure>`).join("")}</div>`
+        : m.video
         ? `<div class="media-frame"><video src="${esc(url(m.video))}" ${m.poster ? `poster="${esc(url(m.poster))}"` : ""} controls playsinline preload="metadata"></video></div>`
         : m.images?.length
           ? `<div class="media-grid">${m.images.map((src) => `<img src="${esc(url(src))}" alt="" loading="lazy">`).join("")}</div>`
           : `<div class="media-frame"><div class="media-placeholder"><div><div class="play">${icon("play")}</div>O vídeo de demonstração do produto entra aqui</div></div></div>`;
-      return `<div class="container"><div class="section-head"><span class="eyebrow">Demonstração</span><h2>${esc(m.title)}</h2></div><div data-reveal>${body}</div></div>`;
+      return `<div class="container"><div class="section-head"><span class="eyebrow">Demonstração</span><h2>${esc(m.title)}</h2>${m.subtitle ? `<p>${esc(m.subtitle)}</p>` : ""}</div><div data-reveal>${body}</div></div>`;
+    },
+    beforeAfter: () => {
+      const ba = S.media?.beforeAfter;
+      if (!ba?.before || !ba?.after) return null;
+      return `<div class="container"><div class="section-head section-head--center"><span class="eyebrow">Resultado</span><h2>${esc(ba.title || "Antes e depois")}</h2>${ba.note ? `<p>${esc(ba.note)}</p>` : ""}</div>
+        <div class="ba" data-reveal><img src="${esc(url(ba.before))}" alt="Antes: sofá com pelo" loading="lazy" width="1200" height="1200">
+        <img class="ba-after" src="${esc(url(ba.after))}" alt="Depois: o mesmo sofá limpo" loading="lazy" width="1200" height="1200">
+        <span class="ba-handle" aria-hidden="true"></span>
+        <input class="ba-range" type="range" min="0" max="100" value="50" aria-label="Comparar antes e depois"></div></div>`;
+    },
+    ad: (el) => {
+      const a = S.ads?.[+el.dataset.ad];
+      if (!a) return null;
+      return `<div class="container"><a class="ad-banner" href="${esc(url(a.href))}" ${a.offer ? `data-offer-qty="${a.offer}"` : ""}><img src="${esc(url(a.image))}" alt="${esc(a.alt)}" loading="lazy" width="1600" height="800"></a></div>`;
     },
     steps: () => S.steps?.length ? `<div class="container">
         <div class="section-head"><span class="eyebrow">Como funciona</span><h2>Simples, do início ao fim</h2></div>
@@ -202,7 +227,7 @@
       </div></div>`,
   };
   $$("[data-render]").forEach((el) => {
-    const html = R[el.dataset.render]?.();
+    const html = R[el.dataset.render]?.(el);
     if (html == null) el.hidden = true; else el.innerHTML = html;
   });
   // preenche dados de contacto/legais em páginas interiores
@@ -245,6 +270,39 @@
     $("#galleryMain").src = b.dataset.src;
     $$(".gallery-thumbs button").forEach((x) => x.setAttribute("aria-current", x === b));
   }));
+
+  // ---------- ofertas ----------
+  function selectOffer(i) {
+    offerIdx = i;
+    const o = offers[i]; if (!o) return;
+    const full = o.qty * product.price, box = $("#priceBox");
+    if (box) box.innerHTML = money(o.price) + (full - o.price > 0.009 ? `<s>${money(full)}</s>` : "");
+    $$("input[name=offer]").forEach((r) => { r.checked = +r.value === i; r.closest(".offer").classList.toggle("is-on", r.checked); });
+    const btn = $("#buyBtn");
+    if (btn) btn.href = o.checkoutUrl || product.checkoutUrl || "#interesse";
+  }
+  $$("input[name=offer]").forEach((r) => r.addEventListener("change", () => selectOffer(+r.value)));
+  if (offers.length) selectOffer(offerIdx);
+  $$("[data-offer-qty]").forEach((a) => a.addEventListener("click", () => {
+    const i = offers.findIndex((o) => o.qty === +a.dataset.offerQty);
+    if (i >= 0) selectOffer(i);
+  }));
+
+  // ---------- vídeos: só tocam quando estão visíveis ----------
+  const vids = $$(".reel video");
+  if (vids.length && "IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const vio = new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting) { e.target.preload = "auto"; e.target.play().catch(() => {}); } else e.target.pause();
+    }), { threshold: 0.35 });
+    vids.forEach((v) => vio.observe(v));
+  } else vids.forEach((v) => v.setAttribute("controls", ""));
+
+  // ---------- antes / depois ----------
+  $$(".ba").forEach((ba) => {
+    const r = $(".ba-range", ba), after = $(".ba-after", ba), h = $(".ba-handle", ba);
+    const set = () => { after.style.clipPath = `inset(0 0 0 ${r.value}%)`; h.style.left = r.value + "%"; };
+    r.addEventListener("input", set); set();
+  });
 
   // ---------- formulários ----------
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;

@@ -167,7 +167,7 @@ body.menu-open { overflow: hidden; }
 .gallery-main { aspect-ratio: 1; border-radius: var(--r-lg); overflow: hidden; background: var(--surface-2); border: 1px solid var(--line); }
 .gallery-main img { width: 100%; height: 100%; object-fit: cover; }
 .gallery-main .placeholder-object { border: 0; border-radius: 0; box-shadow: none; height: 100%; }
-.gallery-thumbs { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; margin-top: 12px; }
+.gallery-thumbs { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 10px; margin-top: 12px; }
 .gallery-thumbs button { aspect-ratio: 1; padding: 0; border-radius: var(--r-sm); overflow: hidden; border: 2px solid transparent; background: var(--surface-2); cursor: pointer; transition: border-color .15s; }
 .gallery-thumbs button[aria-current="true"] { border-color: var(--accent); }
 .gallery-thumbs img { width: 100%; height: 100%; object-fit: cover; }
@@ -307,3 +307,39 @@ textarea.input { min-height: 140px; resize: vertical; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
 }
+
+/* ---------- ofertas ---------- */
+.offers { border: 0; padding: 0; margin: 0; display: grid; gap: 12px; }
+.offers legend { font-weight: 700; margin-bottom: 10px; padding: 0; }
+.offer { position: relative; display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: 12px; align-items: center; padding: 14px 16px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--surface); cursor: pointer; transition: border-color .15s, background-color .15s, transform .15s var(--ease); }
+.offer:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.offer:active { transform: scale(.99); }
+.offer.is-on { border-color: var(--accent); background: var(--accent-soft); }
+.offer input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); }
+.offer-txt { display: grid; gap: 2px; }
+.offer-txt small { color: var(--muted); font-size: var(--step--1); }
+.offer-price { text-align: right; font-variant-numeric: tabular-nums; display: grid; }
+.offer-price s { color: var(--muted); font-size: var(--step--1); }
+.offer-badge { position: absolute; top: -10px; right: 14px; background: #f2b544; color: #2a1d00; font-size: .72rem; font-weight: 800; border-radius: 999px; padding: 2px 10px; }
+
+/* ---------- vídeos verticais ---------- */
+.reels { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+@media (max-width: 760px) { .reels { grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 72%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; } .reel { scroll-snap-align: start; } }
+.reel { margin: 0; position: relative; aspect-ratio: 9 / 16; border-radius: var(--r-lg); overflow: hidden; background: var(--ink); box-shadow: var(--shadow-1); }
+.reel video { width: 100%; height: 100%; object-fit: cover; }
+.reel figcaption { position: absolute; left: 12px; top: 12px; background: rgba(0,0,0,.6); color: #fff; font-size: .8rem; font-weight: 700; border-radius: 999px; padding: 4px 10px; }
+
+/* ---------- antes / depois ---------- */
+.ba { position: relative; max-width: 640px; margin-inline: auto; aspect-ratio: 1; border-radius: var(--r-lg); overflow: hidden; background: var(--surface-2); box-shadow: var(--shadow-2); }
+.ba img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ba-after { clip-path: inset(0 0 0 50%); }
+.ba-range { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
+.ba-range:focus-visible + .ba-handle, .ba:focus-within .ba-handle::after { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ba-handle { position: absolute; top: 0; bottom: 0; left: 50%; width: 4px; translate: -50% 0; background: #fff; pointer-events: none; }
+.ba-handle::after { content: "⟷"; position: absolute; top: 50%; left: 50%; translate: -50% -50%; width: 46px; height: 46px; border-radius: 50%; background: #fff; color: #0f1214; display: grid; place-items: center; font-weight: 800; box-shadow: var(--shadow-2); }
+
+/* ---------- faixas de anúncio ---------- */
+.ad-slot { padding-block: 8px 24px; }
+.ad-banner { display: block; border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow-1); transition: transform .25s var(--ease), box-shadow .25s var(--ease); }
+.ad-banner:hover { transform: translateY(-3px); box-shadow: var(--shadow-2); }
+.ad-banner img { width: 100%; aspect-ratio: 2 / 1; object-fit: cover; }
