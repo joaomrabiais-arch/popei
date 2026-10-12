@@ -1,6 +1,10 @@
 # Anúncios: Pelinho
 
 ## Criativos no teu Canva (já criados)
+**Tudo num só design (8 páginas):** https://www.canva.com/d/9wMeG2fuCXPuiWB
+Páginas 1–4: verticais 9:16 (TikTok, Reels, Stories). Páginas 5–8: feed 4:5 (Instagram, Facebook). A página 4 tem um erro no título ("Pelinhos na Sofá? Resolva Rápido!"): corrige para "Pelos no sofá? Resolve já!".
+
+Designs individuais (os originais continuam no teu Canva):
 Ainda não os vi: não consegui descarregar as imagens para aqui. O Canva gera os textos por IA, por isso **revê a ortografia** e troca as imagens de banco pela foto real da amostra.
 
 | Formato | Uso | Editar |
