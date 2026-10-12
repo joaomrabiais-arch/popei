@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de Margem</title>
+<style>
+  :root { --bg:#f7f7f5; --card:#fff; --ink:#1b1b1b; --muted:#666; --line:#e2e2de; --ok:#1a7f45; --bad:#b3261e; --accent:#2b4acb; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#141414; --card:#1e1e1e; --ink:#eee; --muted:#9a9a9a; --line:#333; --ok:#4cc27a; --bad:#ff6b60; --accent:#8aa0ff; } }
+  :root[data-theme="dark"] { --bg:#141414; --card:#1e1e1e; --ink:#eee; --muted:#9a9a9a; --line:#333; --ok:#4cc27a; --bad:#ff6b60; --accent:#8aa0ff; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui, sans-serif; }
+  main { max-width:880px; margin:0 auto; padding:24px 16px 48px; }
+  h1 { font-size:1.5rem; margin:0 0 4px; }
+  p.sub { color:var(--muted); margin:0 0 20px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:700px) { .grid { grid-template-columns:1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; }
+  label { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:6px 0; border-bottom:1px solid var(--line); font-size:.95rem; }
+  label:last-child { border-bottom:0; }
+  input { width:96px; padding:6px 8px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--ink); font:inherit; text-align:right; }
+  table { width:100%; border-collapse:collapse; font-size:.95rem; }
+  td { padding:5px 0; border-bottom:1px solid var(--line); }
+  td:last-child { text-align:right; font-variant-numeric:tabular-nums; }
+  .big { font-size:1.6rem; font-weight:700; font-variant-numeric:tabular-nums; }
+  .ok { color:var(--ok); } .bad { color:var(--bad); }
+  .verdict { margin-top:12px; padding:12px; border-radius:8px; border:1px solid var(--line); }
+  h2 { font-size:1rem; margin:0 0 8px; }
+  small { color:var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Calculadora de margem real (dropshipping, Portugal)</h1>
+  <p class="sub">O vídeo mostra "29 $ − 9,54 $ = boa margem". Aqui entram os custos que ele não mostra. Valores por defeito = o produto do vídeo.</p>
+  <div class="grid">
+    <div class="card">
+      <h2>Valores</h2>
+      <label>Preço de venda ao cliente (€, com IVA) <input id="price" type="number" step="0.01" value="29.99"></label>
+      <label>Custo do produto (€) <input id="cogs" type="number" step="0.01" value="8.80"></label>
+      <label>Envio do fornecedor (€) <input id="ship" type="number" step="0.01" value="4.50"></label>
+      <label>IVA (%) <input id="vat" type="number" step="0.1" value="23"></label>
+      <label>Comissão pagamento (%) <input id="feePct" type="number" step="0.1" value="2.1"></label>
+      <label>Comissão pagamento fixa (€) <input id="feeFix" type="number" step="0.01" value="0.30"></label>
+      <label>Reembolsos / devoluções (% das vendas) <input id="refund" type="number" step="0.5" value="8"></label>
+      <label>Custo por compra em anúncios — CPA (€) <input id="cpa" type="number" step="0.5" value="30"></label>
+      <label>Custos fixos/mês: Shopify, apps, domínio (€) <input id="fixed" type="number" step="1" value="45"></label>
+      <label>Encomendas por mês <input id="orders" type="number" step="1" value="50"></label>
+    </div>
+    <div class="card">
+      <h2>Por encomenda</h2>
+      <table id="tbl"></table>
+      <h2 style="margin-top:16px">Por mês</h2>
+      <div>Faturação: <b id="rev"></b></div>
+      <div>Lucro: <span class="big" id="profit"></span></div>
+      <div class="verdict" id="verdict"></div>
+      <p><small>CPA por defeito 30 €: estimativas de blogs do setor dão ~28–46 € por compra na Meta em e‑commerce europeu (2026). Mede o teu real. Envio e reembolsos são estimativas — confirma com o fornecedor.</small></p>
+    </div>
+  </div>
+</main>
+<script>
+const ids = ["price","cogs","ship","vat","feePct","feeFix","refund","cpa","fixed","orders"];
+const eur = n => (n<0?"−":"") + Math.abs(n).toLocaleString("pt-PT",{style:"currency",currency:"EUR"});
+function calc() {
+  const v = Object.fromEntries(ids.map(id => [id, parseFloat(document.getElementById(id).value) || 0]));
+  const net = v.price / (1 + v.vat/100);
+  const vatAmt = v.price - net;
+  const fees = v.price * v.feePct/100 + v.feeFix;
+  const refunds = net * v.refund/100;
+  const contrib = net - v.cogs - v.ship - fees - refunds;   // antes de anúncios
+  const perOrder = contrib - v.cpa;
+  const monthly = perOrder * v.orders - v.fixed;
+  // preço mínimo (com IVA) para empatar com este CPA, sem custos fixos
+  const k = (1/(1+v.vat/100))*(1 - v.refund/100) - v.feePct/100;
+  const minPrice = k > 0 ? (v.cogs + v.ship + v.feeFix + v.cpa) / k : Infinity;
+  const rows = [
+    ["Preço pago pelo cliente", v.price], ["− IVA para o Estado", -vatAmt],
+    ["− Produto", -v.cogs], ["− Envio", -v.ship], ["− Comissões pagamento", -fees],
+    ["− Reembolsos (média)", -refunds], ["= Margem antes de anúncios", contrib],
+    ["− Anúncios (CPA)", -v.cpa], ["= Lucro por encomenda", perOrder]
+  ];
+  document.getElementById("tbl").innerHTML = rows.map(([a,b]) =>
+    `<tr><td>${a.startsWith("=")?"<b>"+a+"</b>":a}</td><td class="${a.startsWith("=")?(b>=0?"ok":"bad"):""}">${eur(b)}</td></tr>`).join("");
+  document.getElementById("rev").textContent = eur(v.price * v.orders);
+  const p = document.getElementById("profit");
+  p.textContent = eur(monthly); p.className = "big " + (monthly>=0?"ok":"bad");
+  document.getElementById("verdict").innerHTML =
+    `CPA máximo para empatar: <b>${eur(contrib)}</b>.<br>` +
+    `Preço mínimo (com IVA) para empatar com CPA de ${eur(v.cpa)}: <b>${isFinite(minPrice)?eur(minPrice):"impossível"}</b>.<br>` +
+    (monthly>=0 ? "Dá lucro com estes pressupostos — agora prova o CPA com dinheiro real e pouco." :
+     "Com estes pressupostos <b>perdes dinheiro</b>. Sobe o preço, faz bundles ou consegue tráfego orgânico.");
+}
+ids.forEach(id => document.getElementById(id).addEventListener("input", calc));
+calc();
+</script>
+</body>
+</html>

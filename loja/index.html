@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loja de Produto Único</title>
+<style>
+  :root { --bg:#fbf8f6; --card:#fff; --ink:#1d1a19; --muted:#6d6460; --line:#ece4df; --brand:#c2185b; --brand-ink:#fff; --soft:#fbe9f0; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#151213; --card:#1f1b1c; --ink:#f1ecea; --muted:#a59c98; --line:#342d2e; --brand:#f06292; --brand-ink:#1a0d12; --soft:#2b1c22; } }
+  :root[data-theme="dark"] { --bg:#151213; --card:#1f1b1c; --ink:#f1ecea; --muted:#a59c98; --line:#342d2e; --brand:#f06292; --brand-ink:#1a0d12; --soft:#2b1c22; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 system-ui, sans-serif; }
+  .wrap { max-width:1040px; margin:0 auto; padding:0 16px; }
+  header { border-bottom:1px solid var(--line); }
+  header .wrap { display:flex; justify-content:space-between; align-items:center; height:60px; }
+  .logo { font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+  .bar { background:var(--brand); color:var(--brand-ink); text-align:center; font-size:.85rem; padding:6px 16px; }
+  .hero { display:grid; grid-template-columns:1.1fr 1fr; gap:32px; padding:32px 0; align-items:start; }
+  @media (max-width:760px) { .hero { grid-template-columns:1fr; } }
+  .gallery { aspect-ratio:1; border-radius:14px; background:var(--soft); display:grid; place-items:center; overflow:hidden; border:1px solid var(--line); }
+  .gallery img { width:100%; height:100%; object-fit:cover; }
+  .ph { color:var(--muted); text-align:center; padding:24px; font-size:.9rem; }
+  h1 { font-size:clamp(1.6rem, 4vw, 2.2rem); line-height:1.15; margin:0 0 8px; }
+  .rating { color:var(--muted); font-size:.9rem; }
+  .price { display:flex; gap:12px; align-items:baseline; margin:16px 0; }
+  .price .now { font-size:1.8rem; font-weight:800; }
+  .price .was { text-decoration:line-through; color:var(--muted); }
+  .bundles { display:grid; gap:8px; margin:12px 0 16px; }
+  .bundle { display:flex; justify-content:space-between; align-items:center; border:2px solid var(--line); border-radius:10px; padding:10px 14px; cursor:pointer; background:var(--card); }
+  .bundle input { accent-color:var(--brand); margin-right:10px; }
+  .bundle.sel { border-color:var(--brand); }
+  .tag { font-size:.75rem; background:var(--brand); color:var(--brand-ink); border-radius:99px; padding:2px 8px; margin-left:8px; }
+  button.buy { width:100%; padding:16px; border:0; border-radius:10px; background:var(--brand); color:var(--brand-ink); font:700 1.05rem system-ui; cursor:pointer; }
+  ul.ticks { padding-left:0; list-style:none; } ul.ticks li::before { content:"✓ "; color:var(--brand); font-weight:700; }
+  section { padding:32px 0; border-top:1px solid var(--line); }
+  h2 { font-size:1.4rem; margin:0 0 16px; }
+  .cols { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  @media (max-width:760px) { .cols { grid-template-columns:1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; }
+  details { border-bottom:1px solid var(--line); padding:12px 0; } summary { cursor:pointer; font-weight:600; }
+  footer { border-top:1px solid var(--line); padding:24px 0 40px; color:var(--muted); font-size:.85rem; }
+  footer a { color:inherit; }
+  .todo { background:#fff3cd; color:#5c4400; border:1px dashed #c9a227; padding:2px 6px; border-radius:4px; }
+</style>
+</head>
+<body>
+<!--
+  TEMPLATE DE LOJA DE PRODUTO ÚNICO
+  Edita só o objeto CONFIG no fim do ficheiro. Tudo o que aparece a amarelo
+  ("PREENCHER") é obrigatório antes de publicar — são dados legais em Portugal/UE.
+  Para Shopify: usa este texto/estrutura como base do tema; o botão "Comprar" deve
+  apontar para o checkout da Shopify (CONFIG.checkoutUrl).
+-->
+<div class="bar" id="bar"></div>
+<header><div class="wrap"><div class="logo" id="logo"></div><div id="hdrShip" class="rating"></div></div></header>
+
+<main class="wrap">
+  <div class="hero">
+    <div class="gallery" id="gallery"></div>
+    <div>
+      <h1 id="title"></h1>
+      <div class="rating" id="sub"></div>
+      <div class="price"><span class="now" id="now"></span><span class="was" id="was"></span></div>
+      <div class="bundles" id="bundles"></div>
+      <button class="buy" id="buy">Comprar agora</button>
+      <ul class="ticks" id="ticks"></ul>
+    </div>
+  </div>
+
+  <section><h2>Porque vais gostar</h2><div class="cols" id="benefits"></div></section>
+  <section><h2>Como usar</h2><div class="cols" id="steps"></div></section>
+  <section><h2>Perguntas frequentes</h2><div id="faq"></div></section>
+</main>
+
+<footer><div class="wrap" id="legal"></div></footer>
+
+<script>
+const CONFIG = {
+  brand: "Vellora",                       // nome da tua marca (verifica no INPI/EUIPO que está livre)
+  product: "Escova a Vapor 2‑em‑1",
+  subtitle: "Alisa e dá volume em minutos, com menos calor direto no cabelo.",
+  images: [],                             // URLs das tuas fotos (ideal: fotos/vídeos teus, não do fornecedor)
+  currency: "EUR",
+  compareAt: 79.90,                       // só usa um preço "antes" se o praticaste de facto (Diretiva Omnibus)
+  bundles: [                              // define os preços com calculadora/index.html
+    { qty: 1, price: 59.90, label: "1 unidade" },
+    { qty: 2, price: 99.90, label: "2 unidades", tag: "Mais escolhido" }
+  ],
+  shippingDays: "7–14 dias úteis",        // sê honesto: envio do fornecedor, não "24h"
+  checkoutUrl: "",                        // link do checkout Shopify
+  ticks: ["Envio grátis para Portugal", "14 dias para devolver (direito de livre resolução)", "Pagamento seguro"],
+  benefits: [
+    ["Rápida", "Aquece em segundos e faz o trabalho de duas ferramentas."],
+    ["Mais suave", "Vapor + cerdas para menos frizz. (Confirma esta alegação com o fornecedor.)"],
+    ["Fácil de levar", "Compacta para viagem e ginásio."]
+  ],
+  steps: [["1. Liga", "Enche o depósito e espera pela luz verde."], ["2. Escova", "Madeixas finas, da raiz às pontas."], ["3. Finaliza", "Rodar para dar volume."]],
+  faq: [
+    ["Quanto tempo demora a entrega?", "Normalmente {ship}. Recebes o número de seguimento por email."],
+    ["Posso devolver?", "Sim. Tens 14 dias após receção para devolver sem justificação, nos termos do DL 24/2014."],
+    ["É seguro?", "Produto com marcação CE e informação do responsável na UE na embalagem. (PREENCHER: confirma documentação do fornecedor.)"]
+  ],
+  legal: {                                 // OBRIGATÓRIO antes de publicar
+    company: "PREENCHER — nome / empresa",
+    nif: "PREENCHER — NIF",
+    address: "PREENCHER — morada",
+    email: "PREENCHER — email de apoio",
+    euResponsible: "PREENCHER — pessoa responsável na UE (GPSR)",
+    ral: "Em caso de litígio pode recorrer a uma entidade de Resolução Alternativa de Litígios de consumo: PREENCHER nome da entidade RAL (lista no Portal do Consumidor)"
+  }
+};
+
+const $ = id => document.getElementById(id);
+const money = n => n.toLocaleString("pt-PT", { style: "currency", currency: CONFIG.currency });
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const mark = s => esc(s).replace(/PREENCHER[^.,)]*/g, m => `<span class="todo">${m}</span>`);
+
+document.title = `${CONFIG.product} | ${CONFIG.brand}`;
+$("bar").textContent = `Envio grátis para Portugal · Entrega ${CONFIG.shippingDays}`;
+$("logo").textContent = CONFIG.brand;
+$("title").textContent = CONFIG.product;
+$("sub").textContent = CONFIG.subtitle;
+$("gallery").innerHTML = CONFIG.images.length
+  ? `<img src="${esc(CONFIG.images[0])}" alt="${esc(CONFIG.product)}">`
+  : `<div class="ph">Coloca aqui a tua foto principal<br>(CONFIG.images)</div>`;
+
+let sel = CONFIG.bundles.length > 1 ? 1 : 0;
+function renderBundles() {
+  $("bundles").innerHTML = CONFIG.bundles.map((b, i) => `
+    <label class="bundle ${i === sel ? "sel" : ""}">
+      <span><input type="radio" name="b" ${i === sel ? "checked" : ""} data-i="${i}">${esc(b.label)}${b.tag ? `<span class="tag">${esc(b.tag)}</span>` : ""}</span>
+      <b>${money(b.price)}</b>
+    </label>`).join("");
+  const b = CONFIG.bundles[sel];
+  $("now").textContent = money(b.price);
+  $("was").textContent = b.qty === 1 && CONFIG.compareAt ? money(CONFIG.compareAt) : "";
+}
+$("bundles").addEventListener("change", e => { sel = +e.target.dataset.i; renderBundles(); });
+renderBundles();
+
+$("buy").addEventListener("click", () => {
+  if (!CONFIG.checkoutUrl) { alert("Falta configurar CONFIG.checkoutUrl (checkout da Shopify)."); return; }
+  location.href = CONFIG.checkoutUrl;
+});
+$("ticks").innerHTML = CONFIG.ticks.map(t => `<li>${esc(t)}</li>`).join("");
+$("benefits").innerHTML = CONFIG.benefits.map(([h, p]) => `<div class="card"><b>${esc(h)}</b><p>${esc(p)}</p></div>`).join("");
+$("steps").innerHTML = CONFIG.steps.map(([h, p]) => `<div class="card"><b>${esc(h)}</b><p>${esc(p)}</p></div>`).join("");
+$("faq").innerHTML = CONFIG.faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${mark(a.replace("{ship}", CONFIG.shippingDays))}</p></details>`).join("");
+const L = CONFIG.legal;
+$("legal").innerHTML = `
+  <p><b>${esc(CONFIG.brand)}</b> · ${mark(L.company)} · NIF ${mark(L.nif)} · ${mark(L.address)} · ${mark(L.email)}</p>
+  <p>Responsável na UE (GPSR): ${mark(L.euResponsible)}</p>
+  <p>Livro de Reclamações Eletrónico: <a href="https://www.livroreclamacoes.pt">livroreclamacoes.pt</a> · ${mark(L.ral)}</p>
+  <p>Preços com IVA incluído. Direito de livre resolução de 14 dias.</p>`;
+</script>
+</body>
+</html>
