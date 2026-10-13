@@ -42,6 +42,11 @@
     home: '<path d="M4 11 12 4l8 7v9H4z"/><path d="M10 20v-5h4v5"/>',
     shirt: '<path d="M8 4 4 7l2 4 2-1v10h8V10l2 1 2-4-4-3c0 2-2 3-4 3s-4-1-4-3z"/>',
     pending: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    cart: '<path d="M3 4h2l2.4 11h10.6l2-8H6.3"/><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/>',
+    minus: '<path d="M5 12h14"/>',
+    chevl: '<path d="m15 6-6 6 6 6"/>',
+    chevr: '<path d="m9 6 6 6-6 6"/>',
+    chevd: '<path d="m6 9 6 6 6-6"/>',
   };
   const icon = (n, cls = "") => `<svg class="ic ${n === "arrow" ? "ic-arrow" : ""} ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n] || P.spark}</svg>`;
 
@@ -71,7 +76,8 @@
         <div class="container header-row">
           <a class="brand" href="${esc(url("index.html"))}" aria-label="${esc(S.brand.name)}, página inicial">${brandHTML()}</a>
           <nav class="nav" aria-label="Principal">${navLinks}</nav>
-          <a class="btn header-cta" href="${esc(ctaHref)}">${esc(S.interest.button || "Contactar")}</a>
+          ${S.product?.price != null ? `<button class="cart-btn" id="cartBtn" type="button" aria-label="Abrir carrinho">${icon("cart")}<span class="cart-count" id="cartCount">0</span></button>`
+            : `<a class="btn header-cta" href="${esc(ctaHref)}">${esc(S.interest.button || "Contactar")}</a>`}
           <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileMenu" aria-label="Abrir menu">${icon("menu")}</button>
         </div>
       </header>
@@ -113,6 +119,12 @@
   const offers = product.offers || [];
   let offerIdx = Math.max(0, offers.findIndex((o) => o.default));
   const placeholder = (label) => `<div class="placeholder-object">${'<div>' + icon("image") + esc(label) + "</div>"}</div>`;
+
+  // estado de um dado: verificado / fornecedor / pendente
+  const stOf = (x) => x.status || (x.confirmed ? "verificado" : "pendente");
+  const stBadge = (x) => stOf(x) === "fornecedor" ? `<span class="pill-src">segundo o fornecedor</span>`
+    : stOf(x) === "pendente" ? `<span class="pill-pending">${icon("pending")}A confirmar</span>` : "";
+  const imgOf = (i) => typeof i === "string" ? { src: i, alt: "" } : i;
 
   // Ilustração genérica de um kit de tosquia com aspiração (não representa nenhum modelo concreto).
   function kitSVG(id) {
@@ -158,8 +170,10 @@
     </svg>`;
   }
 
+const isPdp = S.layout === "pdp";
   const R = {
     hero: () => {
+      if (!S.hero) return null;
       const h = S.hero, chips = (S.trust || []).slice(0, 3);
       return `<div class="container hero-grid">
         <div class="hero-copy">
@@ -186,8 +200,9 @@
         </div>`}
       </div>`;
     },
-    trust: () => S.trust?.length ? `<div class="container trust-row">${S.trust.map((c) => `<div class="trust-item">${icon(c.icon)}<span>${esc(c.text)}</span></div>`).join("")}</div>` : null,
+    trust: () => !isPdp && S.trust?.length ? `<div class="container trust-row">${S.trust.map((c) => `<div class="trust-item">${icon(c.icon)}<span>${esc(c.text)}</span></div>`).join("")}</div>` : null,
     product: () => {
+      if (isPdp) return null;
       const imgs = product.images || [];
       return `<div class="container">
         <div class="section-head"><span class="eyebrow">${product.status ? "O kit" : "O produto"}</span><h2>${hasProduct ? (offers.length ? "Escolhe a tua oferta" : product.status ? "Galeria e preço" : esc(product.name)) : "Produto em preparação"}</h2></div>
@@ -251,6 +266,66 @@
         <span class="ba-handle" aria-hidden="true"></span>
         <input class="ba-range" type="range" min="0" max="100" value="50" aria-label="Comparar antes e depois"></div></div>`;
     },
+    pdp: () => {
+      if (!isPdp) return null;
+      const p = product, imgs = (p.images || []).map(imgOf);
+      if (!imgs.length && !p.name) return null;
+      const hasPrice = p.price != null;
+      const tabs = [
+        ["Descrição", `<p>${esc(p.description || "")}</p>`],
+        S.specs?.length && ["Características", `<dl class="mini-specs">${S.specs.map((x) => `<div><dt>${esc(x.label)}</dt><dd>${stOf(x) !== "pendente" && x.value ? esc(x.value) + " " : ""}${stBadge(x)}</dd></div>`).join("")}</dl>`],
+        S.accessories && ["Na caixa", S.accessories.length ? `<ul class="box-list">${S.accessories.map((a) => `<li>${icon("check")}<span>${esc(a.name)}</span> ${stBadge(a)}</li>`).join("")}</ul>` : `<p>Lista por confirmar.</p>`],
+        S.shipping?.length && ["Envio e devoluções", `<ul class="box-list">${S.shipping.map((x) => `<li>${icon(x.icon)}<span><b>${esc(x.title)}.</b> ${esc(x.text)}</span> ${stBadge(x)}</li>`).join("")}</ul>`],
+      ].filter(Boolean);
+      return `<div class="container pdp">
+        <div class="pdp-gallery" data-enter style="--i:0">
+          <div class="pdp-main" id="pdpMain" tabindex="0" aria-roledescription="carrossel" aria-label="Imagens do produto">
+            ${imgs.map((im, i) => `<img src="${esc(url(im.src))}" alt="${esc(im.alt)}" width="1200" height="1200" class="${i === 0 ? "is-on" : ""}" ${i ? 'loading="lazy"' : 'fetchpriority="high"'} data-i="${i}">`).join("")}
+            ${imgs.length > 1 ? `<button class="pdp-nav pdp-prev" type="button" aria-label="Imagem anterior">${icon("chevl")}</button><button class="pdp-nav pdp-next" type="button" aria-label="Imagem seguinte">${icon("chevr")}</button>` : ""}
+            ${p.imagesAreIllustrations ? `<span class="pdp-note">Imagem ilustrativa</span>` : ""}
+            <span class="pdp-count" id="pdpCount">1 / ${imgs.length}</span>
+          </div>
+          ${imgs.length > 1 ? `<div class="pdp-thumbs" role="group" aria-label="Escolher imagem">${imgs.map((im, i) => `<button type="button" data-i="${i}" aria-current="${i === 0}" aria-label="Imagem ${i + 1}: ${esc(im.alt)}"><img src="${esc(url(im.src))}" alt="" loading="lazy"></button>`).join("")}</div>` : ""}
+        </div>
+        <div class="pdp-info">
+          <div class="pdp-top" data-enter style="--i:1">
+            ${p.badge ? `<span class="badge-soft">${esc(p.badge)}</span>` : ""}
+            <h1>${esc(p.name)}</h1>
+            <p class="pdp-pitch">${esc(p.pitch || "")}</p>
+          </div>
+          <div class="pdp-price" data-enter style="--i:2">${hasPrice ? `<span class="now">${money(p.price)}</span>${p.compareAtPrice ? `<s>${money(p.compareAtPrice)}</s><span class="save">-${Math.round((1 - p.price / p.compareAtPrice) * 100)}%</span>` : ""}<small>IVA incluído</small>` : `<span class="soon">Preço em breve</span>`}</div>
+          ${p.bullets?.length ? `<ul class="pdp-bullets" data-enter style="--i:3">${p.bullets.map((b) => `<li>${icon("check")}${esc(b)}</li>`).join("")}</ul>` : ""}
+          <div class="pdp-buy" data-enter style="--i:4">
+            ${hasPrice ? `<div class="qty" role="group" aria-label="Quantidade"><button type="button" data-qty="-1" aria-label="Menos um">${icon("minus")}</button><output id="qtyOut" aria-live="polite">1</output><button type="button" data-qty="1" aria-label="Mais um">${icon("plus")}</button></div>
+              <button class="btn btn--buy" id="addToCart" type="button">${icon("cart")}Adicionar ao carrinho</button>`
+            : `<a class="btn btn--buy" href="#interesse">${esc(S.interest.button)} quando abrir ${icon("arrow")}</a>
+              <p class="note">Ainda não estamos a vender. Deixa o email e recebes o preço de lançamento.</p>`}
+          </div>
+          ${S.trust?.length ? `<ul class="pdp-trust" data-enter style="--i:5">${S.trust.map((t) => `<li>${icon(t.icon)}<span>${esc(t.text)}</span></li>`).join("")}</ul>` : ""}
+          <div class="tabs" data-enter style="--i:6">${tabs.map(([t, body], i) => `<div class="tab ${i === 0 ? "is-open" : ""}">
+            <button class="tab-q" type="button" aria-expanded="${i === 0}" aria-controls="tab-${i}" id="tab-q-${i}">${esc(t)}${icon("chevd")}</button>
+            <div class="tab-a" id="tab-${i}" role="region" aria-labelledby="tab-q-${i}"><div><div class="tab-body">${body}</div></div></div></div>`).join("")}</div>
+        </div>
+      </div>`;
+    },
+    storyImg: () => {
+      const st = S.story; if (!st?.steps?.length || !st.steps[0].image) return null;
+      return `<div class="container">
+        <div class="section-head"><span class="eyebrow">${esc(st.eyebrow || "Como funciona")}</span><h2>${esc(st.title)}</h2></div>
+        <div class="story story--img">
+          <div class="story-visual"><div class="story-frame" id="storyFrame">${st.steps.map((x, i) => `<img src="${esc(url(x.image))}" alt="" loading="lazy" class="${i === 0 ? "is-on" : ""}" data-i="${i}">`).join("")}${product.imagesAreIllustrations ? `<span class="pdp-note">Imagem ilustrativa</span>` : ""}</div></div>
+          <ol class="story-steps">${st.steps.map((x, i) => `<li class="story-step ${i === 0 ? "is-active" : ""}" data-i="${i}"><span class="story-n">${i + 1}</span><h3>${esc(x.title)}</h3><p>${esc(x.text)}</p></li>`).join("")}</ol>
+        </div>
+      </div>`;
+    },
+    compare: () => {
+      const c = S.compare; if (!c?.rows?.length) return null;
+      return `<div class="container">
+        <div class="section-head section-head--center"><span class="eyebrow">Comparação</span><h2>${esc(c.title)}</h2></div>
+        <div class="cmp" data-reveal><table><thead><tr><th></th>${c.cols.map((h, i) => `<th class="${i === c.cols.length - 1 ? "us" : ""}">${esc(h)}</th>`).join("")}</tr></thead>
+        <tbody>${c.rows.map((r) => `<tr><th scope="row">${esc(r[0])}</th>${r.slice(1).map((v, i) => `<td class="${i === r.length - 2 ? "us" : ""}">${esc(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+      </div>`;
+    },
     problem: () => {
       const pb = S.problem; if (!pb?.points?.length) return null;
       return `<div class="container problem">
@@ -259,7 +334,7 @@
       </div>`;
     },
     story: () => {
-      const st = S.story; if (!st?.steps?.length) return null;
+      const st = S.story; if (!st?.steps?.length || st.steps[0].image) return null;
       return `<div class="container">
         <div class="section-head"><span class="eyebrow">${esc(st.eyebrow || "Como funciona")}</span><h2>${esc(st.title)}</h2></div>
         <div class="story">
@@ -269,25 +344,25 @@
       </div>`;
     },
     specs: () => {
-      if (!S.specs?.length) return null;
-      const done = S.specs.filter((x) => x.confirmed && x.value);
+      if (isPdp || !S.specs?.length) return null;
+      const done = S.specs.filter((x) => stOf(x) === "verificado" && x.value);
       return `<div class="container specs-wrap">
         <div class="section-head"><span class="eyebrow">Características</span><h2>${done.length ? "Características confirmadas" : "Características do modelo"}</h2>
           <p>${done.length === S.specs.length ? "Dados confirmados com o fabricante." : "Só mostramos valores depois de os confirmarmos com o fabricante e de testarmos o aparelho."}</p></div>
-        <dl class="specs" data-reveal>${S.specs.map((x) => `<div class="spec ${x.confirmed && x.value ? "" : "spec--pending"}"><dt>${esc(x.label)}</dt><dd>${x.confirmed && x.value ? esc(x.value) : `<span class="pill-pending">${icon("pending")}A confirmar</span>`}</dd></div>`).join("")}</dl>
+        <dl class="specs" data-reveal>${S.specs.map((x) => `<div class="spec"><dt>${esc(x.label)}</dt><dd>${stOf(x) !== "pendente" && x.value ? esc(x.value) + " " : ""}${stBadge(x)}</dd></div>`).join("")}</dl>
       </div>`;
     },
     accessories: () => {
-      if (!S.accessories) return null;
+      if (isPdp || !S.accessories) return null;
       return `<div class="container">
         <div class="section-head"><span class="eyebrow">Na caixa</span><h2>Acessórios incluídos</h2></div>
         ${S.accessories.length ? `<div class="acc-rail" data-reveal>${S.accessories.map((a) => `<article class="acc"><div class="acc-img">${a.image ? `<img src="${esc(url(a.image))}" alt="${esc(a.name)}" loading="lazy">` : icon("box")}</div><h3>${esc(a.name)}</h3>${a.text ? `<p>${esc(a.text)}</p>` : ""}</article>`).join("")}</div>`
         : `<div class="empty-state" data-reveal>${icon("box")}<div><h3>Lista por confirmar</h3><p>Publicamos a lista exata do que vem na caixa quando o modelo estiver escolhido. Não mostramos acessórios que não possamos garantir.</p></div></div>`}
       </div>`;
     },
-    shipping: () => S.shipping?.length ? `<div class="container">
+    shipping: () => !isPdp && S.shipping?.length ? `<div class="container">
         <div class="section-head"><span class="eyebrow">Envio e devoluções</span><h2>Antes de comprares</h2></div>
-        <div class="ship-grid">${S.shipping.map((x) => `<article class="ship" data-reveal><div class="ship-ic">${icon(x.icon)}</div><div><h3>${esc(x.title)} ${x.confirmed ? "" : `<span class="pill-pending">${icon("pending")}A confirmar</span>`}</h3><p>${esc(x.text)}</p></div></article>`).join("")}</div>
+        <div class="ship-grid">${S.shipping.map((x) => `<article class="ship" data-reveal><div class="ship-ic">${icon(x.icon)}</div><div><h3>${esc(x.title)} ${stBadge(x)}</h3><p>${esc(x.text)}</p></div></article>`).join("")}</div>
       </div>` : null,
     ad: (el) => {
       const a = S.ads?.[+el.dataset.ad];
@@ -384,6 +459,102 @@
     const i = offers.findIndex((o) => o.qty === +a.dataset.offerQty);
     if (i >= 0) selectOffer(i);
   }));
+
+  // ---------- galeria da página de produto ----------
+  const pdpMain = $("#pdpMain");
+  if (pdpMain) {
+    const imgs = $$("img", pdpMain), thumbs = $$(".pdp-thumbs button");
+    let cur = 0;
+    const show = (i) => {
+      cur = (i + imgs.length) % imgs.length;
+      imgs.forEach((im, k) => im.classList.toggle("is-on", k === cur));
+      thumbs.forEach((t, k) => t.setAttribute("aria-current", k === cur));
+      const c = $("#pdpCount"); if (c) c.textContent = `${cur + 1} / ${imgs.length}`;
+    };
+    thumbs.forEach((t) => t.addEventListener("click", () => show(+t.dataset.i)));
+    $(".pdp-prev", pdpMain)?.addEventListener("click", () => show(cur - 1));
+    $(".pdp-next", pdpMain)?.addEventListener("click", () => show(cur + 1));
+    pdpMain.addEventListener("keydown", (e) => { if (e.key === "ArrowLeft") show(cur - 1); if (e.key === "ArrowRight") show(cur + 1); });
+    let sx = null;
+    pdpMain.addEventListener("touchstart", (e) => { sx = e.touches[0].clientX; }, { passive: true });
+    pdpMain.addEventListener("touchend", (e) => { if (sx == null) return; const d = e.changedTouches[0].clientX - sx; if (Math.abs(d) > 40) show(cur + (d < 0 ? 1 : -1)); sx = null; });
+    // zoom ao passar o rato (só em ecrãs com rato)
+    if (matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      pdpMain.addEventListener("mousemove", (e) => {
+        if (e.target.closest("button")) return;
+        const r = pdpMain.getBoundingClientRect();
+        pdpMain.style.setProperty("--zx", ((e.clientX - r.left) / r.width * 100) + "%");
+        pdpMain.style.setProperty("--zy", ((e.clientY - r.top) / r.height * 100) + "%");
+        pdpMain.classList.add("is-zoom");
+      });
+      pdpMain.addEventListener("mouseleave", () => pdpMain.classList.remove("is-zoom"));
+    }
+  }
+
+  // ---------- separadores (acordeão) ----------
+  $$(".tab-q").forEach((b) => b.addEventListener("click", () => {
+    const t = b.closest(".tab"), open = !t.classList.contains("is-open");
+    t.classList.toggle("is-open", open); b.setAttribute("aria-expanded", open);
+  }));
+
+  // ---------- carrinho (só existe quando há preço) ----------
+  if (product.price != null) {
+    let qty = 1, cart = 0;
+    try { cart = +localStorage.getItem("poupei-cart") || 0; } catch (e) {}
+    const saveCart = () => { try { localStorage.setItem("poupei-cart", cart); } catch (e) {} };
+    const drawer = document.createElement("div");
+    drawer.innerHTML = `<div class="drawer-bg" id="drawerBg" hidden></div>
+      <aside class="drawer" id="drawer" aria-label="Carrinho" hidden tabindex="-1">
+        <div class="drawer-head"><h2>Carrinho</h2><button class="icon-btn" id="drawerClose" type="button" aria-label="Fechar carrinho">${icon("close")}</button></div>
+        <div class="drawer-body" id="drawerBody"></div>
+        <div class="drawer-foot"><div class="drawer-total"><span>Total</span><b id="drawerTotal"></b></div>
+          <button class="btn btn--buy" id="checkoutBtn" type="button">Finalizar compra</button>
+          <div data-status id="checkoutStatus" aria-live="polite"></div></div>
+      </aside>`;
+    document.body.append(...drawer.children);
+    const firstImg = imgOf(product.images?.[0] || "");
+    const renderCart = () => {
+      $("#cartCount") && ($("#cartCount").textContent = cart);
+      $("#drawerBody").innerHTML = cart ? `<div class="line">${firstImg.src ? `<img src="${esc(url(firstImg.src))}" alt="">` : ""}
+        <div><b>${esc(product.name)}</b><small>${money(product.price)}</small>
+        <div class="qty qty--sm"><button type="button" data-cart="-1" aria-label="Menos um">${icon("minus")}</button><output>${cart}</output><button type="button" data-cart="1" aria-label="Mais um">${icon("plus")}</button></div></div></div>`
+        : `<p class="note">O carrinho está vazio.</p>`;
+      $("#drawerTotal").textContent = money(cart * product.price);
+      $("#checkoutBtn").disabled = !cart;
+      saveCart();
+    };
+    const openCart = (o) => { $("#drawer").hidden = !o; $("#drawerBg").hidden = !o; document.body.classList.toggle("menu-open", o); if (o) { renderCart(); $("#drawer").focus(); } };
+    $$("[data-qty]").forEach((b) => b.addEventListener("click", () => { qty = Math.max(1, Math.min(9, qty + +b.dataset.qty)); $("#qtyOut").textContent = qty; }));
+    $("#addToCart")?.addEventListener("click", (e) => {
+      cart = Math.min(9, cart + qty); renderCart();
+      const b = e.currentTarget; b.classList.add("is-added"); setTimeout(() => b.classList.remove("is-added"), 900);
+      openCart(true);
+    });
+    $("#cartBtn")?.addEventListener("click", () => openCart(true));
+    $("#drawerClose").addEventListener("click", () => openCart(false));
+    $("#drawerBg").addEventListener("click", () => openCart(false));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#drawer").hidden) openCart(false); });
+    $("#drawerBody").addEventListener("click", (e) => { const b = e.target.closest("[data-cart]"); if (!b) return; cart = Math.max(0, Math.min(9, cart + +b.dataset.cart)); renderCart(); });
+    $("#checkoutBtn").addEventListener("click", () => {
+      const box = $("#checkoutStatus");
+      if (!product.checkoutUrl) { box.innerHTML = `<div class="status status--warn">${icon("info")}<span>O pagamento ainda não está ligado. Nada foi cobrado.</span></div>`; return; }
+      location.href = product.checkoutUrl.replace("{qty}", cart);
+    });
+    renderCart();
+  }
+
+  // ---------- "como funciona" com imagens ----------
+  const sframe = $("#storyFrame");
+  if (sframe && "IntersectionObserver" in window) {
+    const simgs = $$("img", sframe), ssteps = $$(".story--img .story-step");
+    const sio2 = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const i = +e.target.dataset.i;
+      ssteps.forEach((x) => x.classList.toggle("is-active", x === e.target));
+      simgs.forEach((im, k) => im.classList.toggle("is-on", k === i));
+    }), { rootMargin: "-45% 0px -45% 0px" });
+    ssteps.forEach((x) => sio2.observe(x));
+  }
 
   // ---------- "como funciona": o passo visível muda a ilustração ----------
   const steps = $$(".story-step"), storyVisual = $("#storyVisual");

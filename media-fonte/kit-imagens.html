@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>Poupei: imagens ilustrativas do kit</title>
+<style>
+  /* Cada .shot é uma imagem 1200x1200 da galeria (ilustrações; substituir pelas fotografias do fornecedor). */
+  body { margin: 0; background: #888; font-family: "Inter Display", "Inter", sans-serif; }
+  .shot { width: 1200px; height: 1200px; position: relative; overflow: hidden; margin-bottom: 20px; }
+  .h { font-weight: 900; letter-spacing: -.03em; line-height: 1; color: #10201d; }
+  .lbl { position: absolute; font-weight: 800; font-size: 34px; color: #10201d; background: #fff; border-radius: 999px; padding: 14px 26px; box-shadow: 0 10px 30px rgba(0,0,0,.08); display: flex; align-items: center; gap: 14px; }
+  .lbl i { width: 16px; height: 16px; border-radius: 50%; background: #1f6f68; display: inline-block; }
+  .foot { position: absolute; left: 0; right: 0; bottom: 56px; text-align: center; font-size: 26px; color: #5d6a67; font-weight: 600; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="shell" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e9eeec"/><stop offset=".22" stop-color="#ffffff"/><stop offset=".6" stop-color="#f1f4f3"/><stop offset="1" stop-color="#c6d0cd"/>
+    </linearGradient>
+    <linearGradient id="shellTop" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dfe6e4"/>
+    </linearGradient>
+    <linearGradient id="dark" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#1b2523"/><stop offset=".5" stop-color="#3b4644"/><stop offset="1" stop-color="#161e1d"/>
+    </linearGradient>
+    <linearGradient id="bin" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7fb7b0" stop-opacity=".55"/><stop offset=".35" stop-color="#d8efec" stop-opacity=".35"/><stop offset="1" stop-color="#5d9a93" stop-opacity=".6"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#155550"/><stop offset=".5" stop-color="#2a8a81"/><stop offset="1" stop-color="#124a45"/>
+    </linearGradient>
+    <radialGradient id="floor"><stop offset="0" stop-color="#000" stop-opacity=".28"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+    <pattern id="ribs" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#2b3533"/><rect width="5" height="14" fill="#465250"/></pattern>
+    <clipPath id="binClip"><rect x="-150" y="80" width="300" height="250" rx="40"/></clipPath>
+
+    <!-- aspirador: origem no centro da base -->
+    <g id="vac">
+      <ellipse cx="0" cy="12" rx="250" ry="30" fill="url(#floor)"/>
+      <!-- corpo -->
+      <path d="M-170 -330 Q-170 -380 -120 -380 L120 -380 Q170 -380 170 -330 L178 -10 Q178 10 158 10 L-158 10 Q-178 10 -178 -10 Z" fill="url(#shell)"/>
+      <!-- tampa superior e pega -->
+      <path d="M-150 -380 Q-150 -430 -100 -430 L100 -430 Q150 -430 150 -380 Z" fill="url(#shellTop)"/>
+      <path d="M-70 -430 Q-70 -500 0 -500 Q70 -500 70 -430" fill="none" stroke="url(#dark)" stroke-width="30" stroke-linecap="round"/>
+      <!-- faixa da marca -->
+      <rect x="-172" y="-300" width="346" height="16" fill="url(#teal)"/>
+      <!-- painel -->
+      <rect x="-64" y="-370" width="128" height="40" rx="20" fill="#1d2725"/>
+      <circle cx="-34" cy="-350" r="7" fill="#5cc0b2"/><circle cx="-6" cy="-350" r="7" fill="#5cc0b2" opacity=".55"/><circle cx="22" cy="-350" r="7" fill="#5cc0b2" opacity=".25"/>
+      <circle cx="46" cy="-350" r="10" fill="none" stroke="#e8eeec" stroke-width="3"/>
+      <!-- entrada da mangueira -->
+      <circle cx="118" cy="-250" r="34" fill="#1d2725"/><circle cx="118" cy="-250" r="20" fill="#3b4644"/>
+      <!-- depósito transparente -->
+      <g transform="translate(0 -350)">
+        <rect x="-150" y="80" width="300" height="250" rx="40" fill="url(#bin)" stroke="#9fc9c4" stroke-width="3"/>
+        <g clip-path="url(#binClip)"><g id="fur" stroke="#a87443" stroke-width="4" stroke-linecap="round" fill="none" opacity=".9"></g></g>
+        <rect x="-128" y="98" width="16" height="200" rx="8" fill="#fff" opacity=".55"/>
+        <text x="96" y="122" text-anchor="middle" font-size="20" font-weight="800" fill="#155550" opacity=".7">MAX</text>
+        <rect x="70" y="128" width="52" height="4" fill="#155550" opacity=".5"/>
+      </g>
+      <!-- pés -->
+      <rect x="-150" y="6" width="70" height="16" rx="8" fill="#1d2725"/><rect x="80" y="6" width="70" height="16" rx="8" fill="#1d2725"/>
+    </g>
+
+    <!-- escova de cerdas (slicker): origem no centro da cabeça -->
+    <g id="slicker">
+      <rect x="-18" y="-10" width="36" height="210" rx="18" fill="url(#dark)"/>
+      <rect x="-12" y="40" width="24" height="70" rx="10" fill="url(#teal)"/>
+      <rect x="-110" y="-70" width="220" height="80" rx="30" fill="url(#shellTop)" stroke="#c6d0cd" stroke-width="3"/>
+      <g stroke="#7b8784" stroke-width="3" stroke-linecap="round">
+        <path id="pins" d=""/>
+      </g>
+    </g>
+    <!-- pente -->
+    <g id="comb">
+      <rect x="-20" y="-20" width="40" height="190" rx="18" fill="url(#dark)"/>
+      <rect x="-130" y="-80" width="260" height="60" rx="16" fill="url(#shellTop)" stroke="#c6d0cd" stroke-width="3"/>
+      <g stroke="#9aa5a2" stroke-width="5" stroke-linecap="round" id="combTeeth"></g>
+    </g>
+    <!-- ferramenta de subpelo -->
+    <g id="deshed">
+      <rect x="-20" y="-10" width="40" height="200" rx="18" fill="url(#dark)"/>
+      <path d="M-140 -40 L140 -40 L120 -100 L-120 -100 Z" fill="url(#shellTop)" stroke="#c6d0cd" stroke-width="3"/>
+      <rect x="-150" y="-112" width="300" height="16" rx="4" fill="#b6c0bd"/>
+      <g stroke="#7b8784" stroke-width="2.5" id="deshedTeeth"></g>
+    </g>
+  </defs>
+</svg>
+
+<!-- 1: produto em estúdio -->
+<div class="shot" id="k1" style="background:radial-gradient(70% 60% at 50% 42%, #ffffff 0%, #e6eeec 70%, #d9e4e1 100%)">
+  <svg viewBox="-600 -700 1200 1200" width="1200" height="1200" style="position:absolute;inset:0">
+    <path d="M16 -68 C 250 -140, 560 0, 527 190" fill="none" stroke="url(#ribs)" stroke-width="40" stroke-linecap="round"/>
+    <use href="#vac" transform="translate(-120 220) scale(1.15)"/>
+    <use href="#slicker" transform="translate(360 220) rotate(-100) scale(.85)"/>
+  </svg>
+  <div class="foot">Kit de escovagem com aspiração · imagem ilustrativa</div>
+</div>
+
+<!-- 2: acessórios (segundo o fornecedor) -->
+<div class="shot" id="k2" style="background:#f3f6f5">
+  <div class="h" style="position:absolute;left:80px;top:80px;font-size:76px">O que vem<br>na caixa</div>
+  <div style="position:absolute;left:84px;top:270px;font-size:28px;color:#5d6a67;font-weight:600">Segundo o fornecedor · a confirmar com a amostra</div>
+  <svg viewBox="0 0 1200 1200" width="1200" height="1200" style="position:absolute;inset:0">
+    <use href="#slicker" transform="translate(250 640) rotate(-12)"/>
+    <use href="#comb" transform="translate(600 610)"/>
+    <use href="#deshed" transform="translate(950 640) rotate(12)"/>
+  </svg>
+  <div class="lbl" style="left:90px;top:960px"><i></i>Escova de cerdas</div>
+  <div class="lbl" style="left:500px;top:960px"><i></i>Pente</div>
+  <div class="lbl" style="left:800px;top:960px"><i></i>Tira-subpelo</div>
+</div>
+
+<!-- 3: depósito -->
+<div class="shot" id="k3" style="background:linear-gradient(160deg,#16302d,#0f1e1c)">
+  <div class="h" style="position:absolute;left:80px;top:90px;font-size:84px;color:#fff">Depósito<br><span style="color:#5cc0b2">de 2,3 L</span></div>
+  <div style="position:absolute;left:84px;top:300px;font-size:30px;color:#b7c9c5;font-weight:600;max-width:440px;line-height:1.35">O pelo fica guardado. Esvazias só quando enche.<br><span style="font-size:24px;color:#7f9792">Capacidade indicada pelo fornecedor</span></div>
+  <svg viewBox="-600 -700 1200 1200" width="1200" height="1200" style="position:absolute;inset:0">
+    <use href="#vac" transform="translate(230 420) scale(1.25)"/>
+  </svg>
+</div>
+
+<!-- 4: como funciona -->
+<div class="shot" id="k4" style="background:#ffffff">
+  <div class="h" style="position:absolute;left:0;right:0;top:80px;text-align:center;font-size:72px">Escova. Aspira. <span style="color:#1f6f68">Esvazia.</span></div>
+  <svg viewBox="0 0 1200 1200" width="1200" height="1200" style="position:absolute;inset:0">
+    <path d="M330 640 C 470 420, 690 420, 820 560" fill="none" stroke="url(#ribs)" stroke-width="40" stroke-linecap="round"/>
+    <path d="M360 610 C 480 450, 680 450, 790 560" fill="none" stroke="#1f6f68" stroke-width="8" stroke-dasharray="18 22" stroke-linecap="round"/>
+    <use href="#slicker" transform="translate(280 700) rotate(-40) scale(.9)"/>
+    <use href="#vac" transform="translate(900 1010) scale(.75)"/>
+    <g id="furOut" stroke="#a87443" stroke-width="4" stroke-linecap="round" fill="none"></g>
+    <g font-family="Inter Display" font-weight="900" font-size="34" fill="#10201d">
+      <circle cx="210" cy="960" r="34" fill="#1f6f68"/><text x="210" y="972" text-anchor="middle" fill="#fff">1</text><text x="260" y="972">Escova</text>
+      <circle cx="560" cy="300" r="34" fill="#1f6f68"/><text x="560" y="312" text-anchor="middle" fill="#fff">2</text><text x="610" y="312">Aspira</text>
+      <circle cx="800" cy="1110" r="34" fill="#1f6f68"/><text x="800" y="1122" text-anchor="middle" fill="#fff">3</text><text x="850" y="1122">Esvazia</text>
+    </g>
+  </svg>
+</div>
+
+<!-- 5: casa sem pelo -->
+<div class="shot" id="k5" style="background:#f6f1ea">
+  <svg viewBox="0 0 1200 1200" width="1200" height="1200" style="position:absolute;inset:0">
+    <rect x="0" y="0" width="600" height="1200" fill="#efe6dc"/>
+    <rect x="600" y="0" width="600" height="1200" fill="#e7f1ee"/>
+    <rect x="0" y="760" width="1200" height="440" fill="#d9cbbb"/>
+    <rect x="600" y="760" width="600" height="440" fill="#cfe0db"/>
+    <rect x="-40" y="420" width="1280" height="200" rx="40" fill="#7d8a96"/>
+    <rect x="-40" y="560" width="1280" height="170" rx="34" fill="#93a0ab"/>
+    <g id="furSofa" stroke="#a87443" stroke-width="4" stroke-linecap="round" fill="none"></g>
+    <rect x="597" y="0" width="6" height="1200" fill="#fff"/>
+  </svg>
+  <div class="lbl" style="left:60px;top:70px">Escovar sem aspiração</div>
+  <div class="lbl" style="right:60px;top:70px;background:#1f6f68;color:#fff"><i style="background:#fff"></i>Com aspiração</div>
+  <div class="foot" style="color:#10201d;font-size:30px">Menos pelo no chão e no sofá · imagem ilustrativa</div>
+</div>
+
+<script>
+function rng(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+function hairs(n, x, y, w, h, seed) {
+  const r = rng(seed); let o = "";
+  for (let i = 0; i < n; i++) { const px = x + r() * w, py = y + r() * h, a = r() * 6.28, l = 14 + r() * 22;
+    o += `<path d="M${px} ${py} q${Math.cos(a) * l / 2 + 5} ${Math.sin(a) * l / 2 - 5} ${Math.cos(a) * l} ${Math.sin(a) * l}"/>`; }
+  return o;
+}
+document.getElementById("fur").innerHTML = hairs(170, -150, 190, 300, 140, 5);
+let pins = ""; for (let i = 0; i < 18; i++) for (let j = 0; j < 4; j++) pins += `M${-96 + i * 11.3} ${-58 + j * 16} v10 `;
+document.getElementById("pins").setAttribute("d", pins);
+let ct = ""; for (let i = 0; i < 22; i++) ct += `<path d="M${-118 + i * 11.2} -24 v54"/>`;
+document.getElementById("combTeeth").innerHTML = ct;
+let dt = ""; for (let i = 0; i < 60; i++) dt += `<path d="M${-146 + i * 4.9} -96 v10"/>`;
+document.getElementById("deshedTeeth").innerHTML = dt;
+document.getElementById("furOut").innerHTML = hairs(40, 150, 700, 200, 120, 9);
+document.getElementById("furSofa").innerHTML = hairs(240, 20, 440, 560, 270, 3) + hairs(120, 20, 780, 560, 380, 4);
+</script>
+</body>
+</html>

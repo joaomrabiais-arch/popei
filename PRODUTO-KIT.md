@@ -1,8 +1,31 @@
-# Kit de tosquia com aspiração: comparação de modelos e viabilidade
+# Kit de escovagem com aspiração (Poupei): fornecedor, modelos e viabilidade
 
-Estado: **modelo por escolher**. O site (`site/`) está preparado para este produto, mas só mostra como factos os dados com `confirmed: true` em `site/assets/js/config.js`.
+Estado: **fornecedor candidato escolhido, por confirmar com amostra**. O site (`site/`) está preparado para este produto, mas só mostra como factos os dados com `confirmed: true` em `site/assets/js/config.js`.
 
-## 1. O que consegui verificar
+
+## 0. Fornecedor candidato (escolhido para a loja, por confirmar)
+
+**AliExpress — "Dog Grooming Kit Pet Vacuum Cleaner and Grooming Kit with 2.3L Capacity Pet Hair Dust Cup"**
+https://es.aliexpress.com/i/1005007620899124.html
+
+É um produto genérico de fornecedor (não uma marca), por isso pode ser vendido com a tua marca **Poupei**. Segundo os resultados de pesquisa sobre esse anúncio (a página está bloqueada aqui, não a vi diretamente):
+- Depósito de **2,3 L**
+- Inclui **escova de cerdas, pente e ferramenta tira-subpelo**
+- Opção de **ficha europeia** e campo de **certificação CE** declarado pelo vendedor
+- Avaliação 4,4 com mais de 900 vendidos
+- Preço visto na pesquisa: 253,86 $ (valor estranho para este produto: pode incluir variantes ou portes; **confirma na página**)
+- **Não confirmado:** potência de sucção, ruído, armazém (de onde envia), prazo, portes, garantia e devoluções do vendedor
+
+No site estes dados aparecem como "segundo o fornecedor" ou "A confirmar". Para o tornar definitivo:
+1. Abre o anúncio, escolhe a variante com **ficha EU** e vê "Envia de" (prefere Espanha/Polónia/França).
+2. Encomenda **1 amostra** para ti: confirma ruído, sucção, acessórios e ficha.
+3. Pede ao vendedor a **declaração de conformidade CE** e os dados do responsável na UE.
+4. Guarda as fotografias do anúncio (botão direito → Guardar imagem) e anexa-as na conversa, ou põe-nas em `site/assets/img/kit/` com os nomes `kit-1-produto.jpg` … `kit-5-casa.jpg` (substituem as ilustrações).
+5. Define o preço em `config.js` (`product.price`) e põe `imagesAreIllustrations: false`.
+
+Alternativas europeias a pesquisar diretamente (não consegui confirmar este produto nelas): BigBuy (Espanha) e armazéns UE da CJdropshipping.
+
+## 1. Modelos de referência indicados por ti
 
 As páginas indicadas (neakasa.com e eprolo.com) estão **bloqueadas neste ambiente**: não consegui abri-las. Os dados abaixo vêm de pesquisa web noutras fontes (lojas e manuais). Confirma tudo na página do fornecedor antes de publicar.
 

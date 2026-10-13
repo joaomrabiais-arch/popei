@@ -1,8 +1,10 @@
 # Site base
 
-Site estático (HTML, CSS e JavaScript, sem bibliotecas nem passo de compilação) da marca **Popei**.
+Site estático (HTML, CSS e JavaScript, sem bibliotecas nem passo de compilação) da marca **Poupei**.
 
-- **Produto ativo:** kit de tosquia com aspiração (`assets/js/config.js`). O modelo ainda não está escolhido: ver `../PRODUTO-KIT.md`. Especificações, acessórios, envio e preço só aparecem como factos quando têm `confirmed: true`; até lá mostram "A confirmar".
+- **Produto ativo:** kit de escovagem com aspiração, em formato de página de produto de loja online (`layout: "pdp"` em `assets/js/config.js`): galeria com zoom, preço, quantidade, carrinho, separadores. Fornecedor candidato e dados por confirmar: `../PRODUTO-KIT.md`. Cada dado tem `status`: `verificado`, `fornecedor` ("segundo o fornecedor") ou `pendente` ("A confirmar").
+- **Carrinho:** aparece sozinho quando `product.price` tiver valor. O botão "Finalizar compra" vai para `product.checkoutUrl` (pode ter `{qty}`); sem link, avisa que nada foi cobrado.
+- **Imagens do kit:** `assets/img/kit/` (ilustrações geradas por `node media-fonte/render-kit.js`). Substitui pelos ficheiros do fornecedor com os mesmos nomes.
 - **Loja anterior (rolo tira-pelos):** `assets/js/config-rolo.js`. Para voltar a ela, copia-a para `config.js`. As imagens e vídeos do rolo continuam em `assets/img/produto/` e `assets/video/` (gerados a partir de `media-fonte/`).
 - As ilustrações do kit (herói e "Como funciona") são desenhos genéricos, não representam nenhum modelo. Quando houver fotografias oficiais em `product.images`, o herói passa a mostrar a fotografia.
 

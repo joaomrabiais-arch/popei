@@ -134,6 +134,46 @@ const ok = (cond, msg) => { if (cond) passes++; else { failures++; console.error
     await page.close();
   }
 
+  console.log("• página de produto: galeria e separadores");
+  {
+    const page = await browser.newPage();
+    await page.goto(base + "/");
+    if (await page.$("#pdpMain")) {
+      const onSrc = () => page.$eval("#pdpMain img.is-on", (i) => i.getAttribute("src"));
+      const first = await onSrc();
+      await page.click(".pdp-thumbs button:nth-child(3)");
+      ok((await onSrc()) !== first, "a miniatura não muda a imagem principal");
+      ok(/3 \//.test(await page.textContent("#pdpCount")), "o contador da galeria não atualiza");
+      await page.focus("#pdpMain"); await page.keyboard.press("ArrowRight");
+      ok(/4 \//.test(await page.textContent("#pdpCount")), "a seta do teclado não muda a imagem");
+      const tab = page.locator(".tab-q").nth(1);
+      await tab.click();
+      ok(await tab.getAttribute("aria-expanded") === "true", "o separador não abre");
+      const cta = await page.$(".pdp-buy a.btn, #addToCart");
+      ok(cta !== null, "falta o botão de compra ou de lista de espera");
+    }
+    await page.close();
+  }
+
+  console.log("• carrinho (com preço e checkout simulados só no teste)");
+  {
+    const page = await browser.newPage();
+    await page.addInitScript(() => { Object.defineProperty(window, "SITE", { configurable: true, set(v) { if (v.layout === "pdp") { v.product.price = 50; v.product.checkoutUrl = ""; } Object.defineProperty(window, "SITE", { value: v, writable: true }); } }); });
+    await page.goto(base + "/");
+    if (await page.$("#addToCart")) {
+      await page.click("[data-qty='1']");
+      await page.click("#addToCart");
+      ok(await page.isVisible("#drawer"), "o carrinho não abre ao adicionar");
+      ok(await page.textContent("#cartCount") === "2", "a quantidade no carrinho está errada");
+      ok(/100,00/.test(await page.textContent("#drawerTotal")), "o total do carrinho está errado");
+      await page.click("#checkoutBtn");
+      ok(await page.locator("#checkoutStatus .status--warn").count() === 1, "sem checkout devia avisar que não cobrou nada");
+      await page.keyboard.press("Escape");
+      ok(await page.isHidden("#drawer"), "Esc não fecha o carrinho");
+    }
+    await page.close();
+  }
+
   console.log("• formulário de contacto");
   {
     const page = await browser.newPage();
@@ -157,7 +197,7 @@ const ok = (cond, msg) => { if (cond) passes++; else { failures++; console.error
     await page.goto(base + "/");
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(200);
-    const hidden = await page.$$eval("main *", (els) => els.filter((e) => !e.matches("input[type=range]") && !e.closest("svg") && getComputedStyle(e).opacity === "0").length);
+    const hidden = await page.$$eval("main *", (els) => els.filter((e) => !e.matches("input[type=range]") && !e.closest("svg") && !e.matches(".pdp-main img:not(.is-on), .story-frame img:not(.is-on), .pdp-nav") && getComputedStyle(e).opacity === "0").length);
     ok(hidden === 0, `${hidden} elementos com opacidade 0 com movimento reduzido`);
     await ctx.close();
   }

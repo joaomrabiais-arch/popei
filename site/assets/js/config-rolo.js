@@ -2,7 +2,7 @@
  *
  * CONFIGURAÇÃO DO SITE — o único ficheiro a editar para adaptar a marca e o produto.
  *
- * Produto atual: rolo tira-pelos reutilizável (marca Popei).
+ * Produto atual: rolo tira-pelos reutilizável (marca Poupei).
  * Tudo o que está marcado com  // CONFIRMAR  depende de decisões ou dados que ainda não existem
  * (fornecedor, prazos, envio, fotografias reais). Não publiques sem confirmar.
  * Enquanto `demo` for true, o site mostra a faixa `demoMessage` no topo.
@@ -16,7 +16,7 @@ window.SITE = {
   demoMessage: "Pré-lançamento · as imagens são ilustrações até termos as fotografias reais do produto",
 
   brand: {
-    name: "Popei",
+    name: "Poupei",
     tagline: "Pelos do cão e do gato fora do sofá, sem recargas.",
     logo: "",            // vazio = marca gerada (inicial + nome); ou "assets/img/logo.svg"
   },
@@ -70,7 +70,7 @@ window.SITE = {
   ],
 
   product: {
-    name: "Rolo Tira-Pelos Popei",
+    name: "Rolo Tira-Pelos Poupei",
     description: "Um rolo mecânico que apanha o pelo de cão e de gato de sofás, camas, mantas, alcatifas e bancos do carro. Não usa cola nem folhas: o pelo fica guardado num depósito que abres e esvazias.",
     price: 24.90,
     compareAtPrice: null,      // só se já praticaste esse preço (Diretiva Omnibus)
@@ -101,7 +101,7 @@ window.SITE = {
   value: {
     title: "Porque não um rolo de fita?",
     problem: "O rolo de fita gasta uma folha a cada poucas passagens. No sofá inteiro acabas com um monte de folhas no lixo e a comprar recargas todos os meses.",
-    solution: "O Popei usa sempre a mesma superfície. Rolas, abres o depósito, deitas o pelo fora e está pronto para a próxima vez.",
+    solution: "O Poupei usa sempre a mesma superfície. Rolas, abres o depósito, deitas o pelo fora e está pronto para a próxima vez.",
   },
 
   benefits: [
@@ -116,7 +116,7 @@ window.SITE = {
     subtitle: "Animações ilustrativas. Vamos substituí-las por vídeos reais com o produto.",  // CONFIRMAR
     videos: [
       { src: "assets/video/video-sofa.mp4",   poster: "assets/video/video-sofa.jpg",   label: "O teste do sofá" },
-      { src: "assets/video/video-fita.mp4",   poster: "assets/video/video-fita.jpg",   label: "Rolo de fita vs Popei" },
+      { src: "assets/video/video-fita.mp4",   poster: "assets/video/video-fita.jpg",   label: "Rolo de fita vs Poupei" },
       { src: "assets/video/video-sitios.mp4", poster: "assets/video/video-sitios.jpg", label: "Sofá · cama · carro" },
     ],
     video: "",
@@ -150,7 +150,7 @@ window.SITE = {
 
   interest: {
     title: "Avisamos-te no lançamento",
-    text: "Ainda não estamos a vender. Deixa o teu email e recebes o aviso quando o Popei estiver disponível.",
+    text: "Ainda não estamos a vender. Deixa o teu email e recebes o aviso quando o Poupei estiver disponível.",
     button: "Avisar-me",
   },
 
@@ -165,7 +165,7 @@ window.SITE = {
 
   footer: {
     columns: [
-      { title: "Popei", links: [
+      { title: "Poupei", links: [
         { label: "Produto", href: "index.html#produto" },
         { label: "Como funciona", href: "index.html#como-funciona" },
         { label: "Perguntas", href: "index.html#perguntas" },
