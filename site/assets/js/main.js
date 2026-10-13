@@ -37,6 +37,11 @@
     alert: '<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/>',
     instagram: '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor"/>',
     tiktok: '<path d="M14 3v11a4 4 0 1 1-4-4"/><path d="M14 3c.5 3 2.5 5 6 5"/>',
+    shield: '<path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/>',
+    plug: '<path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4"/>',
+    home: '<path d="M4 11 12 4l8 7v9H4z"/><path d="M10 20v-5h4v5"/>',
+    shirt: '<path d="M8 4 4 7l2 4 2-1v10h8V10l2 1 2-4-4-3c0 2-2 3-4 3s-4-1-4-3z"/>',
+    pending: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   };
   const icon = (n, cls = "") => `<svg class="ic ${n === "arrow" ? "ic-arrow" : ""} ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n] || P.spark}</svg>`;
 
@@ -109,6 +114,50 @@
   let offerIdx = Math.max(0, offers.findIndex((o) => o.default));
   const placeholder = (label) => `<div class="placeholder-object">${'<div>' + icon("image") + esc(label) + "</div>"}</div>`;
 
+  // Ilustração genérica de um kit de tosquia com aspiração (não representa nenhum modelo concreto).
+  function kitSVG(id) {
+    let hairs = "", inside = "";
+    for (let i = 0; i < 14; i++) {
+      const x = 40 + (i * 37) % 120, y = 228 + (i * 23) % 70, r = (i * 47) % 360;
+      hairs += `<path class="kit-hair" style="--d:${(i % 7) * .28}s;--x:${150 - x}px;--y:${178 - y}px" d="M${x} ${y} q6 -7 14 -2" transform="rotate(${r % 40 - 20} ${x} ${y})"/>`;
+    }
+    for (let i = 0; i < 70; i++) {
+      const x = 392 + (i * 29) % 136, y = 372 + (i * 13) % 62;
+      inside += `<path d="M${x} ${y} q5 -6 12 -1" transform="rotate(${(i * 53) % 180} ${x} ${y})"/>`;
+    }
+    return `<svg class="kit" id="${id}" viewBox="0 0 640 560" role="img" aria-label="Ilustração de um kit de tosquia com aspiração: aspirador, mangueira e escova">
+      <defs>
+        <linearGradient id="${id}-body" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#eef2f1"/><stop offset="1" stop-color="#d5dddb"/></linearGradient>
+        <linearGradient id="${id}-bin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent)" stop-opacity=".10"/><stop offset="1" stop-color="var(--accent)" stop-opacity=".28"/></linearGradient>
+        <radialGradient id="${id}-sh"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+        <clipPath id="${id}-clip"><rect x="384" y="300" width="152" height="140" rx="22"/></clipPath>
+      </defs>
+      <ellipse cx="462" cy="500" rx="150" ry="20" fill="url(#${id}-sh)"/>
+      <path class="kit-hose" d="M392 238 C 360 120, 240 70, 168 160" fill="none" stroke="#2b3432" stroke-width="30" stroke-linecap="round"/>
+      <path class="kit-hose-ribs" d="M392 238 C 360 120, 240 70, 168 160" fill="none" stroke="#475351" stroke-width="30" stroke-dasharray="3 11" stroke-linecap="butt"/>
+      <path class="kit-flow" d="M168 160 C 240 70, 360 120, 392 238" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round" stroke-dasharray="10 26"/>
+      <g class="kit-canister">
+        <rect x="360" y="214" width="204" height="276" rx="64" fill="url(#${id}-body)" stroke="#c9d2d0" stroke-width="2"/>
+        <rect x="360" y="262" width="204" height="18" fill="var(--accent)"/>
+        <circle cx="400" cy="240" r="16" fill="#2b3432"/><circle cx="400" cy="240" r="7" fill="#475351"/>
+        <circle cx="526" cy="240" r="9" fill="var(--accent)"/>
+        <g class="kit-bin">
+          <rect x="384" y="300" width="152" height="140" rx="22" fill="url(#${id}-bin)" stroke="var(--accent)" stroke-opacity=".45" stroke-width="2"/>
+          <g clip-path="url(#${id}-clip)" stroke="#a3713e" stroke-width="3" stroke-linecap="round" fill="none" opacity=".85">${inside}</g>
+          <rect x="396" y="306" width="10" height="120" rx="5" fill="#fff" opacity=".55"/>
+        </g>
+        <rect x="380" y="474" width="40" height="18" rx="9" fill="#2b3432"/><rect x="504" y="474" width="40" height="18" rx="9" fill="#2b3432"/>
+      </g>
+      <g class="kit-head" transform="rotate(-38 150 172)">
+        <rect x="128" y="150" width="46" height="84" rx="20" fill="#2b3432"/>
+        <rect x="96" y="214" width="110" height="46" rx="18" fill="#f4f6f5" stroke="#c9d2d0" stroke-width="2"/>
+        <g stroke="#2b3432" stroke-width="4" stroke-linecap="round">${Array.from({ length: 9 }, (_, k) => `<path d="M${106 + k * 11.5} 258 v14"/>`).join("")}</g>
+        <rect x="140" y="176" width="22" height="34" rx="8" fill="var(--accent)"/>
+      </g>
+      <g class="kit-hairs" stroke="#a3713e" stroke-width="3.2" stroke-linecap="round" fill="none">${hairs}</g>
+    </svg>`;
+  }
+
   const R = {
     hero: () => {
       const h = S.hero, chips = (S.trust || []).slice(0, 3);
@@ -122,30 +171,39 @@
             ${h.secondary ? `<a class="btn btn--ghost" href="${esc(h.secondary.href)}">${esc(h.secondary.label)}</a>` : ""}
           </div>
         </div>
+        ${h.visual === "kit" && !product.images?.length ? `<div class="stage stage--kit" data-enter style="--i:2">
+          <div class="stage-card"></div>
+          <div class="kit-wrap">${kitSVG("kitHero")}</div>
+          <span class="stage-note">Ilustração</span>
+          ${chips.map((c) => `<span class="stage-chip">${icon(c.icon)}${esc(c.text)}</span>`).join("")}
+        </div>` : `
         <div class="stage" data-enter style="--i:2" aria-hidden="${product.images?.length ? "false" : "true"}">
           <div class="stage-card"></div>
           <div class="stage-ring"></div>
           <div class="stage-plinth"></div>
           <div class="stage-product">${product.images?.length ? `<img src="${esc(url(product.images[0]))}" alt="${esc(product.name || S.brand.name)}" fetchpriority="high">` : placeholder("Imagem do produto")}</div>
           ${chips.map((c) => `<span class="stage-chip">${icon(c.icon)}${esc(c.text)}</span>`).join("")}
-        </div>
+        </div>`}
       </div>`;
     },
     trust: () => S.trust?.length ? `<div class="container trust-row">${S.trust.map((c) => `<div class="trust-item">${icon(c.icon)}<span>${esc(c.text)}</span></div>`).join("")}</div>` : null,
     product: () => {
       const imgs = product.images || [];
       return `<div class="container">
-        <div class="section-head"><span class="eyebrow">O produto</span><h2>${hasProduct ? (offers.length ? "Escolhe a tua oferta" : esc(product.name)) : "Produto em preparação"}</h2></div>
+        <div class="section-head"><span class="eyebrow">${product.status ? "O kit" : "O produto"}</span><h2>${hasProduct ? (offers.length ? "Escolhe a tua oferta" : product.status ? "Galeria e preço" : esc(product.name)) : "Produto em preparação"}</h2></div>
         <div class="product">
           <div class="gallery" data-reveal>
-            <div class="gallery-main">${imgs.length ? `<img id="galleryMain" src="${esc(url(imgs[0]))}" alt="${esc(product.name)}" width="1200" height="1200">` : placeholder("As fotografias reais do produto entram aqui")}</div>
+            ${!imgs.length && product.imageSlots?.length ? `<div class="slots">${product.imageSlots.map((t, i) => `<figure class="slot ${i === 0 ? "slot--big" : ""}"><div>${icon("image")}<figcaption>${esc(t)}</figcaption><small>Fotografia oficial em breve</small></div></figure>`).join("")}</div>` :
+            `<div class="gallery-main">${imgs.length ? `<img id="galleryMain" src="${esc(url(imgs[0]))}" alt="${esc(product.name)}" width="1200" height="1200">` : placeholder("As fotografias reais do produto entram aqui")}</div>`}
             ${imgs.length > 1 ? `<div class="gallery-thumbs" role="group" aria-label="Fotografias">${imgs.map((src, i) =>
               `<button type="button" data-src="${esc(url(src))}" aria-current="${i === 0}" aria-label="Fotografia ${i + 1}"><img src="${esc(url(src))}" alt="" loading="lazy"></button>`).join("")}</div>` : ""}
           </div>
           <div class="product-info" data-reveal>
             ${hasProduct ? "" : `<span class="tag">${icon("info")}Produto ainda não definido</span>`}
+            ${product.status ? `<span class="tag tag--pending">${icon("pending")}${esc(product.status)}</span>` : ""}
             ${product.imagesAreIllustrations ? `<span class="tag">${icon("image")}Imagens ilustrativas</span>` : ""}
             <h3>${hasProduct ? esc(product.name) : "O teu produto aparece aqui"}</h3>
+            ${product.price == null && product.status ? `<div class="price price--pending">Preço por confirmar</div>` : ""}
             ${product.price != null ? `<div class="price" id="priceBox">${money(product.price)}${product.compareAtPrice ? `<s>${money(product.compareAtPrice)}</s>` : ""}</div>` : ""}
             <p class="product-desc">${hasProduct ? esc(product.description) : "Quando escolheres o produto, preenche o nome, a descrição, o preço e as fotografias em config.js. Esta secção monta-se sozinha."}</p>
             ${product.highlights?.length ? `<ul class="checklist">${product.highlights.map((h) => `<li>${icon("check")}${esc(h)}</li>`).join("")}</ul>` : ""}
@@ -172,7 +230,8 @@
         <div class="cards">${S.benefits.map((b) => `<article class="card" data-reveal><div class="card-icon">${icon(b.icon)}</div><h3>${esc(b.title)}</h3><p>${esc(b.text)}</p></article>`).join("")}</div>
       </div>` : null,
     media: () => {
-      const m = S.media || {};
+      if (!S.media) return null;
+      const m = S.media;
       if (!m.video && !m.images?.length && !m.videos?.length && !S.demo) return null;
       const body = m.videos?.length
         ? `<div class="reels">${m.videos.map((v) => `<figure class="reel"><video src="${esc(url(v.src))}" ${v.poster ? `poster="${esc(url(v.poster))}"` : ""} muted loop playsinline preload="none" aria-label="${esc(v.label)}"></video><figcaption>${esc(v.label)}</figcaption></figure>`).join("")}</div>`
@@ -192,6 +251,44 @@
         <span class="ba-handle" aria-hidden="true"></span>
         <input class="ba-range" type="range" min="0" max="100" value="50" aria-label="Comparar antes e depois"></div></div>`;
     },
+    problem: () => {
+      const pb = S.problem; if (!pb?.points?.length) return null;
+      return `<div class="container problem">
+        <div class="problem-head" data-reveal><span class="eyebrow">${esc(pb.eyebrow || "O problema")}</span><h2>${esc(pb.title)}</h2></div>
+        <div class="problem-list">${pb.points.map((p, i) => `<article class="problem-item" data-reveal><span class="problem-n">0${i + 1}</span><div class="problem-ic">${icon(p.icon)}</div><h3>${esc(p.title)}</h3><p>${esc(p.text)}</p></article>`).join("")}</div>
+      </div>`;
+    },
+    story: () => {
+      const st = S.story; if (!st?.steps?.length) return null;
+      return `<div class="container">
+        <div class="section-head"><span class="eyebrow">${esc(st.eyebrow || "Como funciona")}</span><h2>${esc(st.title)}</h2></div>
+        <div class="story">
+          <div class="story-visual"><div class="story-sticky" data-state="${esc(st.steps[0].state)}" id="storyVisual">${kitSVG("kitStory")}<span class="stage-note">Ilustração</span></div></div>
+          <ol class="story-steps">${st.steps.map((x, i) => `<li class="story-step ${i === 0 ? "is-active" : ""}" data-state="${esc(x.state)}"><span class="story-n">${i + 1}</span><h3>${esc(x.title)}</h3><p>${esc(x.text)}</p></li>`).join("")}</ol>
+        </div>
+      </div>`;
+    },
+    specs: () => {
+      if (!S.specs?.length) return null;
+      const done = S.specs.filter((x) => x.confirmed && x.value);
+      return `<div class="container specs-wrap">
+        <div class="section-head"><span class="eyebrow">Características</span><h2>${done.length ? "Características confirmadas" : "Características do modelo"}</h2>
+          <p>${done.length === S.specs.length ? "Dados confirmados com o fabricante." : "Só mostramos valores depois de os confirmarmos com o fabricante e de testarmos o aparelho."}</p></div>
+        <dl class="specs" data-reveal>${S.specs.map((x) => `<div class="spec ${x.confirmed && x.value ? "" : "spec--pending"}"><dt>${esc(x.label)}</dt><dd>${x.confirmed && x.value ? esc(x.value) : `<span class="pill-pending">${icon("pending")}A confirmar</span>`}</dd></div>`).join("")}</dl>
+      </div>`;
+    },
+    accessories: () => {
+      if (!S.accessories) return null;
+      return `<div class="container">
+        <div class="section-head"><span class="eyebrow">Na caixa</span><h2>Acessórios incluídos</h2></div>
+        ${S.accessories.length ? `<div class="acc-rail" data-reveal>${S.accessories.map((a) => `<article class="acc"><div class="acc-img">${a.image ? `<img src="${esc(url(a.image))}" alt="${esc(a.name)}" loading="lazy">` : icon("box")}</div><h3>${esc(a.name)}</h3>${a.text ? `<p>${esc(a.text)}</p>` : ""}</article>`).join("")}</div>`
+        : `<div class="empty-state" data-reveal>${icon("box")}<div><h3>Lista por confirmar</h3><p>Publicamos a lista exata do que vem na caixa quando o modelo estiver escolhido. Não mostramos acessórios que não possamos garantir.</p></div></div>`}
+      </div>`;
+    },
+    shipping: () => S.shipping?.length ? `<div class="container">
+        <div class="section-head"><span class="eyebrow">Envio e devoluções</span><h2>Antes de comprares</h2></div>
+        <div class="ship-grid">${S.shipping.map((x) => `<article class="ship" data-reveal><div class="ship-ic">${icon(x.icon)}</div><div><h3>${esc(x.title)} ${x.confirmed ? "" : `<span class="pill-pending">${icon("pending")}A confirmar</span>`}</h3><p>${esc(x.text)}</p></div></article>`).join("")}</div>
+      </div>` : null,
     ad: (el) => {
       const a = S.ads?.[+el.dataset.ad];
       if (!a) return null;
@@ -287,6 +384,17 @@
     const i = offers.findIndex((o) => o.qty === +a.dataset.offerQty);
     if (i >= 0) selectOffer(i);
   }));
+
+  // ---------- "como funciona": o passo visível muda a ilustração ----------
+  const steps = $$(".story-step"), storyVisual = $("#storyVisual");
+  if (steps.length && storyVisual && "IntersectionObserver" in window) {
+    const sio = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return;
+      steps.forEach((x) => x.classList.toggle("is-active", x === e.target));
+      storyVisual.dataset.state = e.target.dataset.state;
+    }), { rootMargin: "-45% 0px -45% 0px" });
+    steps.forEach((x) => sio.observe(x));
+  }
 
   // ---------- vídeos: só tocam quando estão visíveis ----------
   const vids = $$(".reel video");

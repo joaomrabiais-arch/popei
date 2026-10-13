@@ -1,13 +1,15 @@
 # Site base
 
-Site estático (HTML, CSS e JavaScript, sem bibliotecas nem passo de compilação) da marca **Popei**, configurado para o rolo tira-pelos reutilizável. Para mudar de produto, basta editar `assets/js/config.js`.
+Site estático (HTML, CSS e JavaScript, sem bibliotecas nem passo de compilação) da marca **Popei**.
 
-As imagens (`assets/img/produto/`) e os vídeos (`assets/video/`) são ilustrações geradas a partir de `media-fonte/` (`node media-fonte/render.js`). Substitui-os pelas fotografias e vídeos reais do produto e põe `product.imagesAreIllustrations: false`.
+- **Produto ativo:** kit de tosquia com aspiração (`assets/js/config.js`). O modelo ainda não está escolhido: ver `../PRODUTO-KIT.md`. Especificações, acessórios, envio e preço só aparecem como factos quando têm `confirmed: true`; até lá mostram "A confirmar".
+- **Loja anterior (rolo tira-pelos):** `assets/js/config-rolo.js`. Para voltar a ela, copia-a para `config.js`. As imagens e vídeos do rolo continuam em `assets/img/produto/` e `assets/video/` (gerados a partir de `media-fonte/`).
+- As ilustrações do kit (herói e "Como funciona") são desenhos genéricos, não representam nenhum modelo. Quando houver fotografias oficiais em `product.images`, o herói passa a mostrar a fotografia.
 
 ## Estrutura
 ```
 site/
-├── index.html            página inicial (secções montadas a partir de config.js)
+├── index.html            página inicial (secções montadas a partir de config.js; secções sem conteúdo ficam escondidas)
 ├── contacto.html         formulário de contacto
 ├── 404.html              página de erro (usa caminhos absolutos: o site tem de estar na raiz do domínio)
 ├── legal/                privacidade, termos, envios, devoluções (rascunhos para rever)

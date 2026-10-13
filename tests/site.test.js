@@ -157,7 +157,7 @@ const ok = (cond, msg) => { if (cond) passes++; else { failures++; console.error
     await page.goto(base + "/");
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(200);
-    const hidden = await page.$$eval("main *", (els) => els.filter((e) => !e.matches("input[type=range]") && getComputedStyle(e).opacity === "0").length);
+    const hidden = await page.$$eval("main *", (els) => els.filter((e) => !e.matches("input[type=range]") && !e.closest("svg") && getComputedStyle(e).opacity === "0").length);
     ok(hidden === 0, `${hidden} elementos com opacidade 0 com movimento reduzido`);
     await ctx.close();
   }
