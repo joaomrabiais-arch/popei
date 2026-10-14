@@ -1,0 +1,216 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#111}canvas{display:block;width:540px;height:960px}</style>
+</head><body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+// FurSwoop — vídeo explicativo vertical (1080x1920). render(t) desenha o fotograma no instante t (s).
+const W = 1080, H = 1920;
+const c = document.getElementById('c'), x = c.getContext('2d');
+const C = { paper:'#f6f1e8', ink:'#1d2b2a', teal:'#1f6f68', tealL:'#5cc0b2', mustard:'#f2b544',
+            fur:'#c98c45', furD:'#9c6a33', couch:'#d8cbb8', couchD:'#bfae96', floor:'#efe6d6', red:'#d9573f', white:'#ffffff' };
+const F = 'Inter Display, Inter, sans-serif';
+
+// ---------- utilitários ----------
+const clamp = (v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+const lerp = (a,b,p)=>a+(b-a)*p;
+const eo = p=>1-Math.pow(1-clamp(p),3);           // ease out
+const eio = p=>{p=clamp(p);return p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;};
+const back = p=>{p=clamp(p);const s=1.7;return 1+(s+1)*Math.pow(p-1,3)+s*Math.pow(p-1,2);};
+const prog = (t,a,d)=>clamp((t-a)/d);
+function rng(seed){ let s=seed>>>0; return ()=>((s=(s*1664525+1013904223)>>>0)/4294967296); }
+function rr(px,py,w,h,r){ x.beginPath(); x.roundRect(px,py,w,h,r); }
+function txt(s,px,py,size,{w=900,color=C.ink,align='left',alpha=1,font=F,dy=0}={}){
+  x.save(); x.globalAlpha*=alpha; x.fillStyle=color; x.font=`${w} ${size}px ${font}`; x.textAlign=align; x.textBaseline='alphabetic';
+  x.fillText(s,px,py+dy); x.restore();
+}
+// texto que entra a subir com fade
+function inTxt(t,start,s,px,py,size,o={}){ const p=eo(prog(t,start,.45)); if(p<=0) return; txt(s,px,py,size,{...o,alpha:p*(o.alpha??1),dy:(1-p)*40}); }
+// marcador amarelo por trás de uma palavra (desenhado à mão)
+function marker(t,start,px,py,w,h){ const p=eio(prog(t,start,.4)); if(p<=0) return;
+  x.save(); x.fillStyle=C.mustard; x.globalAlpha=.9; x.beginPath();
+  x.moveTo(px,py+6); x.lineTo(px+w*p,py); x.lineTo(px+w*p+6,py+h); x.lineTo(px-4,py+h+4); x.closePath(); x.fill(); x.restore(); }
+
+// grão de papel (dá textura e tira o ar "digital")
+const grain = document.createElement('canvas'); grain.width=grain.height=256;
+{ const g=grain.getContext('2d'), d=g.createImageData(256,256), r=rng(7);
+  for(let i=0;i<d.data.length;i+=4){ const v=r()*255; d.data[i]=d.data[i+1]=d.data[i+2]=v; d.data[i+3]=255; } g.putImageData(d,0,0); }
+function paper(color=C.paper){ x.fillStyle=color; x.fillRect(0,0,W,H);
+  x.save(); x.globalAlpha=.045; x.fillStyle=x.createPattern(grain,'repeat'); x.fillRect(0,0,W,H); x.restore(); }
+
+// ---------- desenhos ----------
+function tuft(px,py,s,rot,col=C.fur){ // tufo de pelo: 3 traços curvos
+  x.save(); x.translate(px,py); x.rotate(rot); x.strokeStyle=col; x.lineCap='round'; x.lineWidth=3.2*s;
+  for(let k=-1;k<=1;k++){ x.beginPath(); x.moveTo(k*4*s,6*s); x.quadraticCurveTo(k*7*s+5*s,-2*s,k*3*s+2*s,-9*s); x.stroke(); }
+  x.restore(); }
+function couch(px,py,s=1){
+  x.save(); x.translate(px,py); x.scale(s,s);
+  x.fillStyle=C.couchD; rr(-20,-210,640,180,40); x.fill();           // costas
+  x.fillStyle=C.couch; rr(0,-80,600,120,30); x.fill();               // assento
+  x.fillStyle=C.couchD; rr(-60,-150,110,200,40); x.fill(); rr(550,-150,110,200,40); x.fill(); // braços
+  x.fillStyle=C.ink; x.fillRect(0,40,22,40); x.fillRect(578,40,22,40);  // pés
+  x.restore(); }
+function dog(px,py,s=1,wag=0){
+  x.save(); x.translate(px,py); x.scale(s,s); x.fillStyle=C.fur; x.strokeStyle=C.furD; x.lineWidth=6; x.lineCap='round';
+  // cauda
+  x.save(); x.translate(-150,-70); x.rotate(-.6+Math.sin(wag)*.35); x.beginPath(); x.moveTo(0,0); x.quadraticCurveTo(-40,-50,-20,-110); x.lineWidth=26; x.strokeStyle=C.fur; x.stroke(); x.restore();
+  // pernas
+  for(const lx of [-120,-70,70,115]){ rr(lx-18,-20,36,110,18); x.fill(); }
+  // corpo
+  x.beginPath(); x.ellipse(0,-60,175,85,0,0,Math.PI*2); x.fill();
+  // cabeça
+  x.beginPath(); x.ellipse(175,-150,78,70,0,0,Math.PI*2); x.fill();
+  x.beginPath(); x.ellipse(240,-128,52,36,.15,0,Math.PI*2); x.fill(); // focinho
+  x.fillStyle=C.furD; x.beginPath(); x.ellipse(140,-150,32,62,.35,0,Math.PI*2); x.fill(); // orelha
+  x.fillStyle=C.ink; x.beginPath(); x.arc(196,-168,9,0,7); x.fill(); x.beginPath(); x.ellipse(287,-138,14,11,0,0,7); x.fill(); // olho, nariz
+  x.strokeStyle=C.ink; x.lineWidth=5; x.beginPath(); x.arc(250,-112,18,.3,1.6); x.stroke(); // sorriso
+  x.restore(); }
+function brush(px,py,rot=0){ // escova normal
+  x.save(); x.translate(px,py); x.rotate(rot);
+  x.fillStyle='#7a5a3c'; rr(-14,-170,28,150,14); x.fill();
+  x.fillStyle=C.ink; rr(-70,-30,140,40,12); x.fill();
+  x.strokeStyle=C.ink; x.lineWidth=5; for(let i=-60;i<=60;i+=12){ x.beginPath(); x.moveTo(i,10); x.lineTo(i,32); x.stroke(); }
+  x.restore(); }
+// FurSwoop: aspirador com depósito transparente; fill 0..1
+function device(px,py,fill,s=1){
+  x.save(); x.translate(px,py); x.scale(s,s);
+  x.fillStyle='rgba(0,0,0,.08)'; x.beginPath(); x.ellipse(0,250,190,26,0,0,7); x.fill();       // sombra
+  x.fillStyle=C.white; x.strokeStyle=C.ink; x.lineWidth=7; rr(-160,-230,320,470,60); x.fill(); x.stroke();
+  x.save(); rr(-160,-230,320,470,60); x.clip(); x.fillStyle=C.teal; x.fillRect(-160,-230,320,110); x.restore();
+  x.strokeStyle=C.ink; rr(-160,-230,320,470,60); x.stroke();
+  // depósito transparente
+  x.save(); rr(-115,-90,230,290,30); x.clip();
+  x.fillStyle='#e9f3f1'; x.fillRect(-115,-90,230,290);
+  const h=290*fill; x.fillStyle=C.fur; x.fillRect(-115,200-h,230,h);
+  const r=rng(3); for(let i=0;i<Math.floor(140*fill);i++) tuft(-100+r()*200,200-r()*h,1.1,r()*6,C.furD);
+  x.fillStyle='rgba(255,255,255,.35)'; x.fillRect(-95,-80,24,270);  // brilho
+  x.restore();
+  x.strokeStyle=C.ink; x.lineWidth=6; rr(-115,-90,230,290,30); x.stroke();
+  // botão e marca
+  x.fillStyle=C.mustard; x.beginPath(); x.arc(110,-175,20,0,7); x.fill();
+  txt('FurSwoop',-120,-160,40,{w:800,color:C.white});
+  x.restore(); }
+function hose(ax,ay,bx,by,cx,cy,dx,dy){ // mangueira (bezier) com nervuras
+  x.save(); x.lineCap='round'; x.strokeStyle=C.ink; x.lineWidth=40; x.beginPath(); x.moveTo(ax,ay); x.bezierCurveTo(bx,by,cx,cy,dx,dy); x.stroke();
+  x.strokeStyle='#3b4b49'; x.lineWidth=28; x.stroke();
+  x.setLineDash([4,14]); x.strokeStyle=C.ink; x.lineWidth=30; x.stroke(); x.restore(); }
+const bez=(p,a,b,c2,d)=>{const q=1-p;return q*q*q*a+3*q*q*p*b+3*q*p*p*c2+p*p*p*d;};
+function head(px,py,rot){ // escova na ponta da mangueira
+  x.save(); x.translate(px,py); x.rotate(rot);
+  x.fillStyle=C.teal; rr(-80,-34,160,48,16); x.fill(); x.strokeStyle=C.ink; x.lineWidth=6; x.stroke();
+  x.lineWidth=5; for(let i=-68;i<=68;i+=12){ x.beginPath(); x.moveTo(i,14); x.lineTo(i,36); x.stroke(); }
+  x.restore(); }
+function check(px,py,s,col=C.teal){ x.save(); x.translate(px,py); x.fillStyle=col; x.beginPath(); x.arc(0,0,34*s,0,7); x.fill();
+  x.strokeStyle=C.white; x.lineWidth=9*s; x.lineCap='round'; x.lineJoin='round'; x.beginPath(); x.moveTo(-15*s,1*s); x.lineTo(-4*s,13*s); x.lineTo(17*s,-12*s); x.stroke(); x.restore(); }
+function cross(px,py,s){ x.save(); x.translate(px,py); x.fillStyle=C.red; x.beginPath(); x.arc(0,0,34*s,0,7); x.fill();
+  x.strokeStyle=C.white; x.lineWidth=9*s; x.lineCap='round'; x.beginPath(); x.moveTo(-12*s,-12*s); x.lineTo(12*s,12*s); x.moveTo(12*s,-12*s); x.lineTo(-12*s,12*s); x.stroke(); x.restore(); }
+function logo(px,py,s=1,alpha=1){ x.save(); x.globalAlpha*=alpha; x.translate(px,py); x.scale(s,s);
+  x.fillStyle=C.teal; x.beginPath(); x.arc(-205,-22,30,0,7); x.fill();
+  tuft(-205,-22,2.2,0,C.white);
+  txt('FurSwoop',-160,0,72,{w:900,color:C.ink}); x.restore(); }
+
+// ---------- cenas ----------
+// 1) Gancho: escovas o cão e o pelo voa para o sofá
+function s1(t){
+  paper();
+  x.fillStyle=C.floor; x.fillRect(0,1380,W,540);
+  couch(240,1200,1);
+  dog(470,1420,1.15,t*9);
+  // escova a ir e vir no dorso
+  const bx=360+Math.sin(t*7)*110; brush(bx,1250,-.15);
+  // pelos a voar e a assentar
+  const r=rng(11);
+  for(let i=0;i<120;i++){
+    const t0=r()*3.2, vx=(r()-.4)*520, vy=-420-r()*360, gy=1500+r()*260*(r()<.5?1:0)-(r()<.45?330:0);
+    const lx = r()*0.6, rot0=r()*6;
+    const tau=t-t0; if(tau<0) continue;
+    const b0=360+Math.sin(t0*7)*110;
+    let px=b0+vx*tau, py=1260+vy*tau+700*tau*tau; const land=Math.max(1180,gy);
+    if(py>land){ py=land; const tl=(-vy+Math.sqrt(vy*vy+2800*(land-1260)))/1400; px=b0+vx*Math.max(0,tl); }
+    tuft(px,py,1.3,rot0+tau*3*(py<land),C.fur);
+  }
+  inTxt(t,.2,'You brushed',90,330,128); inTxt(t,.45,'the dog.',90,470,128);
+  marker(t,1.4,80,560,560,98); inTxt(t,1.3,'Now the fur',100,640,92,{color:C.ink});
+  inTxt(t,1.6,'is everywhere.',100,750,92,{color:C.teal});
+}
+// 2) O problema: três sítios
+function s2(t){
+  paper(C.paper);
+  inTxt(t,.05,'Where it ends up:',90,340,92);
+  const items=[['On the couch',.35],['On your clothes',.7],['On the floor',1.05]];
+  items.forEach(([s,st],i)=>{ const p=back(prog(t,st,.5)); if(p<=0) return; const y=560+i*230;
+    x.save(); x.translate(90+(1-p)*-600,y); x.fillStyle=C.white; rr(0,0,900,180,36); x.fill();
+    x.strokeStyle=C.ink; x.lineWidth=5; x.stroke(); cross(100,90,1.3); txt(s,180,112,66,{w:800});
+    const r=rng(20+i); for(let k=0;k<14;k++) tuft(720+r()*150,30+r()*120,1.4,r()*6); x.restore(); });
+  const p=eo(prog(t,1.7,.5)); if(p>0){ x.save(); x.globalAlpha=p; x.fillStyle=C.ink; rr(90,1300,900,190,40); x.fill(); x.restore();
+    txt('Then you vacuum. Again.',540,1420,64,{w:800,color:C.white,align:'center',alpha:p}); }
+}
+// 3) O que faz: escova e aspira ao mesmo tempo
+function s3(t){
+  paper('#eef5f3');
+  x.fillStyle='#e2ece9'; x.fillRect(0,1500,W,420);
+  dog(330,1560,1.05,t*6);
+  const hx=280+Math.sin(t*3.2)*70, hy=1395;                          // escova no dorso
+  const A=[790,1060], B=[640,820], Cc=[hx+120,1150], D=[hx,hy-40];      // mangueira: aspirador -> escova
+  hose(A[0],A[1],B[0],B[1],Cc[0],Cc[1],D[0],D[1]);
+  head(hx,hy-14,0);
+  // pelos sugados ao longo da mangueira
+  const N=90, r=rng(5); let arrived=0;
+  for(let i=0;i<N;i++){ const d=r()*5.2, off=(r()-.5)*24; const p=prog(t,.6+d,.9); if(p>=1){arrived++;continue;} if(p<=0) continue;
+    const q=eio(p), u=1-q;
+    const px=bez(u,A[0],B[0],Cc[0],D[0])+off, py=bez(u,A[1],B[1],Cc[1],D[1])+off*.5; tuft(px,py,1.15,p*8,C.fur); }
+  device(800,1230,clamp(.06+arrived/N*.62),.95);
+  inTxt(t,.1,'FurSwoop brushes',90,330,96); inTxt(t,.3,'and vacuums',90,440,96,{color:C.teal});
+  inTxt(t,.5,'at the same time.',90,550,96);
+  inTxt(t,1.6,'The loose fur goes up the hose',90,680,46,{w:600}); inTxt(t,1.8,'and into the tank. Not your couch.',90,740,46,{w:600});
+}
+// 4) Como funciona
+function s4(t){
+  paper();
+  inTxt(t,.05,'Brush. Swoop.',90,330,118); inTxt(t,.2,'Empty.',90,460,118,{color:C.teal});
+  const steps=[['1','Click on a brush,','comb or deshedding tool'],['2','Groom like you','always do'],['3','Open the tank,','tip the fur in the bin']];
+  steps.forEach(([n,a,b],i)=>{ const p=back(prog(t,.6+i*.45,.5)); if(p<=0) return; const y=620+i*300;
+    x.save(); x.translate(0,(1-p)*80); x.globalAlpha=clamp(p);
+    x.fillStyle=C.mustard; x.beginPath(); x.arc(170,y+100,72,0,7); x.fill(); txt(n,170,y+128,84,{align:'center'});
+    txt(a,280,y+92,58,{w:800}); txt(b,280,y+160,58,{w:500}); x.restore(); });
+  inTxt(t,2.3,'For dogs and cats.',540,1640,56,{w:700,align:'center',color:C.teal});
+}
+// 5) Porque confiar
+function s5(t){
+  paper(C.ink);
+  inTxt(t,.05,'Why trust us?',90,360,104,{color:C.white});
+  const rows=['14 days to return it.','No questions asked.','2-year legal guarantee.','Real support, real people.','No fake reviews. Ever.'];
+  const pairs=[[rows[0],rows[1]],[rows[2],''],[rows[3],''],[rows[4],'']];
+  pairs.forEach(([a,b],i)=>{ const p=eo(prog(t,.45+i*.4,.45)); if(p<=0) return; const y=560+i*230;
+    x.save(); x.globalAlpha=p; x.translate((1-p)*60,0); check(140,y,1.2,C.tealL);
+    txt(a,220,y+22,58,{w:800,color:C.white}); if(b) txt(b,220,y+90,46,{w:500,color:'#b9c9c6'}); x.restore(); });
+  inTxt(t,2.4,'We only show you what it really does.',540,1560,44,{w:500,align:'center',color:'#b9c9c6'});
+}
+// 6) Chamada final
+function s6(t){
+  paper();
+  const p=back(prog(t,.1,.6)); logo(600,560,1.2*p+.001,clamp(p));
+  inTxt(t,.4,'Less fur at home.',540,760,88,{align:'center'});
+  inTxt(t,.6,'More time with them.',540,870,88,{align:'center',color:C.teal});
+  device(540,1250,.55,.62);
+  const q=back(prog(t,1.0,.5)); if(q>0){ x.save(); x.translate(540,1620); x.scale(q,q);
+    x.fillStyle=C.teal; rr(-330,-75,660,150,75); x.fill(); txt('Join the waitlist',0,20,60,{w:800,color:C.white,align:'center'}); x.restore(); }
+  inTxt(t,1.4,'Link in bio',540,1770,42,{w:500,align:'center',color:'#6f7d7b'});
+}
+
+const SCENES=[[s1,4.0],[s2,3.6],[s3,6.2],[s4,4.2],[s5,4.4],[s6,3.6]];
+const TOTAL=SCENES.reduce((a,s)=>a+s[1],0), XF=.35;
+function render(_s,t){
+  let st=0;
+  for(let i=0;i<SCENES.length;i++){ const [fn,d]=SCENES[i];
+    if(t<st+d||i===SCENES.length-1){
+      x.save(); fn(t-st); x.restore();
+      const left=st+d-t;
+      if(left<XF && i<SCENES.length-1){ x.save(); x.globalAlpha=1-left/XF; const k=1.04-.04*(1-left/XF);
+        x.translate(W/2,H/2); x.scale(k,k); x.translate(-W/2,-H/2); SCENES[i+1][0](0); x.restore(); }
+      return; }
+    st+=d; }
+}
+function duration(){ return TOTAL; }
+render(0,2.5);
+</script></body></html>
