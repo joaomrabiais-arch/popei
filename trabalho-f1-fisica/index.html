@@ -7,7 +7,7 @@
 <meta name="description" content="Módulo F1 · Técnico/a de Audiovisuais (ETEO) — Travelling, Pan, Tilt e Estabilidade explicados pela Física.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=STIX+Two+Text:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#f3f5f8; --panel:#ffffff; --panel2:#eef1f6; --line:#d8dee8;
@@ -55,6 +55,8 @@ p{font-size:20px;line-height:1.45}
 .body{flex:1;min-height:0;display:grid;gap:24px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px 26px;
   box-shadow:0 1px 0 rgba(255,255,255,.03) inset,0 10px 30px -18px rgba(0,0,0,.5)}
+var{font-family:"STIX Two Text","Cambria Math","Times New Roman",serif;font-style:italic;font-weight:600;font-size:1.12em;padding:0 .04em}
+sub var{font-family:inherit;font-style:normal;font-size:1em;padding:0}
 .vec{display:inline-block;position:relative;font-style:normal}
 .vec::after{content:"\2192";position:absolute;left:50%;top:-.6em;transform:translateX(-50%);font-size:.6em;line-height:1;font-weight:800}
 svg text{font-family:inherit}
@@ -258,9 +260,9 @@ svg text{font-family:inherit}
       </div>
     </div>
     <div style="display:grid;grid-template-rows:repeat(3,1fr);gap:14px">
-      <div class="card fx r" style="--i:3"><div class="n">Velocidade angular</div><div class="f">ω = Δθ / Δt</div></div>
-      <div class="card fx r" style="--i:4"><div class="n">Momento de força</div><div class="f">τ = r · F · sin φ</div></div>
-      <div class="card fx r" style="--i:5"><div class="n">2.ª Lei de Newton (rotação)</div><div class="f">Σ τ = I · α</div></div>
+      <div class="card fx r" style="--i:3"><div class="n">Velocidade angular</div><div class="f"><var>ω</var> = Δ<var>θ</var> / Δ<var>t</var></div></div>
+      <div class="card fx r" style="--i:4"><div class="n">Momento de força</div><div class="f"><var>τ</var> = <var>r</var> · <var>F</var> · sin <var>φ</var></div></div>
+      <div class="card fx r" style="--i:5"><div class="n">2.ª Lei de Newton (rotação)</div><div class="f">Σ <var>τ</var> = <var>I</var> · <var>α</var></div></div>
     </div>
     <div class="insight r" style="--i:6;grid-column:1/-1"><div class="ic">!</div><p><b>Cabeça fluida:</b> o fluido cria um momento resistente τ = −b·ω, que suaviza arranques e paragens.</p></div>
   </div>
@@ -338,9 +340,9 @@ svg text{font-family:inherit}
       <div class="cap" style="margin:0 0 14px">Translação · paralaxe entre planos</div>
     </div>
     <div style="display:grid;grid-template-rows:repeat(3,1fr);gap:14px">
-      <div class="card fx r" style="--i:3"><div class="n">Velocidade</div><div class="f"><span class="vec">v</span> = Δ<span class="vec">r</span> / Δt</div></div>
-      <div class="card fx r" style="--i:4"><div class="n">2.ª Lei de Newton</div><div class="f">Σ <span class="vec">F</span> = m · <span class="vec">a</span></div></div>
-      <div class="card fx r" style="--i:5"><div class="n">Atrito de rolamento</div><div class="f">F<sub>a</sub> = μ<sub>r</sub> · N</div></div>
+      <div class="card fx r" style="--i:3"><div class="n">Velocidade</div><div class="f"><span class="vec"><var>v</var></span> = Δ<span class="vec"><var>r</var></span> / Δ<var>t</var></div></div>
+      <div class="card fx r" style="--i:4"><div class="n">2.ª Lei de Newton</div><div class="f">Σ <span class="vec"><var>F</var></span> = <var>m</var> · <span class="vec"><var>a</var></span></div></div>
+      <div class="card fx r" style="--i:5"><div class="n">Atrito de rolamento</div><div class="f"><var>F</var><sub><var>a</var></sub> = <var>μ</var><sub><var>r</var></sub> · <var>N</var></div></div>
     </div>
     <div class="insight r" style="--i:6;grid-column:1/-1"><div class="ic">!</div><p><b>Inércia:</b> um dolly mais pesado reage menos a empurrões irregulares (Δa = ΔF / m).</p></div>
   </div>
@@ -384,7 +386,7 @@ svg text{font-family:inherit}
         <text x="160" y="100" font-size="15" font-weight="800" fill="var(--force)">CG</text>
       </svg>
       <h3>Equilíbrio estático</h3>
-      <div class="fx" style="padding:8px 14px"><div class="f" style="font-size:24px">Σ <span class="vec">F</span> = 0 · Σ <span class="vec">τ</span> = 0</div></div>
+      <div class="fx" style="padding:8px 14px"><div class="f" style="font-size:24px">Σ <span class="vec"><var>F</var></span> = 0 · Σ <span class="vec"><var>τ</var></span> = 0</div></div>
       <p class="muted" style="font-size:18px">CG sobre a base de apoio.</p>
     </div>
     <div class="card r" style="--i:3;display:flex;flex-direction:column;gap:12px">
@@ -398,13 +400,13 @@ svg text{font-family:inherit}
         <text x="164" y="30" font-size="15" font-weight="800" fill="var(--accent2)">gimbal</text>
       </svg>
       <h3>Inércia de rotação</h3>
-      <div class="fx" style="padding:8px 14px"><div class="f" style="font-size:24px">I = Σ m · r²</div></div>
+      <div class="fx" style="padding:8px 14px"><div class="f" style="font-size:24px"><var>I</var> = Σ <var>m</var> · <var>r</var>²</div></div>
       <p class="muted" style="font-size:18px">Mais I, menos rotações bruscas.</p>
     </div>
     <div class="card r" style="--i:4;display:flex;flex-direction:column;gap:12px">
       <svg id="vibSvg" viewBox="0 0 300 170" style="width:100%;height:170px" aria-label="Transmissibilidade da vibração em função da frequência"></svg>
       <h3>Atenuação de vibrações</h3>
-      <div class="fx" style="padding:8px 14px"><div class="f" style="font-size:24px">f₀ = (1/2π) · √(k/m)</div></div>
+      <div class="fx" style="padding:8px 14px"><div class="f" style="font-size:24px"><var>f</var>₀ = (1/2π) · √(<var>k</var>/<var>m</var>)</div></div>
       <p class="muted" style="font-size:18px">Só isola acima de √2 · f₀.</p>
     </div>
   </div>
@@ -437,19 +439,19 @@ svg text{font-family:inherit}
   <div class="body grid2x2">
     <div class="card tool r" style="--i:2">
       <svg viewBox="0 0 84 84" aria-hidden="true"><rect x="2" y="2" width="80" height="80" rx="18" fill="var(--panel2)"/><rect x="24" y="18" width="36" height="20" rx="4" fill="none" stroke="var(--accent)" stroke-width="3.5"/><path d="M42 40 L24 70 M42 40 L60 70 M42 40 L42 70" stroke="var(--accent)" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
-      <div><span class="tag">τ = −b · ω</span><h3>Tripé com cabeça fluida</h3><p>Arrasto e contrapeso ajustados à câmara.</p></div>
+      <div><span class="tag"><var>τ</var> = −<var>b</var> · <var>ω</var></span><h3>Tripé com cabeça fluida</h3><p>Arrasto e contrapeso ajustados à câmara.</p></div>
     </div>
     <div class="card tool r" style="--i:3">
       <svg viewBox="0 0 84 84" aria-hidden="true"><rect x="2" y="2" width="80" height="80" rx="18" fill="var(--panel2)"/><line x1="12" y1="58" x2="72" y2="58" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round"/><rect x="24" y="38" width="36" height="14" rx="3" fill="none" stroke="var(--accent)" stroke-width="3.5"/><circle cx="32" cy="58" r="4" fill="var(--accent)"/><circle cx="52" cy="58" r="4" fill="var(--accent)"/><path d="M42 38 V26 M34 26 H54" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round"/></svg>
-      <div><span class="tag">Σ F = m · a</span><h3>Dolly, carris e sliders</h3><p>Carril nivelado e arranques em rampa.</p></div>
+      <div><span class="tag">Σ <var>F</var> = <var>m</var> · <var>a</var></span><h3>Dolly, carris e sliders</h3><p>Carril nivelado e arranques em rampa.</p></div>
     </div>
     <div class="card tool r" style="--i:4">
       <svg viewBox="0 0 84 84" aria-hidden="true"><rect x="2" y="2" width="80" height="80" rx="18" fill="var(--panel2)"/><line x1="42" y1="18" x2="42" y2="66" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round"/><rect x="28" y="20" width="28" height="14" rx="3" fill="none" stroke="var(--accent)" stroke-width="3.5"/><rect x="30" y="62" width="24" height="8" rx="2" fill="var(--accent)"/><circle cx="42" cy="42" r="4" fill="var(--accent2)"/></svg>
-      <div><span class="tag">I = Σ m · r²</span><h3>Steadicam</h3><p>CG abaixo do gimbal. Célebre em <i>Rocky</i> (1976).</p></div>
+      <div><span class="tag"><var>I</var> = Σ <var>m</var> · <var>r</var>²</span><h3>Steadicam</h3><p>CG abaixo do gimbal. Célebre em <i>Rocky</i> (1976).</p></div>
     </div>
     <div class="card tool r" style="--i:5">
       <svg viewBox="0 0 84 84" aria-hidden="true"><rect x="2" y="2" width="80" height="80" rx="18" fill="var(--panel2)"/><circle cx="42" cy="42" r="22" fill="none" stroke="var(--accent)" stroke-width="3.5"/><ellipse cx="42" cy="42" rx="22" ry="8" fill="none" stroke="var(--accent)" stroke-width="3"/><ellipse cx="42" cy="42" rx="8" ry="22" fill="none" stroke="var(--accent)" stroke-width="3"/><circle cx="42" cy="42" r="4" fill="var(--accent2)"/></svg>
-      <div><span class="tag">Σ τ corretivo</span><h3>Gimbal de 3 eixos</h3><p>Equilibrar antes de ligar os motores.</p></div>
+      <div><span class="tag">Σ <var>τ</var> corretivo</span><h3>Gimbal de 3 eixos</h3><p>Equilibrar antes de ligar os motores.</p></div>
     </div>
   </div>
 </section>
