@@ -11,6 +11,7 @@ Análise e kit de arranque a partir do vídeo TikTok "$12.5k this month — AI D
 - [`loja-en/index.html`](loja-en/index.html) — pré-visualização da loja Shedless em inglês.
 - [`PLANO.md`](PLANO.md) — passos concretos, com orçamento e regras de corte.
 - [`calculadora/index.html`](calculadora/index.html) — margem real por encomenda (IVA, comissões, reembolsos, anúncios).
+- [`trabalho-f1-fisica/index.html`](trabalho-f1-fisica/index.html) — apresentação interativa (Módulo F1, Audiovisuais): movimentos de câmara e Física.
 - [`loja/index.html`](loja/index.html) — template de loja de produto único (editar o objeto `CONFIG`).
 
 Abrir os `.html` diretamente no browser; não há dependências.
