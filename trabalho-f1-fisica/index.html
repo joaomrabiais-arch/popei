@@ -5,367 +5,482 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Movimentos de Câmara</title>
 <meta name="description" content="Módulo F1 · Técnico/a de Audiovisuais (ETEO) — Travelling, Pan, Tilt e Estabilidade explicados pela Física.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0e1116; --panel:#161b23; --panel2:#1d2430; --line:#2a3342;
-  --text:#e8edf4; --muted:#9aa6b8; --accent:#f5a524; --accent2:#38bdf8;
-  --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; --force:#f472b6; --vel:#22c55e; --acc:#f97316;
-  --grid:rgba(255,255,255,.05);
+  --bg:#f3f5f8; --panel:#ffffff; --panel2:#eef1f6; --line:#d8dee8;
+  --text:#0f1722; --muted:#5a667a; --accent:#c76a00; --accent2:#0369a1;
+  --ok:#15803d; --warn:#b45309; --bad:#c81e1e; --force:#be185d; --vel:#15803d; --acc:#c2410c;
+  --grid:rgba(0,0,0,.045); --glow:rgba(199,106,0,.14);
 }
-:root[data-theme="light"]{
-  --bg:#f4f6f9; --panel:#ffffff; --panel2:#eef2f7; --line:#d5dce6;
-  --text:#121821; --muted:#55627a; --accent:#c26d00; --accent2:#0369a1;
-  --ok:#15803d; --warn:#b45309; --bad:#b91c1c; --force:#be185d; --vel:#15803d; --acc:#c2410c;
-  --grid:rgba(0,0,0,.05);
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#0b0e13; --panel:#131922; --panel2:#1a222e; --line:#263040;
+  --text:#eef2f7; --muted:#97a3b6; --accent:#f5a524; --accent2:#38bdf8;
+  --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; --force:#f472b6; --vel:#22c55e; --acc:#fb923c;
+  --grid:rgba(255,255,255,.04); --glow:rgba(245,165,36,.16);
+}}
+:root[data-theme="dark"]{
+  --bg:#0b0e13; --panel:#131922; --panel2:#1a222e; --line:#263040;
+  --text:#eef2f7; --muted:#97a3b6; --accent:#f5a524; --accent2:#38bdf8;
+  --ok:#22c55e; --warn:#f59e0b; --bad:#ef4444; --force:#f472b6; --vel:#22c55e; --acc:#fb923c;
+  --grid:rgba(255,255,255,.04); --glow:rgba(245,165,36,.16);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:var(--bg);color:var(--text);
-  font-family:"Inter","Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;overflow:hidden}
+html,body{height:100%;background:var(--bg);color:var(--text);overflow:hidden;
+  font-family:"Inter","Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
 #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
-#deck{width:1280px;height:720px;position:relative;transform-origin:center center}
-.slide{position:absolute;inset:0;padding:56px 72px 64px;display:none;flex-direction:column;
-  background:var(--bg);
-  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
-  background-size:40px 40px}
-.slide.active{display:flex;animation:in .45s ease}
-@keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.slide.active{animation:none}}
-.kicker{font-size:15px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:10px}
-h1{font-size:64px;line-height:1.02;font-weight:800;letter-spacing:-.02em}
-h2{font-size:40px;line-height:1.1;font-weight:800;letter-spacing:-.01em;margin-bottom:22px}
-h3{font-size:21px;font-weight:700;margin-bottom:8px}
-p,li{font-size:19px;line-height:1.45}
+#deck{width:1280px;height:720px;position:relative;flex:none}
+
+/* ---------- diapositivo ---------- */
+.slide{position:absolute;inset:0;padding:60px 80px 70px;display:flex;flex-direction:column;
+  background:var(--bg);visibility:hidden;opacity:0;transition:opacity .5s ease,transform .5s cubic-bezier(.2,.7,.2,1),visibility 0s .5s;
+  background-image:radial-gradient(1000px 500px at 85% -10%,var(--glow),transparent 60%),
+    linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:auto,48px 48px,48px 48px}
+.slide.active{visibility:visible;opacity:1;transform:none;transition:opacity .5s ease,transform .5s cubic-bezier(.2,.7,.2,1)}
+.slide.before{transform:translateX(-40px)} .slide.after{transform:translateX(40px)}
+.r{opacity:0;transform:translateY(18px)}
+.slide.active .r{animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(var(--i,0) * 90ms + 120ms)}
+@keyframes rise{to{opacity:1;transform:none}}
+
+.kicker{font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.kicker::before{content:"";width:28px;height:3px;background:var(--accent);border-radius:2px}
+h1{font-size:72px;line-height:1.02;font-weight:900;letter-spacing:-.03em}
+h2{font-size:44px;line-height:1.08;font-weight:800;letter-spacing:-.02em;margin-bottom:30px}
+h3{font-size:22px;font-weight:700;letter-spacing:-.01em}
+p{font-size:20px;line-height:1.45}
 .muted{color:var(--muted)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:28px;flex:1;min-height:0}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.grid-diag{display:grid;grid-template-columns:1.25fr 1fr;gap:28px;flex:1;min-height:0}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
-.card.tight{padding:14px 18px}
-ul.clean{list-style:none}
-ul.clean li{padding-left:22px;position:relative;margin:7px 0}
-ul.clean li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:9px;border-radius:2px;background:var(--accent)}
+.body{flex:1;min-height:0;display:grid;gap:24px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px 26px;
+  box-shadow:0 1px 0 rgba(255,255,255,.03) inset,0 10px 30px -18px rgba(0,0,0,.5)}
 .vec{display:inline-block;position:relative;font-style:normal}
-.vec::after{content:"\2192";position:absolute;left:50%;top:-.62em;transform:translateX(-50%);font-size:.62em;line-height:1;font-weight:700}
-.eq{font-family:inherit;font-weight:600;font-size:22px;letter-spacing:.01em;
-  background:var(--panel2);border-left:4px solid var(--accent2);padding:8px 14px;border-radius:6px;margin:8px 0;display:block}
-.eq small{font-weight:400;font-size:15px;color:var(--muted);margin-left:10px}
-.tag{display:inline-block;font-size:13px;font-weight:700;padding:3px 9px;border-radius:99px;
-  border:1px solid var(--line);color:var(--muted);margin-right:6px}
+.vec::after{content:"\2192";position:absolute;left:50%;top:-.6em;transform:translateX(-50%);font-size:.6em;line-height:1;font-weight:800}
 svg text{font-family:inherit}
-.diagram{background:var(--panel);border:1px solid var(--line);border-radius:14px;width:100%;height:100%;display:block}
-.controls label{display:block;font-size:15px;color:var(--muted);margin:10px 0 4px}
-.controls input[type=range]{width:100%;accent-color:var(--accent)}
-.readout{font-variant-numeric:tabular-nums;font-size:18px;margin:6px 0}
-.readout b{color:var(--text)}
-.status{font-weight:800;font-size:18px;padding:8px 12px;border-radius:8px;margin-top:10px;display:inline-block}
-.btn{font:inherit;font-size:15px;font-weight:700;padding:8px 14px;border-radius:8px;border:1px solid var(--line);
-  background:var(--panel2);color:var(--text);cursor:pointer;margin:6px 6px 0 0}
+
+/* fórmulas */
+.fx{display:flex;flex-direction:column;justify-content:center;gap:12px;padding:18px 24px;border-left:5px solid var(--accent2)}
+.fx .f{font-size:32px;font-weight:700;letter-spacing:.01em;font-variant-numeric:tabular-nums;line-height:1.25}
+.fx .n{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}
+.insight{display:flex;align-items:center;gap:16px;padding:16px 22px;border-radius:14px;background:var(--panel2);border:1px solid var(--line)}
+.insight .ic{flex:none;width:38px;height:38px;border-radius:10px;background:var(--accent);color:#111;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px}
+.insight p{font-size:19px}
+.insight b{color:var(--accent)}
+.cap{font-size:14px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:center;margin-top:8px}
+.tag{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:.06em;padding:4px 10px;border-radius:99px;background:var(--panel2);color:var(--accent2);border:1px solid var(--line)}
+
+/* diagramas */
+.diag{grid-template-columns:1fr 380px}
+.diagram{background:var(--panel);border:1px solid var(--line);border-radius:18px;width:100%;height:100%;display:block;min-height:0}
+.ctrl{display:flex;flex-direction:column;gap:14px}
+.ctrl label{display:flex;justify-content:space-between;font-size:15px;font-weight:600;color:var(--muted)}
+.ctrl label output{color:var(--text);font-weight:800;font-variant-numeric:tabular-nums}
+.ctrl input[type=range]{width:100%;accent-color:var(--accent);height:22px}
+.stat{background:var(--panel2);border-radius:14px;padding:14px 18px}
+.stat .k{font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-size:38px;font-weight:900;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.15}
+.stat .s{font-size:14.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stats .v{font-size:28px}
+.pill{font-weight:800;font-size:16px;padding:10px 14px;border-radius:12px;text-align:center;transition:background .3s,color .3s}
+.foot{font-size:13.5px;color:var(--muted);line-height:1.4;margin-top:auto}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:inherit;font-size:14px;font-weight:700;padding:9px 11px;border-radius:10px;border:1px solid var(--line);
+  background:var(--panel2);color:var(--text);cursor:pointer;transition:background .2s,transform .1s}
+.btn:active{transform:scale(.97)}
 .btn.on{background:var(--accent);color:#111;border-color:var(--accent)}
 .btn:focus-visible,input:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
-.footer{position:absolute;left:72px;right:72px;bottom:22px;display:flex;justify-content:space-between;
-  font-size:13px;color:var(--muted);letter-spacing:.04em}
+
 /* capa */
 .cover{justify-content:center}
-.cover h1{font-size:76px;max-width:1000px}
-.cover .sub{font-size:24px;color:var(--muted);margin-top:18px;max-width:900px}
-.cover .meta{display:flex;gap:40px;margin-top:46px}
-.cover .meta div{border-left:3px solid var(--accent);padding-left:14px}
-.cover .meta span{display:block;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.cover .meta strong{font-size:20px}
-.frame-mark{position:absolute;width:44px;height:44px;border-color:var(--accent);border-style:solid;opacity:.8}
+.cover .sub{font-size:24px;color:var(--muted);margin-top:22px}
+.cover .meta{display:grid;grid-template-columns:auto auto 1fr;gap:44px;margin-top:54px}
+.cover .meta div{border-left:3px solid var(--accent);padding-left:16px}
+.cover .meta span{display:block;font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.cover .meta strong{font-size:21px;font-weight:700}
+.fm{position:absolute;width:48px;height:48px;border-color:var(--accent);border-style:solid}
 .fm1{top:30px;left:30px;border-width:3px 0 0 3px}.fm2{top:30px;right:30px;border-width:3px 3px 0 0}
 .fm3{bottom:30px;left:30px;border-width:0 0 3px 3px}.fm4{bottom:30px;right:30px;border-width:0 3px 3px 0}
-.rec{position:absolute;top:44px;right:92px;font-weight:800;font-size:15px;letter-spacing:.12em;color:var(--bad);display:flex;align-items:center;gap:8px}
-.rec i{width:12px;height:12px;border-radius:50%;background:var(--bad);animation:blink 1.4s infinite}
+.rec{position:absolute;top:46px;right:96px;font-weight:800;font-size:14px;letter-spacing:.14em;color:var(--bad);display:flex;align-items:center;gap:8px}
+.rec i{width:11px;height:11px;border-radius:50%;background:var(--bad);animation:blink 1.4s infinite}
+.tc{position:absolute;bottom:46px;right:96px;font-size:14px;font-weight:700;letter-spacing:.1em;color:var(--muted);font-variant-numeric:tabular-nums}
 @keyframes blink{50%{opacity:.2}}
+.cover-art{position:absolute;right:90px;top:96px;width:340px;height:340px;opacity:.95}
+
 /* questão */
-.question{font-size:38px;line-height:1.25;font-weight:700;max-width:1050px;border-left:6px solid var(--accent);padding-left:26px;margin:10px 0 32px}
-.question em{color:var(--accent);font-style:normal}
-.roadmap{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
-.roadmap .card{text-align:left}
-.roadmap .n{font-size:30px;font-weight:800;color:var(--accent2)}
-.roadmap p{font-size:16px}
+.question{font-size:42px;line-height:1.2;font-weight:800;letter-spacing:-.02em;max-width:1060px}
+.question em{font-style:normal;color:var(--accent)}
+.goal{font-size:21px;color:var(--muted);margin:26px 0 0;max-width:900px}
+.road{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:auto}
+.road .card{padding:18px 20px}
+.road .num{font-size:14px;font-weight:800;color:var(--accent2);letter-spacing:.1em}
+.road h3{margin-top:6px;font-size:20px}
+
 /* chrome */
-#bar{position:fixed;left:0;top:0;height:4px;background:var(--accent);transition:width .3s;z-index:5}
-#nav{position:fixed;right:16px;bottom:12px;display:flex;gap:8px;align-items:center;z-index:5}
-#nav button{font:inherit;font-size:14px;width:38px;height:34px;border-radius:8px;border:1px solid var(--line);
+#bar{position:fixed;left:0;top:0;height:4px;background:var(--accent);transition:width .4s;z-index:5}
+#nav{position:fixed;right:16px;bottom:14px;display:flex;gap:8px;align-items:center;z-index:5}
+#nav button{font:inherit;font-size:16px;width:38px;height:34px;border-radius:9px;border:1px solid var(--line);
   background:var(--panel);color:var(--text);cursor:pointer}
 #count{font-size:14px;color:var(--muted);min-width:56px;text-align:center;font-variant-numeric:tabular-nums}
-#timer{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;margin-right:6px;display:none}
+#timer{font-size:14px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;margin-right:6px;display:none}
 #timer.show{display:inline}
-#notes{position:fixed;left:16px;right:16px;bottom:56px;max-width:900px;margin:auto;background:var(--panel);
-  border:1px solid var(--accent2);border-radius:12px;padding:14px 18px;font-size:16px;line-height:1.5;display:none;z-index:6}
+#notes{position:fixed;left:16px;right:16px;bottom:58px;max-width:980px;margin:auto;background:var(--panel);
+  border:1px solid var(--accent2);border-radius:14px;padding:16px 20px;font-size:16px;line-height:1.55;display:none;z-index:6;
+  box-shadow:0 20px 50px -20px rgba(0,0,0,.6)}
 #notes.show{display:block}
 #notes b{color:var(--accent2)}
-#help{position:fixed;left:16px;bottom:14px;font-size:12px;color:var(--muted);z-index:5}
-.src li{font-size:15.5px;line-height:1.4;margin:6px 0}
-.src{columns:2;column-gap:36px}
-.src li{break-inside:avoid}
-.takeaway{display:flex;gap:14px;align-items:flex-start}
-.takeaway .n{flex:none;width:38px;height:38px;border-radius:10px;background:var(--accent);color:#111;font-weight:800;
-  display:flex;align-items:center;justify-content:center;font-size:18px}
-.answer{font-size:22px;line-height:1.45;background:var(--panel2);border:1px solid var(--line);border-left:6px solid var(--accent2);border-radius:12px;padding:18px 22px;margin-top:18px}
+#help{position:fixed;left:16px;bottom:16px;font-size:12px;color:var(--muted);z-index:5;transition:opacity 1s}
+
+/* animações dos esquemas */
+.spin{transform-box:view-box;animation:panrot 6s ease-in-out infinite alternate}
+@keyframes panrot{from{transform:rotate(-35deg)}to{transform:rotate(35deg)}}
+.nod{transform-box:view-box;animation:nod 4s ease-in-out infinite alternate}
+@keyframes nod{from{transform:rotate(-18deg)}to{transform:rotate(22deg)}}
+.dolly{animation:dolly 5s cubic-bezier(.45,0,.55,1) infinite alternate}
+@keyframes dolly{from{transform:translateX(0)}to{transform:translateX(250px)}}
+.par1{animation:par 5s cubic-bezier(.45,0,.55,1) infinite alternate}
+@keyframes par{from{transform:translateX(0)}to{transform:translateX(-120px)}}
+.par2{animation:par2 5s cubic-bezier(.45,0,.55,1) infinite alternate}
+@keyframes par2{from{transform:translateX(0)}to{transform:translateX(-30px)}}
+.sway{transform-box:view-box;animation:sway 3.2s ease-in-out infinite alternate}
+@keyframes sway{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}
+.draw{stroke-dasharray:1200;stroke-dashoffset:1200}
+.slide.active .draw{animation:draw 2.2s .5s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.pulse{animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){
+  .spin,.nod,.dolly,.par1,.par2,.sway,.pulse,.rec i{animation:none}
+  .slide.active .r{animation:none;opacity:1;transform:none}
+  .slide.active .draw{animation:none;stroke-dashoffset:0}
+}
+
+/* prática / conclusão / fontes */
+.grid2x2{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.tool{display:grid;grid-template-columns:112px 1fr;gap:26px;align-items:center;padding:26px 30px}
+.tool svg{width:112px;height:112px}
+.tool h3{margin:10px 0 8px;font-size:26px}
+.tool p{font-size:19px;color:var(--muted)}
+.big3{grid-template-columns:repeat(3,1fr)}
+.take{display:flex;flex-direction:column;justify-content:center;padding:28px 30px}
+.take .n{font-size:84px;font-weight:900;color:var(--accent);line-height:1;letter-spacing:-.03em}
+.take h3{font-size:28px;margin:18px 0 10px}
+.take p{font-size:20px;color:var(--muted)}
+.answer{font-size:23px;line-height:1.45;font-weight:600;padding:22px 28px;border-radius:16px;background:var(--panel2);border-left:6px solid var(--accent2)}
+.answer b{color:var(--accent2)}
+.src{columns:2;column-gap:40px;padding-left:22px}
+.src li{font-size:16px;line-height:1.45;margin:0 0 12px;break-inside:avoid;color:var(--text)}
+.src li::marker{color:var(--accent);font-weight:800}
+.src span{color:var(--muted)}
 </style>
 </head>
 <body>
 <div id="bar"></div>
 <div id="stage"><div id="deck">
 
-<!-- ============ 1. CAPA ============ -->
-<section class="slide cover" data-notes="<b>~20 s.</b> Apresentar o grupo e o tema. Frase de abertura: «Cada movimento de câmara é um problema de Física: rodar, deslocar ou manter parado.»">
-  <div class="frame-mark fm1"></div><div class="frame-mark fm2"></div><div class="frame-mark fm3"></div><div class="frame-mark fm4"></div>
+<!-- 1 · CAPA -->
+<section class="slide cover" data-notes="<b>Capa (~20 s).</b> Apresentar o grupo e o tema. Frase de abertura: «Cada movimento de câmara é um problema de Física: rodar, deslocar ou ficar perfeitamente parado.»">
+  <div class="fm fm1"></div><div class="fm fm2"></div><div class="fm fm3"></div><div class="fm fm4"></div>
   <div class="rec"><i></i>REC</div>
-  <div class="kicker">Módulo F1 · Física e Química</div>
-  <h1>Movimentos de Câmara: Travelling, Pan, Tilt e Estabilidade</h1>
-  <p class="sub">Cinemática, dinâmica e vetores aplicados à captação de imagem em movimento.</p>
-  <div class="meta">
+  <div class="tc" id="tc">00:00:00:00</div>
+  <svg class="cover-art r" style="--i:5" viewBox="0 0 420 420" aria-hidden="true">
+    <defs><marker id="cvA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent2)"/></marker></defs>
+    <circle cx="210" cy="210" r="170" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="3 9"/>
+    <circle cx="210" cy="210" r="110" fill="none" stroke="var(--line)" stroke-width="2"/>
+    <g class="spin" style="transform-origin:210px 210px">
+      <path d="M210 210 L150 60 A160 160 0 0 1 270 60 Z" fill="var(--accent)" fill-opacity=".14" stroke="var(--accent)" stroke-width="2"/>
+      <rect x="186" y="186" width="48" height="56" rx="8" fill="var(--panel2)" stroke="var(--text)" stroke-width="3"/>
+      <rect x="198" y="158" width="24" height="32" rx="4" fill="var(--panel2)" stroke="var(--text)" stroke-width="3"/>
+    </g>
+    <circle cx="210" cy="214" r="6" fill="var(--accent)"/>
+    <path d="M110 330 A140 140 0 0 0 310 330" fill="none" stroke="var(--accent2)" stroke-width="4" marker-end="url(#cvA)"/>
+    <text x="210" y="380" text-anchor="middle" font-size="22" font-weight="800" fill="var(--accent2)">ω</text>
+  </svg>
+  <div class="kicker r" style="--i:0">Módulo F1 · Física e Química</div>
+  <h1 class="r" style="--i:1">Movimentos<br>de Câmara</h1>
+  <p class="sub r" style="--i:2">Travelling, Pan, Tilt e Estabilidade explicados pela Física.</p>
+  <div class="meta r" style="--i:3">
     <div><span>Curso</span><strong>Técnico/a de Audiovisuais</strong></div>
     <div><span>Escola</span><strong>ETEO</strong></div>
     <div><span>Grupo</span><strong>João · Olavo · Bianca · João Oliveira</strong></div>
-    <div><span>Ano letivo</span><strong>2026/2027</strong></div>
   </div>
 </section>
 
-<!-- ============ 2. QUESTÃO ============ -->
-<section class="slide" data-notes="<b>~30 s.</b> Ler a questão. Explicar que vamos tratar três tipos de movimento: rotação (pan/tilt), translação (travelling) e ausência de movimento indesejado (estabilidade).">
-  <div class="kicker">Questão de partida</div>
-  <p class="question">Como é que a Física — <em>cinemática</em>, <em>dinâmica</em> e <em>vetores</em> — explica e otimiza a captação de imagem em movimento no cinema e vídeo?</p>
-  <h3 class="muted" style="margin-bottom:14px">Objetivo: relacionar cada movimento de câmara com as grandezas físicas que o descrevem e com o equipamento que o controla.</h3>
-  <div class="roadmap">
-    <div class="card"><div class="n">01</div><h3>Pan &amp; Tilt</h3><p>Rotação · θ, ω, α · momento de força</p></div>
-    <div class="card"><div class="n">02</div><h3>Travelling</h3><p>Translação · Δ<span class="vec">r</span>, <span class="vec">v</span>, <span class="vec">a</span> · atrito e inércia</p></div>
-    <div class="card"><div class="n">03</div><h3>Estabilidade</h3><p>Centro de gravidade · equilíbrio · vibrações</p></div>
-    <div class="card"><div class="n">04</div><h3>Na prática</h3><p>Tripé fluido · carris · Steadicam · gimbal</p></div>
-    <div class="card"><div class="n">05</div><h3>Conclusão</h3><p>Resposta à questão de partida</p></div>
+<!-- 2 · QUESTÃO -->
+<section class="slide" data-notes="<b>Questão de partida (~30 s).</b> Ler a pergunta. Vamos estudar três situações: a câmara roda (pan e tilt), a câmara desloca-se (travelling) e a câmara não deve mexer-se quando não queremos (estabilidade). Para cada uma: que grandezas físicas a descrevem e que equipamento as controla.">
+  <div class="kicker r" style="--i:0">Questão de partida</div>
+  <p class="question r" style="--i:1">Como é que a Física — <em>cinemática</em>, <em>dinâmica</em> e <em>vetores</em> — explica e otimiza a captação de imagem em movimento?</p>
+  <p class="goal r" style="--i:2"><b style="color:var(--text)">Objetivo:</b> ligar cada movimento de câmara às grandezas físicas que o descrevem.</p>
+  <div class="road">
+    <div class="card r" style="--i:3"><div class="num">01</div><h3>Pan e Tilt</h3></div>
+    <div class="card r" style="--i:4"><div class="num">02</div><h3>Travelling</h3></div>
+    <div class="card r" style="--i:5"><div class="num">03</div><h3>Estabilidade</h3></div>
+    <div class="card r" style="--i:6"><div class="num">04</div><h3>Na prática</h3></div>
+    <div class="card r" style="--i:7"><div class="num">05</div><h3>Conclusão</h3></div>
   </div>
 </section>
 
-<!-- ============ 3. PAN & TILT — CONCEITOS ============ -->
-<section class="slide" data-notes="<b>~45 s.</b> Pan = rotação em torno do eixo vertical; tilt = em torno do eixo horizontal. A grandeza central é a velocidade angular ω. Na cabeça fluida, o fluido viscoso cria um binário resistente proporcional a ω — é isso que dá arranques e paragens suaves.">
-  <div class="kicker">01 · Pan &amp; Tilt — movimento de rotação</div>
-  <h2>A câmara roda em torno de um eixo fixo</h2>
-  <div class="grid2">
-    <div>
-      <div class="card" style="margin-bottom:16px">
-        <h3>Cinemática de rotação</h3>
-        <ul class="clean">
-          <li><b>Pan</b>: rotação em torno do <b>eixo vertical</b> (plano horizontal).</li>
-          <li><b>Tilt</b>: rotação em torno do <b>eixo horizontal</b> transversal (plano vertical).</li>
-        </ul>
-        <span class="eq">ω = Δθ / Δt <small>[rad/s] velocidade angular média</small></span>
-        <span class="eq">α = Δω / Δt <small>[rad/s²] aceleração angular</small></span>
-        <span class="eq">v = ω · r <small>velocidade linear de um ponto a distância r do eixo</small></span>
+<!-- 3 · PAN & TILT -->
+<section class="slide" data-notes="<b>Pan e Tilt (~45 s).</b> O pan é uma rotação em torno do eixo vertical; o tilt, em torno do eixo horizontal. A grandeza principal é a velocidade angular ω = Δθ/Δt, em rad/s. Para pôr a câmara a rodar é preciso um momento de força τ = r·F·sin φ, e a 2.ª Lei de Newton para a rotação diz que Στ = I·α: quanto maior o momento de inércia I (câmara pesada, objetiva longa), mais difícil é arrancar e parar. Na cabeça fluida, um fluido viscoso cria um momento resistente proporcional a ω (τ = −b·ω): os tremores da mão são amortecidos e o movimento começa e acaba de forma suave. Rodar em torno do ponto nodal da objetiva evita a paralaxe.">
+  <div class="kicker r" style="--i:0">01 · Pan e Tilt</div>
+  <h2 class="r" style="--i:1">Rodar a câmara em torno de um eixo</h2>
+  <div class="body" style="grid-template-columns:1.1fr 1fr;grid-template-rows:1fr auto">
+    <div class="card r" style="--i:2;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:18px">
+      <div style="display:flex;flex-direction:column;min-height:0">
+        <svg viewBox="0 0 240 220" style="flex:1;min-height:0" aria-label="Pan: rotação em torno do eixo vertical, vista de cima">
+          <defs><marker id="mA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent2)"/></marker></defs>
+          <circle cx="120" cy="120" r="86" fill="none" stroke="var(--line)" stroke-width="2" stroke-dasharray="3 7"/>
+          <g class="spin" style="transform-origin:120px 120px">
+            <path d="M120 120 L82 36 A92 92 0 0 1 158 36 Z" fill="var(--accent)" fill-opacity=".18" stroke="var(--accent)" stroke-width="2"/>
+            <rect x="100" y="104" width="40" height="44" rx="6" fill="var(--panel2)" stroke="var(--text)" stroke-width="2.5"/>
+            <rect x="110" y="84" width="20" height="24" rx="3" fill="var(--panel2)" stroke="var(--text)" stroke-width="2.5"/>
+          </g>
+          <circle cx="120" cy="124" r="5" fill="var(--accent)"/>
+          <path d="M52 170 A86 86 0 0 0 188 170" fill="none" stroke="var(--accent2)" stroke-width="3.5" marker-end="url(#mA)"/>
+          <text x="120" y="210" text-anchor="middle" font-size="18" font-weight="800" fill="var(--accent2)">ω</text>
+        </svg>
+        <div class="cap">Pan · eixo vertical</div>
       </div>
-      <p class="muted" style="font-size:16px">Rodar a câmara em torno do <b>ponto nodal</b> (pupila de entrada da objetiva) elimina a paralaxe — uma rotação pura não altera a posição relativa entre primeiro plano e fundo.</p>
+      <div style="display:flex;flex-direction:column;min-height:0">
+        <svg viewBox="0 0 240 220" style="flex:1;min-height:0" aria-label="Tilt: rotação em torno do eixo horizontal, vista lateral">
+          <path d="M120 140 L70 214 M120 140 L170 214 M120 140 L120 214" stroke="var(--muted)" stroke-width="4" fill="none"/>
+          <g class="nod" style="transform-origin:120px 128px">
+            <rect x="72" y="80" width="88" height="48" rx="7" fill="var(--panel2)" stroke="var(--text)" stroke-width="2.5"/>
+            <rect x="160" y="88" width="46" height="32" rx="5" fill="var(--panel2)" stroke="var(--text)" stroke-width="2.5"/>
+            <line x1="206" y1="104" x2="236" y2="104" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 4"/>
+          </g>
+          <circle cx="120" cy="128" r="6" fill="var(--accent)"/>
+          <path d="M205 40 A100 100 0 0 1 228 120" fill="none" stroke="var(--accent2)" stroke-width="3.5" marker-end="url(#mA)"/>
+          <text x="226" y="34" font-size="18" font-weight="800" fill="var(--accent2)" text-anchor="end">ω</text>
+        </svg>
+        <div class="cap">Tilt · eixo horizontal</div>
+      </div>
     </div>
-    <div class="card">
-      <h3>Dinâmica de rotação</h3>
-      <span class="eq"><span class="vec">τ</span> = <span class="vec">r</span> × <span class="vec">F</span> &nbsp;⇒&nbsp; τ = r F sin φ <small>[N·m]</small></span>
-      <span class="eq">Σ τ = I · α <small>2.ª Lei de Newton (rotação)</small></span>
-      <ul class="clean">
-        <li><b>Momento de inércia I</b>: resistência à variação de ω. Uma câmara pesada com objetiva longa tem I maior → mais difícil arrancar e parar.</li>
-        <li><b>Cabeça fluida</b>: um fluido viscoso entre discos gera um binário resistente <b>τ<sub>r</sub> = −b·ω</b>. Com binário do operador constante, ω tende para <b>ω<sub>lim</sub> = τ<sub>op</sub>/b</b> de forma progressiva — os tremores da mão são “filtrados”.</li>
-        <li><b>Contrapeso (tilt)</b>: o peso cria um binário <b>τ<sub>P</sub> = m g d sin θ</b>; uma mola interna compensa-o para a câmara ficar parada em qualquer ângulo.</li>
-      </ul>
+    <div style="display:grid;grid-template-rows:repeat(3,1fr);gap:14px">
+      <div class="card fx r" style="--i:3"><div class="n">Velocidade angular</div><div class="f">ω = Δθ / Δt</div></div>
+      <div class="card fx r" style="--i:4"><div class="n">Momento de força</div><div class="f">τ = r · F · sin φ</div></div>
+      <div class="card fx r" style="--i:5"><div class="n">2.ª Lei de Newton (rotação)</div><div class="f">Σ τ = I · α</div></div>
     </div>
+    <div class="insight r" style="--i:6;grid-column:1/-1"><div class="ic">!</div><p><b>Cabeça fluida:</b> o fluido cria um momento resistente τ = −b·ω, que suaviza arranques e paragens.</p></div>
   </div>
 </section>
 
-<!-- ============ 4. DIAGRAMA PAN ============ -->
-<section class="slide" data-notes="<b>~50 s (demonstrar).</b> Mudar a velocidade e a distância focal. Mostrar que com teleobjetiva (85 mm) o mesmo ω atravessa o quadro muito mais depressa. Referir a regra prática dos ~7 s (24 fps, obturador 180°) — é uma orientação, não um limite rígido.">
-  <div class="kicker">Exemplo visual · Pan (vista de cima)</div>
-  <h2>Velocidade angular e tempo de travessia do quadro</h2>
-  <div class="grid-diag">
-    <svg id="panSvg" class="diagram" viewBox="0 0 560 440" role="img" aria-label="Diagrama de um pan visto de cima, com o campo de visão a rodar e o vetor velocidade angular"></svg>
-    <div class="card controls">
-      <label for="panW">Velocidade angular ω (°/s)</label>
+<!-- 4 · DIAGRAMA PAN -->
+<section class="slide" data-notes="<b>Demonstração do pan (~50 s).</b> Mexer na velocidade e na distância focal. O campo de visão horizontal é FOV = 2·arctan(L/2f), com L = 24,9 mm (sensor Super 35). O tempo que um objeto demora a atravessar o quadro é t = FOV/ω. Mostrar que, com a mesma velocidade, uma teleobjetiva (85 mm ou 135 mm) atravessa o quadro muito mais depressa. Regra prática da RED e da ASC: pelo menos cerca de 7 s a 24 fps com obturador a 180°, para evitar o efeito estroboscópico (judder). É uma orientação, não um limite rígido, e não se aplica quando a câmara acompanha um sujeito.">
+  <div class="kicker r" style="--i:0">01 · Diagrama</div>
+  <h2 class="r" style="--i:1">Pan: quanto tempo demora a atravessar o quadro?</h2>
+  <div class="body diag">
+    <svg id="panSvg" class="diagram r" style="--i:2" viewBox="0 0 640 440" role="img" aria-label="Pan visto de cima, com o campo de visão a rodar"></svg>
+    <div class="card ctrl r" style="--i:3">
+      <label for="panW">Velocidade angular ω <output id="panWo"></output></label>
       <input id="panW" type="range" min="1" max="40" step="0.5" value="5">
-      <label for="panF">Distância focal (sensor Super 35, 24,9 mm de largura)</label>
+      <label for="panF">Distância focal <output id="panFo"></output></label>
       <input id="panF" type="range" min="0" max="4" step="1" value="2">
-      <div class="readout" id="panRead"></div>
-      <span class="eq" style="font-size:19px">FOV<sub>h</sub> = 2·arctan(L / 2f) &nbsp; · &nbsp; t = FOV<sub>h</sub> / ω</span>
-      <div id="panStatus" class="status"></div>
-      <p class="muted" style="font-size:14.5px;margin-top:10px">Regra prática (RED / ASC): não atravessar a largura total do quadro em menos de ~7 s a 24 fps com obturador a 180°, para evitar <i>judder</i> (efeito estroboscópico). Não é um limite rígido e não se aplica quando a câmara acompanha um sujeito.</p>
+      <div class="stat"><div class="k">Tempo de travessia</div><div class="v" id="panT"></div><div class="s" id="panS"></div></div>
+      <div class="pill" id="panStatus"></div>
+      <p class="foot">t = FOV / ω · Regra prática: ≥ 7 s a 24 fps.</p>
     </div>
   </div>
 </section>
 
-<!-- ============ 5. DIAGRAMA TILT ============ -->
-<section class="slide" data-notes="<b>~45 s (demonstrar).</b> Inclinar a câmara: o braço do peso aumenta com sin θ, logo o binário também. Carregar em «Largar a pega» sem contrapeso: a câmara tomba (α = τ/I), travada pelo arrasto do fluido. Com contrapeso: Στ ≈ 0, fica parada.">
-  <div class="kicker">Exemplo visual · Tilt (vista lateral)</div>
-  <h2>Momento do peso e contrapeso na cabeça fluida</h2>
-  <div class="grid-diag">
-    <svg id="tiltSvg" class="diagram" viewBox="0 0 560 440" role="img" aria-label="Diagrama de forças de um tilt: peso aplicado no centro de gravidade, braço e binário em torno do eixo"></svg>
-    <div class="card controls">
-      <label for="tiltA">Ângulo de tilt θ (°)</label>
+<!-- 5 · DIAGRAMA TILT -->
+<section class="slide" data-notes="<b>Demonstração do tilt (~45 s).</b> O centro de gravidade da câmara está acima do eixo, a uma distância d. Ao inclinar, o braço do peso é d·sin θ, logo o momento do peso é τ = m·g·d·sin θ: cresce com o ângulo. Desligar o contrapeso e carregar em «Largar a pega»: a câmara tomba com α = Στ/I, travada apenas pelo atrito viscoso do fluido. Com o contrapeso ligado, a mola cria um momento igual e oposto: Στ = 0 e a câmara fica parada em qualquer ângulo. Valores de exemplo: m = 6 kg, d = 8 cm, I = 0,12 kg·m².">
+  <div class="kicker r" style="--i:0">01 · Diagrama</div>
+  <h2 class="r" style="--i:1">Tilt: o peso cria um momento de força</h2>
+  <div class="body diag">
+    <svg id="tiltSvg" class="diagram r" style="--i:2" viewBox="0 0 640 440" role="img" aria-label="Forças num tilt: peso no centro de gravidade e momento em torno do eixo"></svg>
+    <div class="card ctrl r" style="--i:3">
+      <label for="tiltA">Ângulo de tilt θ <output id="tiltAo"></output></label>
       <input id="tiltA" type="range" min="-60" max="60" step="1" value="25">
-      <div>
-        <button class="btn on" id="tiltSpring" aria-pressed="true">Contrapeso: ligado</button>
+      <div class="btns">
+        <button class="btn on" id="tiltSpring" aria-pressed="true">Contrapeso ligado</button>
         <button class="btn" id="tiltDrop">Largar a pega</button>
-        <button class="btn" id="tiltReset">Repor</button>
+        <button class="btn" id="tiltReset" aria-label="Repor">↺</button>
       </div>
-      <div class="readout" id="tiltRead"></div>
-      <span class="eq" style="font-size:19px">τ<sub>P</sub> = m g d sin θ &nbsp;·&nbsp; I α = τ<sub>P</sub> − τ<sub>mola</sub> − b ω</span>
-      <p class="muted" style="font-size:14.5px;margin-top:8px">Valores de exemplo: m = 6 kg, d = 8 cm (CG acima do eixo), I = 0,12 kg·m², b = 0,35 N·m·s.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ============ 6. TRAVELLING — CONCEITOS ============ -->
-<section class="slide" data-notes="<b>~45 s.</b> No travelling a câmara translada. Vetores: deslocamento, velocidade, aceleração. A 2.ª Lei explica porque é preciso força para arrancar e travar e porque, a velocidade constante, a resultante é nula. A massa do dolly é uma vantagem: inércia grande = menos sensível a empurrões irregulares.">
-  <div class="kicker">02 · Travelling — movimento de translação</div>
-  <h2>A câmara desloca-se: vetores e Leis de Newton</h2>
-  <div class="grid2">
-    <div class="card">
-      <h3>Cinemática</h3>
-      <span class="eq">Δ<span class="vec">r</span> = <span class="vec">r</span><sub>f</sub> − <span class="vec">r</span><sub>i</sub> <small>vetor deslocamento [m]</small></span>
-      <span class="eq"><span class="vec">v</span> = Δ<span class="vec">r</span> / Δt <small>[m/s]</small> &nbsp; <span class="vec">a</span> = Δ<span class="vec">v</span> / Δt <small>[m/s²]</small></span>
-      <ul class="clean">
-        <li>Fases típicas: <b>aceleração</b> (MRUA) → <b>velocidade constante</b> (MRU) → <b>travagem</b>.</li>
-        <li>Num carril curvo, mesmo com |<span class="vec">v</span>| constante existe <b>aceleração centrípeta</b> a<sub>c</sub> = v²/R — a direção de <span class="vec">v</span> muda.</li>
-        <li>Ao contrário do pan, a translação gera <b>paralaxe</b>: objetos próximos “passam” mais depressa que o fundo → sensação de profundidade.</li>
-      </ul>
-    </div>
-    <div class="card">
-      <h3>Dinâmica no carril</h3>
-      <span class="eq"><span class="vec">F</span><sub>R</sub> = Σ <span class="vec">F</span> = m · <span class="vec">a</span> <small>2.ª Lei de Newton</small></span>
-      <span class="eq">F<sub>op</sub> − F<sub>a</sub> = m a, &nbsp; F<sub>a</sub> = μ<sub>r</sub> · N <small>atrito de rolamento</small></span>
-      <ul class="clean">
-        <li>Rodas em carris têm μ<sub>r</sub> muito baixo → pouca força para manter v constante (F<sub>op</sub> = F<sub>a</sub>, F<sub>R</sub> = 0: <b>1.ª Lei</b>).</li>
-        <li><b>Inércia</b>: com m grande, a mesma irregularidade de força ΔF produz uma variação de aceleração pequena (Δa = ΔF/m) → movimento mais uniforme.</li>
-        <li>No eixo vertical: N = P = m g (carril nivelado); um carril desnivelado introduz a componente P sin β.</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- ============ 7. DIAGRAMA TRAVELLING ============ -->
-<section class="slide" data-notes="<b>~60 s (demonstrar).</b> Este é o diagrama de forças principal. Correr o perfil suave e depois o brusco. Mesmo deslocamento (2 m em 6 s), mas no brusco a aceleração é ~8× maior e a força de inércia na cabeça da câmara também — é isso que se vê como solavanco no plano.">
-  <div class="kicker">Exemplo visual · Diagrama de forças e vetores</div>
-  <h2>Travelling sobre carril: suave vs. brusco</h2>
-  <div class="grid-diag">
-    <svg id="travSvg" class="diagram" viewBox="0 0 600 460" role="img" aria-label="Dolly sobre carril com vetores de força, velocidade e aceleração e gráficos v(t) e a(t)"></svg>
-    <div class="card controls">
-      <div>
-        <button class="btn on" id="travSmooth" aria-pressed="true">Perfil suave (rampa 1,5 s)</button>
-        <button class="btn" id="travHard" aria-pressed="false">Arranque brusco (0,15 s)</button>
+      <div class="stats">
+        <div class="stat"><div class="k">τ do peso</div><div class="v" id="tiltP"></div><div class="s">N·m</div></div>
+        <div class="stat"><div class="k">Σ τ</div><div class="v" id="tiltN"></div><div class="s">N·m</div></div>
       </div>
-      <div><button class="btn" id="travPlay">▶ Reproduzir</button></div>
-      <div class="readout" id="travRead"></div>
-      <div id="travPhase" class="status"></div>
-      <p class="muted" style="font-size:14.5px;margin-top:10px">Exemplo: dolly + operador + câmara m = 60 kg, μ<sub>r</sub> = 0,01, Δx = 2,0 m em 6,0 s; cabeça+câmara m<sub>c</sub> = 8 kg (sente a força de inércia −m<sub>c</sub><span class="vec">a</span>).</p>
-      <p style="font-size:14.5px;margin-top:6px"><span style="color:var(--vel)">■ <span class="vec">v</span></span> &nbsp;<span style="color:var(--acc)">■ <span class="vec">a</span></span> &nbsp;<span style="color:var(--force)">■ forças</span></p>
+      <div class="pill" id="tiltStatus"></div>
+      <p class="foot">τ = m · g · d · sin θ · Exemplo: m = 6 kg, d = 8 cm.</p>
     </div>
   </div>
 </section>
 
-<!-- ============ 8. ESTABILIDADE — CONCEITOS ============ -->
-<section class="slide" data-notes="<b>~50 s.</b> Equilíbrio estático: resultante e momento resultante nulos. Um tripé não tomba enquanto a vertical do CG cair dentro da base. Equilíbrio dinâmico: Steadicam e gimbal mantêm a orientação da câmara enquanto o operador se move. O gráfico mostra que um sistema mola-amortecedor só isola vibrações acima de √2 vezes a sua frequência natural.">
-  <div class="kicker">03 · Estabilidade</div>
-  <h2>Centro de gravidade, equilíbrio e vibrações</h2>
-  <div class="grid3" style="flex:1">
-    <div class="card">
+<!-- 6 · TRAVELLING -->
+<section class="slide" data-notes="<b>Travelling (~45 s).</b> No travelling a câmara desloca-se: é uma translação. Descreve-se com vetores: deslocamento Δr = r_f − r_i, velocidade v = Δr/Δt e aceleração a = Δv/Δt. Há três fases: aceleração, velocidade constante e travagem. Pela 2.ª Lei de Newton, ΣF = m·a: para arrancar e travar é preciso força; a velocidade constante, a força resultante é nula (1.ª Lei). As rodas no carril têm atrito de rolamento muito baixo (Fa = μr·N). A massa do dolly ajuda: com mais inércia, a mesma irregularidade no empurrão dá uma variação de aceleração menor (Δa = ΔF/m). Num carril curvo há ainda aceleração centrípeta a = v²/R. Ao contrário do pan, a translação cria paralaxe: o primeiro plano passa mais depressa do que o fundo, o que dá profundidade.">
+  <div class="kicker r" style="--i:0">02 · Travelling</div>
+  <h2 class="r" style="--i:1">Deslocar a câmara: vetores e forças</h2>
+  <div class="body" style="grid-template-columns:1.1fr 1fr;grid-template-rows:1fr auto">
+    <div class="card r" style="--i:2;padding:0;overflow:hidden;display:flex;flex-direction:column">
+      <svg viewBox="0 0 520 290" style="flex:1;min-height:0;width:100%" aria-label="Dolly a deslocar-se num carril, com paralaxe entre o fundo e o primeiro plano">
+        <defs><marker id="mV" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--vel)"/></marker></defs>
+        <g class="par2" opacity=".5"><path d="M-20 120 L40 60 L90 105 L150 45 L220 110 L290 55 L360 115 L430 50 L500 100 L580 60 L620 120 Z" fill="var(--line)"/></g>
+        <g class="par1"><g fill="var(--accent2)" opacity=".55">
+          <rect x="40" y="110" width="14" height="60"/><circle cx="47" cy="105" r="22"/>
+          <rect x="200" y="110" width="14" height="60"/><circle cx="207" cy="105" r="22"/>
+          <rect x="360" y="110" width="14" height="60"/><circle cx="367" cy="105" r="22"/>
+          <rect x="520" y="110" width="14" height="60"/><circle cx="527" cy="105" r="22"/>
+        </g></g>
+        <line x1="10" y1="250" x2="510" y2="250" stroke="var(--muted)" stroke-width="6"/>
+        <g fill="var(--line)"><rect x="30" y="255" width="16" height="7"/><rect x="100" y="255" width="16" height="7"/><rect x="170" y="255" width="16" height="7"/><rect x="240" y="255" width="16" height="7"/><rect x="310" y="255" width="16" height="7"/><rect x="380" y="255" width="16" height="7"/><rect x="450" y="255" width="16" height="7"/></g>
+        <g class="dolly">
+          <rect x="60" y="214" width="110" height="26" rx="6" fill="var(--panel2)" stroke="var(--text)" stroke-width="2.5"/>
+          <circle cx="82" cy="244" r="8" fill="var(--text)"/><circle cx="148" cy="244" r="8" fill="var(--text)"/>
+          <line x1="115" y1="214" x2="115" y2="180" stroke="var(--text)" stroke-width="3"/>
+          <rect x="90" y="150" width="50" height="32" rx="5" fill="var(--panel2)" stroke="var(--text)" stroke-width="2.5"/>
+          <rect x="140" y="157" width="20" height="18" fill="var(--panel2)" stroke="var(--text)" stroke-width="2.5"/>
+          <line x1="90" y1="132" x2="165" y2="132" stroke="var(--vel)" stroke-width="4" marker-end="url(#mV)"/>
+          <text x="172" y="138" font-size="18" font-weight="800" fill="var(--vel)">v</text>
+        </g>
+      </svg>
+      <div class="cap" style="margin:0 0 14px">Translação · paralaxe entre planos</div>
+    </div>
+    <div style="display:grid;grid-template-rows:repeat(3,1fr);gap:14px">
+      <div class="card fx r" style="--i:3"><div class="n">Velocidade</div><div class="f"><span class="vec">v</span> = Δ<span class="vec">r</span> / Δt</div></div>
+      <div class="card fx r" style="--i:4"><div class="n">2.ª Lei de Newton</div><div class="f">Σ <span class="vec">F</span> = m · <span class="vec">a</span></div></div>
+      <div class="card fx r" style="--i:5"><div class="n">Atrito de rolamento</div><div class="f">F<sub>a</sub> = μ<sub>r</sub> · N</div></div>
+    </div>
+    <div class="insight r" style="--i:6;grid-column:1/-1"><div class="ic">!</div><p><b>Inércia:</b> um dolly mais pesado reage menos a empurrões irregulares (Δa = ΔF / m).</p></div>
+  </div>
+</section>
+
+<!-- 7 · DIAGRAMA TRAVELLING -->
+<section class="slide" data-notes="<b>Diagrama de forças e vetores (~60 s).</b> É o esquema principal do trabalho. O dolly percorre 2 m em 6 s nos dois casos. Forças: peso P, reação normal N, força do operador F op e atrito de rolamento F a. Na aceleração, F op > F a e ΣF = m·a. A velocidade constante, F op = F a e ΣF = 0 (1.ª Lei). Na travagem, a aceleração tem sentido oposto ao da velocidade. Comparar: no arranque brusco a aceleração máxima é cerca de 8 vezes maior, e a força de inércia sobre a cabeça da câmara (m·a) também. É esse pico que aparece como solavanco na imagem.">
+  <div class="kicker r" style="--i:0">02 · Diagrama de forças e vetores</div>
+  <h2 class="r" style="--i:1">Travelling: arranque suave ou brusco?</h2>
+  <div class="body diag">
+    <svg id="travSvg" class="diagram r" style="--i:2" viewBox="0 0 640 460" role="img" aria-label="Dolly sobre carril com forças, velocidade, aceleração e gráficos v(t) e a(t)"></svg>
+    <div class="card ctrl r" style="--i:3">
+      <div class="btns">
+        <button class="btn on" id="travSmooth" aria-pressed="true">Suave</button>
+        <button class="btn" id="travHard" aria-pressed="false">Brusco</button>
+        <button class="btn" id="travPlay">▶ Reproduzir</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="k">a máxima</div><div class="v" id="travA"></div><div class="s">m/s²</div></div>
+        <div class="stat"><div class="k">Força na câmara</div><div class="v" id="travF"></div><div class="s">N</div></div>
+      </div>
+      <div class="stat"><div class="k">Velocidade máxima</div><div class="v" id="travV"></div><div class="s">m/s · mesmo percurso: 2 m em 6 s</div></div>
+      <div class="pill" id="travPhase"></div>
+      <p class="foot"><span style="color:var(--vel)">●</span> velocidade &nbsp; <span style="color:var(--acc)">●</span> aceleração &nbsp; <span style="color:var(--force)">●</span> forças<br>Exemplo: 60 kg, 2 m em 6 s, câmara de 8 kg.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · ESTABILIDADE -->
+<section class="slide" data-notes="<b>Estabilidade (~50 s).</b> Equilíbrio estático: ΣF = 0 e Στ = 0. Um tripé não tomba enquanto a vertical que passa pelo centro de gravidade cair dentro da base de apoio; centro de gravidade baixo e base larga dão equilíbrio estável. Equilíbrio dinâmico: no Steadicam, o braço com molas isola a câmara do corpo do operador e as massas afastadas do eixo aumentam o momento de inércia I = Σ m·r², o que resiste a rotações bruscas; o centro de gravidade fica ligeiramente abaixo do gimbal. No gimbal eletrónico, sensores medem a rotação e motores aplicam momentos corretivos nos 3 eixos. Vibrações: um sistema mola-amortecedor tem frequência natural f₀ = (1/2π)·√(k/m) e só reduz a vibração quando a frequência da perturbação é maior do que √2·f₀; por isso se usam molas macias.">
+  <div class="kicker r" style="--i:0">03 · Estabilidade</div>
+  <h2 class="r" style="--i:1">Manter a câmara estável</h2>
+  <div class="body big3">
+    <div class="card r" style="--i:2;display:flex;flex-direction:column;gap:12px">
+      <svg viewBox="0 0 300 170" style="width:100%;height:170px" aria-label="Tripé com centro de gravidade sobre a base">
+        <rect x="70" y="150" width="160" height="6" rx="3" fill="var(--ok)" opacity=".7"/>
+        <path d="M150 56 L78 152 M150 56 L222 152" stroke="var(--muted)" stroke-width="5" fill="none"/>
+        <rect x="122" y="30" width="56" height="28" rx="5" fill="var(--panel2)" stroke="var(--text)" stroke-width="2.5"/>
+        <line x1="150" y1="46" x2="150" y2="150" stroke="var(--force)" stroke-width="2.5" stroke-dasharray="5 4" class="pulse"/>
+        <circle cx="150" cy="46" r="7" fill="var(--force)"/>
+        <text x="160" y="100" font-size="15" font-weight="800" fill="var(--force)">CG</text>
+      </svg>
       <h3>Equilíbrio estático</h3>
-      <span class="eq" style="font-size:20px">Σ <span class="vec">F</span> = <span class="vec">0</span> &nbsp; e &nbsp; Σ <span class="vec">τ</span> = <span class="vec">0</span></span>
-      <ul class="clean" style="font-size:17px">
-        <li>O sistema fica em equilíbrio se a <b>vertical que passa pelo CG</b> cair <b>dentro do polígono de apoio</b> (pés do tripé).</li>
-        <li>CG baixo + base larga ⇒ <b>equilíbrio estável</b>: é preciso um binário maior para o derrubar.</li>
-        <li>Saco de areia no tripé: baixa o CG e aumenta o binário restaurador.</li>
-      </ul>
+      <div class="fx" style="padding:8px 14px"><div class="f" style="font-size:24px">Σ <span class="vec">F</span> = 0 · Σ <span class="vec">τ</span> = 0</div></div>
+      <p class="muted" style="font-size:18px">CG sobre a base de apoio.</p>
     </div>
-    <div class="card">
-      <h3>Equilíbrio dinâmico e inércia</h3>
-      <ul class="clean" style="font-size:17px">
-        <li><b>Steadicam</b>: braço com molas isola a câmara do corpo; o <i>sled</i> tem massas afastadas do eixo → <b>I = Σ m r²</b> elevado, resiste a rotações bruscas.</li>
-        <li>CG do <i>sled</i> ligeiramente <b>abaixo</b> do gimbal: comporta-se como um pêndulo lento que regressa à vertical.</li>
-        <li><b>Gimbal eletrónico</b>: sensores (IMU) medem a rotação e motores aplicam binários corretivos nos 3 eixos.</li>
-      </ul>
+    <div class="card r" style="--i:3;display:flex;flex-direction:column;gap:12px">
+      <svg viewBox="0 0 300 170" style="width:100%;height:170px" aria-label="Estabilizador com massas afastadas do eixo">
+        <g class="sway" style="transform-origin:150px 40px">
+          <line x1="150" y1="40" x2="150" y2="150" stroke="var(--text)" stroke-width="4"/>
+          <rect x="118" y="44" width="64" height="30" rx="5" fill="var(--panel2)" stroke="var(--text)" stroke-width="2.5"/>
+          <rect x="110" y="140" width="80" height="20" rx="5" fill="var(--accent)"/>
+        </g>
+        <circle cx="150" cy="40" r="7" fill="var(--accent2)"/>
+        <text x="164" y="30" font-size="15" font-weight="800" fill="var(--accent2)">gimbal</text>
+      </svg>
+      <h3>Inércia de rotação</h3>
+      <div class="fx" style="padding:8px 14px"><div class="f" style="font-size:24px">I = Σ m · r²</div></div>
+      <p class="muted" style="font-size:18px">Mais I, menos rotações bruscas.</p>
     </div>
-    <div class="card" style="display:flex;flex-direction:column">
+    <div class="card r" style="--i:4;display:flex;flex-direction:column;gap:12px">
+      <svg id="vibSvg" viewBox="0 0 300 170" style="width:100%;height:170px" aria-label="Transmissibilidade da vibração em função da frequência"></svg>
       <h3>Atenuação de vibrações</h3>
-      <span class="eq" style="font-size:19px">f<sub>0</sub> = (1/2π)·√(k/m)</span>
-      <svg id="vibSvg" viewBox="0 0 340 190" style="width:100%;flex:1;min-height:0" role="img" aria-label="Gráfico da transmissibilidade de vibração em função da razão de frequências"></svg>
-      <p class="muted" style="font-size:14px">Transmissibilidade T: a vibração só é <b>reduzida</b> (T &lt; 1) quando f/f<sub>0</sub> &gt; √2. Molas macias (f<sub>0</sub> baixa) isolam melhor os passos do operador.</p>
+      <div class="fx" style="padding:8px 14px"><div class="f" style="font-size:24px">f₀ = (1/2π) · √(k/m)</div></div>
+      <p class="muted" style="font-size:18px">Só isola acima de √2 · f₀.</p>
     </div>
   </div>
 </section>
 
-<!-- ============ 9. DIAGRAMA ESTABILIDADE ============ -->
-<section class="slide" data-notes="<b>~45 s (demonstrar).</b> Afastar a objetiva para a frente até o CG sair da base: o tripé tomba. Abrir as pernas ou pôr saco de areia aumenta a força necessária para derrubar. Cálculo: momentos em torno do pé da frente.">
-  <div class="kicker">Exemplo visual · Estabilidade do tripé</div>
-  <h2>Onde está o centro de gravidade?</h2>
-  <div class="grid-diag">
-    <svg id="stabSvg" class="diagram" viewBox="0 0 560 440" role="img" aria-label="Tripé visto de lado com centro de gravidade, peso e base de apoio"></svg>
-    <div class="card controls">
-      <label for="stH">Altura da cabeça h (m)</label>
+<!-- 9 · DIAGRAMA ESTABILIDADE -->
+<section class="slide" data-notes="<b>Demonstração do tripé (~45 s).</b> Afastar o centro de gravidade da câmara para a frente (objetiva pesada) até sair da base: o tripé tomba. Abrir mais as pernas aumenta a base. Ligar o saco de areia: baixa o centro de gravidade e aumenta o momento que segura o tripé. Cálculo dos momentos em torno do pé da frente: F·h = m·g·(b − x), mais M·g·b com o saco de areia.">
+  <div class="kicker r" style="--i:0">03 · Diagrama</div>
+  <h2 class="r" style="--i:1">Tripé: onde está o centro de gravidade?</h2>
+  <div class="body diag">
+    <svg id="stabSvg" class="diagram r" style="--i:2" viewBox="0 0 640 440" role="img" aria-label="Tripé visto de lado com centro de gravidade, peso e base de apoio"></svg>
+    <div class="card ctrl r" style="--i:3">
+      <label for="stH">Altura da cabeça <output id="stHo"></output></label>
       <input id="stH" type="range" min="0.8" max="1.8" step="0.05" value="1.4">
-      <label for="stPhi">Abertura das pernas φ (° em relação à vertical)</label>
+      <label for="stPhi">Abertura das pernas <output id="stPhio"></output></label>
       <input id="stPhi" type="range" min="8" max="35" step="1" value="20">
-      <label for="stX">Deslocamento do CG da câmara para a frente x (m) — objetiva pesada</label>
+      <label for="stX">Objetiva pesada (CG à frente) <output id="stXo"></output></label>
       <input id="stX" type="range" min="0" max="0.7" step="0.01" value="0.15">
-      <div><button class="btn" id="stBag" aria-pressed="false">Saco de areia (8 kg): desligado</button></div>
-      <div class="readout" id="stRead"></div>
-      <div id="stStatus" class="status"></div>
+      <div class="btns"><button class="btn" id="stBag" aria-pressed="false">+ Saco de areia</button></div>
+      <div class="stat"><div class="k">Força para o derrubar</div><div class="v" id="stF"></div></div>
+      <div class="pill" id="stStatus"></div>
     </div>
   </div>
 </section>
 
-<!-- ============ 10. LIGAÇÃO PRÁTICA ============ -->
-<section class="slide" data-notes="<b>~50 s.</b> Ligar cada equipamento ao princípio físico. Exemplo histórico: o Steadicam, inventado por Garrett Brown, foi usado na sequência das escadarias de «Rocky» (1976). Dica técnica: equilibrar sempre a câmara antes de filmar — é ajustar o CG.">
-  <div class="kicker">04 · Ligação prática ao audiovisual</div>
-  <h2>O que a Física muda no dia a dia técnico</h2>
-  <div class="grid2" style="grid-template-columns:repeat(2,1fr);gap:18px">
-    <div class="card tight">
-      <span class="tag">Pan / Tilt</span><span class="tag">τ = −bω</span>
-      <h3 style="margin-top:8px">Tripé com cabeça fluida</h3>
-      <p style="font-size:17px">Regular o <b>arrasto</b> (b) conforme a objetiva: mais arrasto em teleobjetiva para ω pequeno e constante. Ajustar o <b>contrapeso</b> ao peso da câmara e <b>nivelar</b> a cabeça (bolha) para que o pan não “suba” no horizonte.</p>
+<!-- 10 · PRÁTICA -->
+<section class="slide" data-notes="<b>Ligação prática (~50 s).</b> Tripé com cabeça fluida: ajustar o arrasto ao tipo de objetiva (mais arrasto em teleobjetiva) e o contrapeso ao peso da câmara; nivelar a cabeça com a bolha para o horizonte não subir durante o pan. Dolly, carris e sliders: carris nivelados e juntas sem degraus, arranques e travagens em rampa; os sliders motorizados repetem o mesmo perfil de velocidade em todos os takes. Steadicam: inventado por Garrett Brown nos anos 70 e famoso na sequência das escadarias de «Rocky» (1976); antes de filmar faz-se o balanço, com o centro de gravidade ligeiramente abaixo do gimbal. Gimbal de 3 eixos: equilibrar a câmara antes de ligar os motores, para que estes só corrijam perturbações e não lutem contra o peso.">
+  <div class="kicker r" style="--i:0">04 · Na prática</div>
+  <h2 class="r" style="--i:1">Do conceito ao equipamento</h2>
+  <div class="body grid2x2">
+    <div class="card tool r" style="--i:2">
+      <svg viewBox="0 0 84 84" aria-hidden="true"><rect x="2" y="2" width="80" height="80" rx="18" fill="var(--panel2)"/><rect x="24" y="18" width="36" height="20" rx="4" fill="none" stroke="var(--accent)" stroke-width="3.5"/><path d="M42 40 L24 70 M42 40 L60 70 M42 40 L42 70" stroke="var(--accent)" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>
+      <div><span class="tag">τ = −b · ω</span><h3>Tripé com cabeça fluida</h3><p>Arrasto e contrapeso ajustados à câmara.</p></div>
     </div>
-    <div class="card tight">
-      <span class="tag">Travelling</span><span class="tag">F = m a</span>
-      <h3 style="margin-top:8px">Dolly, carris e sliders</h3>
-      <p style="font-size:17px">Carris <b>nivelados</b> e juntas alinhadas (sem degraus → sem picos de a). Arrancar e travar com <b>rampas</b>. Sliders motorizados programam perfis de velocidade (<i>ease in/out</i>) e repetem o movimento com precisão entre takes.</p>
+    <div class="card tool r" style="--i:3">
+      <svg viewBox="0 0 84 84" aria-hidden="true"><rect x="2" y="2" width="80" height="80" rx="18" fill="var(--panel2)"/><line x1="12" y1="58" x2="72" y2="58" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round"/><rect x="24" y="38" width="36" height="14" rx="3" fill="none" stroke="var(--accent)" stroke-width="3.5"/><circle cx="32" cy="58" r="4" fill="var(--accent)"/><circle cx="52" cy="58" r="4" fill="var(--accent)"/><path d="M42 38 V26 M34 26 H54" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round"/></svg>
+      <div><span class="tag">Σ F = m · a</span><h3>Dolly, carris e sliders</h3><p>Carril nivelado e arranques em rampa.</p></div>
     </div>
-    <div class="card tight">
-      <span class="tag">Estabilidade</span><span class="tag">I = Σ m r²</span>
-      <h3 style="margin-top:8px">Steadicam</h3>
-      <p style="font-size:17px">Inventado por Garrett Brown (anos 70), célebre na sequência das escadarias de <i>Rocky</i> (1976). Antes de filmar faz-se o <b>balanço</b>: posicionar o CG ligeiramente abaixo do gimbal e afinar a tensão das molas do braço à carga.</p>
+    <div class="card tool r" style="--i:4">
+      <svg viewBox="0 0 84 84" aria-hidden="true"><rect x="2" y="2" width="80" height="80" rx="18" fill="var(--panel2)"/><line x1="42" y1="18" x2="42" y2="66" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round"/><rect x="28" y="20" width="28" height="14" rx="3" fill="none" stroke="var(--accent)" stroke-width="3.5"/><rect x="30" y="62" width="24" height="8" rx="2" fill="var(--accent)"/><circle cx="42" cy="42" r="4" fill="var(--accent2)"/></svg>
+      <div><span class="tag">I = Σ m · r²</span><h3>Steadicam</h3><p>CG abaixo do gimbal. Célebre em <i>Rocky</i> (1976).</p></div>
     </div>
-    <div class="card tight">
-      <span class="tag">Estabilidade</span><span class="tag">Στ corretivo</span>
-      <h3 style="margin-top:8px">Gimbal de 3 eixos</h3>
-      <p style="font-size:17px">Balancear a câmara em cada eixo <b>antes</b> de ligar os motores: com o CG sobre os eixos, os motores só corrigem perturbações e não lutam contra o peso (menos consumo, menos vibração, menos aquecimento).</p>
+    <div class="card tool r" style="--i:5">
+      <svg viewBox="0 0 84 84" aria-hidden="true"><rect x="2" y="2" width="80" height="80" rx="18" fill="var(--panel2)"/><circle cx="42" cy="42" r="22" fill="none" stroke="var(--accent)" stroke-width="3.5"/><ellipse cx="42" cy="42" rx="22" ry="8" fill="none" stroke="var(--accent)" stroke-width="3"/><ellipse cx="42" cy="42" rx="8" ry="22" fill="none" stroke="var(--accent)" stroke-width="3"/><circle cx="42" cy="42" r="4" fill="var(--accent2)"/></svg>
+      <div><span class="tag">Σ τ corretivo</span><h3>Gimbal de 3 eixos</h3><p>Equilibrar antes de ligar os motores.</p></div>
     </div>
   </div>
 </section>
 
-<!-- ============ 11. CONCLUSÃO ============ -->
-<section class="slide" data-notes="<b>~40 s.</b> Responder diretamente à questão de partida. Terminar com a frase: «Um plano suave não é sorte: é controlo de ω, de a e do centro de gravidade.»">
-  <div class="kicker">05 · Conclusão</div>
-  <h2>Planos suaves e precisos são Física controlada</h2>
-  <div class="grid2" style="flex:none">
-    <div class="takeaway card tight"><div class="n">1</div><p><b>Pan/Tilt</b> são rotações: controlar ω e α (arrasto e contrapeso) evita <i>judder</i> e arranques bruscos.</p></div>
-    <div class="takeaway card tight"><div class="n">2</div><p><b>Travelling</b> é translação: rampas de aceleração e carris nivelados mantêm <span class="vec">a</span> pequeno e F<sub>R</sub> controlada.</p></div>
-    <div class="takeaway card tight"><div class="n">3</div><p><b>Estabilidade</b> depende do CG, da base de apoio e da inércia: Σ <span class="vec">F</span> = <span class="vec">0</span> e Σ <span class="vec">τ</span> = <span class="vec">0</span>.</p></div>
-    <div class="takeaway card tight"><div class="n">4</div><p><b>Vibrações</b> isolam-se com massa, molas e amortecimento bem dimensionados (f ≫ f<sub>0</sub>).</p></div>
+<!-- 11 · CONCLUSÃO -->
+<section class="slide" data-notes="<b>Conclusão (~40 s).</b> Resposta à questão de partida: a cinemática descreve o movimento que queremos (θ, ω, v, a); a dinâmica explica que forças e momentos o produzem ou o perturbam; os vetores permitem decompô-lo e prever o resultado. Dominar estes conceitos permite escolher e afinar o equipamento antes de filmar, em vez de corrigir erros na pós-produção. Frase final: «Um plano suave não é sorte: é controlo de ω, de a e do centro de gravidade.»">
+  <div class="kicker r" style="--i:0">05 · Conclusão</div>
+  <h2 class="r" style="--i:1">Um plano suave não é sorte</h2>
+  <div class="body big3" style="grid-template-rows:1fr auto">
+    <div class="card take r" style="--i:2"><div class="n">ω</div><h3>Pan e Tilt</h3><p>Controlar a velocidade angular evita judder e solavancos.</p></div>
+    <div class="card take r" style="--i:3"><div class="n">a</div><h3>Travelling</h3><p>Rampas de aceleração mantêm as forças pequenas.</p></div>
+    <div class="card take r" style="--i:4"><div class="n">CG</div><h3>Estabilidade</h3><p>Base, inércia e molas garantem o equilíbrio.</p></div>
+    <div class="answer r" style="--i:5;grid-column:1/-1"><b>Resposta:</b> a Física permite prever e controlar o movimento da câmara antes de filmar — em vez de corrigir erros na pós-produção.</div>
   </div>
-  <div class="answer"><b>Resposta à questão de partida:</b> a cinemática descreve o movimento que queremos (θ, ω, <span class="vec">v</span>, <span class="vec">a</span>); a dinâmica explica que forças e binários o produzem ou o perturbam; os vetores permitem decompô-lo e prever o resultado. Dominar estes conceitos permite ao técnico escolher e afinar o equipamento — em vez de corrigir erros em pós-produção.</div>
 </section>
 
-<!-- ============ 12. FONTES ============ -->
-<section class="slide" data-notes="<b>~15 s.</b> Mostrar as fontes e abrir para perguntas.">
-  <div class="kicker">Fontes consultadas</div>
-  <h2>Referências bibliográficas e recursos</h2>
-  <ol class="src" style="padding-left:22px">
-    <li>Halliday, D., Resnick, R. &amp; Walker, J. <i>Fundamentos de Física, Vol. 1 – Mecânica</i>. Rio de Janeiro: LTC (caps. de cinemática, rotação, equilíbrio).</li>
-    <li>Serway, R. A. &amp; Jewett, J. W. <i>Physics for Scientists and Engineers</i>. Boston: Cengage (rotação de corpos rígidos, oscilações).</li>
-    <li>Rao, S. S. (2017). <i>Mechanical Vibrations</i> (6.ª ed.). Pearson (isolamento de vibrações, transmissibilidade).</li>
-    <li>Brown, B. (2016). <i>Cinematography: Theory and Practice</i> (3.ª ed.). Routledge/Focal Press (movimentos de câmara, dolly, Steadicam).</li>
-    <li>Burum, S. H. (ed.) (2004). <i>American Cinematographer Manual</i> (9.ª ed.). Hollywood: ASC Press (tabelas de velocidade de pan).</li>
-    <li>RED Digital Cinema. <i>Camera Panning Speed</i>. red.com/red-101/camera-panning-speed (consultado em 04/11/2026).</li>
-    <li>Manuais técnicos de cabeças fluidas e estabilizadores (ex.: Sachtler, Manfrotto, Tiffen Steadicam, DJI Ronin) — secções de contrapeso, arrasto e balanço.</li>
-    <li>Programa da disciplina de Física e Química dos Cursos Profissionais — Módulo F1.</li>
+<!-- 12 · FONTES -->
+<section class="slide" data-notes="<b>Fontes (~15 s).</b> Mostrar as referências e abrir para perguntas. Os valores numéricos dos diagramas são exemplos didáticos, não especificações de equipamento real.">
+  <div class="kicker r" style="--i:0">Fontes consultadas</div>
+  <h2 class="r" style="--i:1">Referências</h2>
+  <ol class="src r" style="--i:2">
+    <li>Halliday, D., Resnick, R. &amp; Walker, J. <i>Fundamentos de Física, Vol. 1 – Mecânica</i>. <span>LTC.</span></li>
+    <li>Serway, R. A. &amp; Jewett, J. W. <i>Physics for Scientists and Engineers</i>. <span>Cengage.</span></li>
+    <li>Rao, S. S. (2017). <i>Mechanical Vibrations</i> (6.ª ed.). <span>Pearson.</span></li>
+    <li>Brown, B. (2016). <i>Cinematography: Theory and Practice</i> (3.ª ed.). <span>Routledge.</span></li>
+    <li>Burum, S. H. (ed.) (2004). <i>American Cinematographer Manual</i> (9.ª ed.). <span>ASC Press.</span></li>
+    <li>RED Digital Cinema. <i>Camera Panning Speed</i>. <span>red.com/red-101/camera-panning-speed (consultado em 04/11/2026).</span></li>
+    <li>Manuais técnicos de cabeças fluidas e estabilizadores. <span>Sachtler, Manfrotto, Tiffen Steadicam, DJI Ronin.</span></li>
+    <li>Programa de Física e Química dos Cursos Profissionais. <span>Módulo F1.</span></li>
   </ol>
-  <p class="muted" style="font-size:14px;margin-top:14px">Valores numéricos dos diagramas são exemplos didáticos e não especificações de equipamento real.</p>
+  <p class="muted r" style="--i:3;font-size:14px;margin-top:auto">Os valores numéricos dos diagramas são exemplos didáticos.</p>
 </section>
 
 </div></div>
@@ -388,19 +503,28 @@ const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(NS,
   for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
 const fmt = (x, d = 2) => x.toLocaleString("pt-PT", {minimumFractionDigits: d, maximumFractionDigits: d});
 const DEG = Math.PI / 180, g = 9.8;
+function pill(node, txt, kind){
+  node.textContent = txt;
+  node.style.background = css({ok: "--ok", warn: "--warn", bad: "--bad", acc: "--acc", none: "--panel2"}[kind]);
+  node.style.color = kind === "none" ? css("--text") : (kind === "warn" || kind === "acc") ? "#111" : "#fff";
+}
+
+/* estado partilhado (declarado antes de go) */
+const trav = {ta: 1.5, t: 0, playing: false, last: null, wait: 0};
 
 /* ---------- navegação ---------- */
 const slides = [...document.querySelectorAll(".slide")];
 let cur = 0;
-function fit(){ const s = Math.min(innerWidth / 1280, (innerHeight) / 720); $("#deck").style.transform = `scale(${s})`; }
+function fit(){ const s = Math.min(innerWidth / 1280, innerHeight / 720); $("#deck").style.transform = `scale(${s})`; }
 addEventListener("resize", fit); fit();
 function go(i){
   cur = Math.max(0, Math.min(slides.length - 1, i));
-  slides.forEach((s, k) => s.classList.toggle("active", k === cur));
+  slides.forEach((s, k) => { s.classList.toggle("active", k === cur); s.classList.toggle("before", k < cur); s.classList.toggle("after", k > cur); });
   $("#count").textContent = `${cur + 1} / ${slides.length}`;
   $("#bar").style.width = `${(cur + 1) / slides.length * 100}%`;
   $("#notes").innerHTML = slides[cur].dataset.notes || "";
   history.replaceState(null, "", "#" + (cur + 1));
+  if (slides[cur].querySelector("#travSvg")) { trav.t = 0; trav.playing = true; trav.wait = 0.9; $("#travPlay").textContent = "❚❚ Pausa"; }
 }
 $("#prev").onclick = () => go(cur - 1); $("#next").onclick = () => go(cur + 1);
 let t0 = null, tInt = null;
@@ -412,7 +536,8 @@ addEventListener("keydown", e => {
   else if (k === "home") go(0); else if (k === "end") go(slides.length - 1);
   else if (k === "n") $("#notes").classList.toggle("show");
   else if (k === "f") { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); }
-  else if (k === "l") { const r = document.documentElement; r.dataset.theme = r.dataset.theme === "light" ? "dark" : "light"; redrawAll(); }
+  else if (k === "l") { const r = document.documentElement, dark = matchMedia("(prefers-color-scheme: dark)").matches;
+    const now = r.dataset.theme || (dark ? "dark" : "light"); r.dataset.theme = now === "dark" ? "light" : "dark"; redrawAll(); }
   else if (k === "t") {
     const tm = $("#timer"); tm.classList.toggle("show");
     if (!tInt) { t0 = Date.now(); tInt = setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000);
@@ -421,21 +546,26 @@ addEventListener("keydown", e => {
   }
 });
 let sx = null;
-addEventListener("touchstart", e => { if (e.target.tagName !== "INPUT") sx = e.touches[0].clientX; }, {passive: true});
+addEventListener("touchstart", e => { if (!["INPUT", "BUTTON"].includes(e.target.tagName)) sx = e.touches[0].clientX; }, {passive: true});
 addEventListener("touchend", e => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx;
   if (Math.abs(dx) > 50) go(cur + (dx < 0 ? 1 : -1)); sx = null; });
-go(Math.max(0, (parseInt(location.hash.slice(1)) || 1) - 1));
+setTimeout(() => { $("#help").style.opacity = 0; }, 7000);
+const tcStart = performance.now();
+setInterval(() => { const f = Math.floor((performance.now() - tcStart) / 1000 * 24), s = Math.floor(f / 24);
+  const p = n => String(n).padStart(2, "0");
+  $("#tc").textContent = `${p(Math.floor(s / 3600))}:${p(Math.floor(s / 60) % 60)}:${p(s % 60)}:${p(f % 24)}`; }, 42);
 
 function arrowHead(defs, id, color){
-  const m = el("marker", {id, viewBox: "0 0 10 10", refX: 8, refY: 5, markerWidth: 7, markerHeight: 7, orient: "auto-start-reverse"}, defs);
+  const m = el("marker", {id, viewBox: "0 0 10 10", refX: 8, refY: 5, markerWidth: 6, markerHeight: 6, orient: "auto-start-reverse"}, defs);
   el("path", {d: "M0,0 L10,5 L0,10 z", fill: color}, m);
 }
-function vec(parent, x1, y1, x2, y2, color, id, w = 3.5){
-  return el("line", {x1, y1, x2, y2, stroke: color, "stroke-width": w, "marker-end": `url(#${id})`}, parent);
+const vec = (p, x1, y1, x2, y2, c, id, w = 4) => el("line", {x1, y1, x2, y2, stroke: c, "stroke-width": w, "stroke-linecap": "round", "marker-end": `url(#${id})`}, p);
+function label(p, x, y, txt, color, size = 16, anchor = "start", weight = 800){
+  const t = el("text", {x, y, fill: color, "font-size": size, "text-anchor": anchor, "font-weight": weight}, p); t.textContent = txt; return t;
 }
-function label(parent, x, y, txt, color, size = 15, anchor = "start", weight = 700){
-  const t = el("text", {x, y, fill: color, "font-size": size, "text-anchor": anchor, "font-weight": weight}, parent);
-  t.textContent = txt; return t;
+function cgMark(p, x, y){
+  el("circle", {cx: x, cy: y, r: 10, fill: css("--bg"), stroke: css("--text"), "stroke-width": 2.5}, p);
+  el("path", {d: `M${x - 10},${y} A10,10 0 0 1 ${x},${y - 10} L${x},${y} Z M${x + 10},${y} A10,10 0 0 1 ${x},${y + 10} L${x},${y} Z`, fill: css("--text")}, p);
 }
 
 /* ---------- PAN ---------- */
@@ -444,50 +574,42 @@ let panAng = 0, panLast = null;
 function drawPan(){
   const svg = $("#panSvg"); svg.innerHTML = "";
   const defs = el("defs", {}, svg);
-  arrowHead(defs, "pa1", css("--accent")); arrowHead(defs, "pa2", css("--vel"));
-  const cx = 280, cy = 250, R = 175;
+  arrowHead(defs, "pa1", css("--accent2")); arrowHead(defs, "pa2", css("--vel"));
+  const cx = 320, cy = 225, R = 180;
   const w = +$("#panW").value, f = FOCALS[+$("#panF").value];
   const fov = 2 * Math.atan(SENSOR / (2 * f)) / DEG;
-  // cenário
-  el("circle", {cx, cy, r: R, fill: "none", stroke: css("--line"), "stroke-dasharray": "4 6"}, svg);
-  for (let i = 0; i < 24; i++) { const a = i * 15 * DEG;
-    el("circle", {cx: cx + R * Math.cos(a), cy: cy + R * Math.sin(a), r: i % 3 ? 4 : 7, fill: i % 3 ? css("--muted") : css("--accent2")}, svg); }
-  // FOV
+  el("circle", {cx, cy, r: R, fill: "none", stroke: css("--line"), "stroke-width": 2, "stroke-dasharray": "3 8"}, svg);
   const a0 = (panAng - fov / 2 - 90) * DEG, a1 = (panAng + fov / 2 - 90) * DEG;
-  const large = fov > 180 ? 1 : 0;
-  el("path", {d: `M${cx},${cy} L${cx + R * Math.cos(a0)},${cy + R * Math.sin(a0)} A${R},${R} 0 ${large} 1 ${cx + R * Math.cos(a1)},${cy + R * Math.sin(a1)} Z`,
-    fill: css("--accent"), "fill-opacity": .16, stroke: css("--accent"), "stroke-width": 1.5}, svg);
-  // câmara
-  const gCam = el("g", {transform: `rotate(${panAng} ${cx} ${cy})`}, svg);
-  el("rect", {x: cx - 22, y: cy - 16, width: 44, height: 40, rx: 6, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2}, gCam);
-  el("rect", {x: cx - 10, y: cy - 42, width: 20, height: 28, rx: 3, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2}, gCam);
-  // vetor velocidade tangencial na ponta da objetiva
-  const r = 42, vt = Math.min(70, 8 + w * 2.2);
-  vec(gCam, cx, cy - r, cx + vt, cy - r, css("--vel"), "pa2", 3);
-  label(gCam, cx + vt + 4, cy - r - 6, "v = ω·r", css("--vel"), 14);
-  // eixo
-  el("circle", {cx, cy, r: 5, fill: css("--accent")}, svg);
-  label(svg, cx + 10, cy + 40, "eixo vertical (⊙)", css("--muted"), 13, "start", 500);
-  // seta ω
-  const ra = 62, b0 = -150 * DEG, b1 = -40 * DEG;
+  for (let i = 0; i < 36; i++) { const a = i * 10 * DEG;
+    const d = ((i * 10 - (panAng - 90)) % 360 + 540) % 360 - 180, inside = Math.abs(d) <= fov / 2;
+    el("circle", {cx: cx + R * Math.cos(a), cy: cy + R * Math.sin(a), r: i % 3 ? 4 : 7,
+      fill: inside ? css("--accent") : (i % 3 ? css("--muted") : css("--accent2")), opacity: inside ? 1 : .6}, svg); }
+  el("path", {d: `M${cx},${cy} L${cx + R * Math.cos(a0)},${cy + R * Math.sin(a0)} A${R},${R} 0 0 1 ${cx + R * Math.cos(a1)},${cy + R * Math.sin(a1)} Z`,
+    fill: css("--accent"), "fill-opacity": .16, stroke: css("--accent"), "stroke-width": 2}, svg);
+  const gc = el("g", {transform: `rotate(${panAng} ${cx} ${cy})`}, svg);
+  el("rect", {x: cx - 24, y: cy - 16, width: 48, height: 44, rx: 7, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2.5}, gc);
+  el("rect", {x: cx - 11, y: cy - 44, width: 22, height: 30, rx: 4, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2.5}, gc);
+  const vt = Math.min(80, 14 + w * 2.2);
+  vec(gc, cx, cy - 46, cx + vt, cy - 46, css("--vel"), "pa2", 3.5);
+  label(gc, cx + vt + 6, cy - 40, "v = ω·r", css("--vel"), 14);
+  el("circle", {cx, cy, r: 6, fill: css("--accent")}, svg);
+  const ra = 70, b0 = -150 * DEG, b1 = -30 * DEG;
   el("path", {d: `M${cx + ra * Math.cos(b0)},${cy + ra * Math.sin(b0)} A${ra},${ra} 0 0 1 ${cx + ra * Math.cos(b1)},${cy + ra * Math.sin(b1)}`,
-    fill: "none", stroke: css("--accent"), "stroke-width": 3, "marker-end": "url(#pa1)"}, svg);
-  label(svg, cx - 80, cy - 62, "ω", css("--accent"), 22);
-  label(svg, 20, 30, `FOV horizontal = ${fmt(fov, 1)}°  (f = ${f} mm)`, css("--text"), 16);
-  label(svg, 20, 52, `θ = ${fmt(((panAng % 360) + 360) % 360, 0)}°`, css("--muted"), 14, "start", 500);
-  // readouts
+    fill: "none", stroke: css("--accent2"), "stroke-width": 3.5, "marker-end": "url(#pa1)"}, svg);
+  label(svg, cx - 76, cy - 54, "ω", css("--accent2"), 22);
+  label(svg, 24, 36, `FOV = ${fmt(fov, 1)}°`, css("--accent"), 18);
+  label(svg, 24, 418, "Vista de cima · eixo vertical", css("--muted"), 13, "start", 600);
   const t = fov / w;
-  $("#panRead").innerHTML = `ω = <b>${fmt(w, 1)} °/s</b> = <b>${fmt(w * DEG, 3)} rad/s</b><br>Tempo de travessia do quadro: <b>t = ${fmt(fov, 1)}° / ${fmt(w, 1)} °/s = ${fmt(t, 1)} s</b>`;
-  const st = $("#panStatus");
-  if (t >= 7) { st.textContent = "✓ Pan suave (t ≥ 7 s)"; st.style.background = css("--ok"); st.style.color = "#fff"; }
-  else if (t >= 4) { st.textContent = "⚠ Risco de judder (4–7 s)"; st.style.background = css("--warn"); st.style.color = "#111"; }
-  else { st.textContent = "✕ Judder visível (t < 4 s)"; st.style.background = css("--bad"); st.style.color = "#fff"; }
+  $("#panWo").textContent = `${fmt(w, 1)} °/s`;
+  $("#panFo").textContent = `${f} mm`;
+  $("#panT").textContent = `${fmt(t, 1)} s`;
+  $("#panS").textContent = `FOV ${fmt(fov, 1)}° · ω = ${fmt(w * DEG, 3)} rad/s`;
+  if (t >= 7) pill($("#panStatus"), "✓ Pan suave", "ok");
+  else if (t >= 4) pill($("#panStatus"), "⚠ Risco de judder", "warn");
+  else pill($("#panStatus"), "✕ Judder visível", "bad");
 }
 function panLoop(ts){
-  if (slides[cur].querySelector("#panSvg")) {
-    if (panLast != null) panAng += (+$("#panW").value) * (ts - panLast) / 1000;
-    drawPan();
-  }
+  if (slides[cur].querySelector("#panSvg")) { if (panLast != null) panAng += (+$("#panW").value) * (ts - panLast) / 1000; drawPan(); }
   panLast = ts; requestAnimationFrame(panLoop);
 }
 ["#panW", "#panF"].forEach(s => $(s).addEventListener("input", drawPan));
@@ -495,65 +617,53 @@ requestAnimationFrame(panLoop);
 
 /* ---------- TILT ---------- */
 const TM = 6, TD = 0.08, TI = 0.12, TB = 0.35;
-let tilt = {th: 25 * DEG, w: 0, spring: true, drop: false, last: null};
+const tilt = {th: 25 * DEG, w: 0, spring: true, drop: false, last: null};
 function drawTilt(){
   const svg = $("#tiltSvg"); svg.innerHTML = "";
   const defs = el("defs", {}, svg);
   arrowHead(defs, "ta1", css("--force")); arrowHead(defs, "ta2", css("--accent")); arrowHead(defs, "ta3", css("--accent2"));
-  const px = 250, py = 280, sc = 1000; // 1 m = 1000 px (d = 80 px)
-  const th = tilt.th;
-  // tripé
-  el("path", {d: `M${px},${py + 18} L${px - 90},430 M${px},${py + 18} L${px + 90},430 M${px},${py + 18} L${px},430`, stroke: css("--muted"), "stroke-width": 5, fill: "none"}, svg);
-  el("rect", {x: px - 40, y: py, width: 80, height: 22, rx: 5, fill: css("--panel2"), stroke: css("--muted")}, svg);
-  // vertical de referência
-  el("line", {x1: px, y1: py, x2: px, y2: py - 170, stroke: css("--line"), "stroke-dasharray": "5 5", "stroke-width": 2}, svg);
-  // câmara rodada (θ>0 = inclina para a frente / baixo)
+  const px = 300, py = 270, sc = 1100, th = tilt.th;
+  el("path", {d: `M${px},${py + 20} L${px - 100},428 M${px},${py + 20} L${px + 100},428 M${px},${py + 20} L${px},428`, stroke: css("--muted"), "stroke-width": 5, fill: "none", "stroke-linecap": "round"}, svg);
+  el("rect", {x: px - 44, y: py, width: 88, height: 24, rx: 6, fill: css("--panel2"), stroke: css("--muted"), "stroke-width": 2}, svg);
+  el("line", {x1: px, y1: py, x2: px, y2: py - 190, stroke: css("--line"), "stroke-dasharray": "6 6", "stroke-width": 2}, svg);
   const gC = el("g", {transform: `rotate(${th / DEG} ${px} ${py})`}, svg);
-  el("rect", {x: px - 70, y: py - 120, width: 140, height: 80, rx: 8, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2}, gC);
-  el("rect", {x: px + 70, y: py - 108, width: 90, height: 56, rx: 6, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2}, gC);
-  el("line", {x1: px, y1: py, x2: px, y2: py - TD * sc, stroke: css("--accent2"), "stroke-width": 2.5}, gC);
-  label(gC, px - 8, py - 40, "d", css("--accent2"), 16, "end");
-  el("rect", {x: px - 22, y: py - 40, width: 44, height: 40, fill: css("--panel2"), stroke: css("--muted")}, gC);
-  // CG no referencial global
+  el("rect", {x: px - 26, y: py - 42, width: 52, height: 42, rx: 4, fill: css("--panel2"), stroke: css("--muted"), "stroke-width": 2}, gC);
+  el("rect", {x: px - 78, y: py - 132, width: 156, height: 90, rx: 10, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2.5}, gC);
+  el("rect", {x: px + 78, y: py - 118, width: 96, height: 62, rx: 8, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2.5}, gC);
+  el("line", {x1: px, y1: py, x2: px, y2: py - TD * sc, stroke: css("--accent2"), "stroke-width": 3}, gC);
+  label(gC, px - 10, py - 46, "d", css("--accent2"), 17, "end");
   const cgx = px + TD * sc * Math.sin(th), cgy = py - TD * sc * Math.cos(th);
-  el("circle", {cx: cgx, cy: cgy, r: 9, fill: css("--bg"), stroke: css("--text"), "stroke-width": 2}, svg);
-  el("path", {d: `M${cgx - 9},${cgy} A9,9 0 0 1 ${cgx},${cgy - 9} L${cgx},${cgy} Z M${cgx + 9},${cgy} A9,9 0 0 1 ${cgx},${cgy + 9} L${cgx},${cgy} Z`, fill: css("--text")}, svg);
-  label(svg, cgx + 14, cgy - 10, "CG", css("--text"), 14);
-  // peso
-  vec(svg, cgx, cgy, cgx, cgy + 110, css("--force"), "ta1", 4);
-  label(svg, cgx + 8, cgy + 112, "P = m·g", css("--force"), 15);
-  // braço
-  el("line", {x1: px, y1: cgy, x2: cgx, y2: cgy, stroke: css("--accent"), "stroke-width": 2, "stroke-dasharray": "4 3"}, svg);
-  label(svg, (px + cgx) / 2, cgy - 8, "d·sinθ", css("--accent"), 13, "middle");
-  // eixo
-  el("circle", {cx: px, cy: py, r: 7, fill: css("--accent")}, svg);
-  label(svg, px - 14, py + 6, "eixo", css("--muted"), 13, "end", 500);
-  // binários
-  const tauP = TM * g * TD * Math.sin(th);
-  const tauS = tilt.spring ? TM * g * TD * Math.sin(th) : 0;
-  const ra = 46;
+  vec(svg, cgx, cgy, cgx, cgy + 120, css("--force"), "ta1", 4.5);
+  label(svg, cgx + 10, cgy + 118, "P = m·g", css("--force"), 16);
+  el("line", {x1: px, y1: cgy, x2: cgx, y2: cgy, stroke: css("--accent"), "stroke-width": 2.5, "stroke-dasharray": "5 4"}, svg);
+  if (Math.abs(th) > 6 * DEG) label(svg, th > 0 ? px - 10 : px + 10, cgy + 5, "d·sin θ", css("--accent"), 14, th > 0 ? "end" : "start");
+  cgMark(svg, cgx, cgy); label(svg, cgx + (th >= 0 ? 16 : -16), cgy - 14, "CG", css("--text"), 15, th >= 0 ? "start" : "end");
+  el("circle", {cx: px, cy: py, r: 8, fill: css("--accent")}, svg);
   if (Math.abs(th) > 1 * DEG) {
-    const dir = Math.sign(th), s0 = -90 * DEG, s1 = (-90 + dir * 55) * DEG;
+    const dir = Math.sign(th), ra = 52, s0 = -90 * DEG, s1 = (-90 + dir * 55) * DEG;
     el("path", {d: `M${px + ra * Math.cos(s0)},${py + ra * Math.sin(s0)} A${ra},${ra} 0 0 ${dir > 0 ? 1 : 0} ${px + ra * Math.cos(s1)},${py + ra * Math.sin(s1)}`,
-      fill: "none", stroke: css("--accent"), "stroke-width": 3, "marker-end": "url(#ta2)", transform: `rotate(${th / DEG} ${px} ${py})`}, svg);
-    if (tilt.spring) {
-      const rb = 66, q0 = (-90 + dir * 55) * DEG, q1 = -90 * DEG;
-      el("path", {d: `M${px + rb * Math.cos(q0)},${py + rb * Math.sin(q0)} A${rb},${rb} 0 0 ${dir > 0 ? 0 : 1} ${px + rb * Math.cos(q1)},${py + rb * Math.sin(q1)}`,
-        fill: "none", stroke: css("--accent2"), "stroke-width": 3, "marker-end": "url(#ta3)", transform: `rotate(${th / DEG} ${px} ${py})`}, svg);
-    }
+      fill: "none", stroke: css("--accent"), "stroke-width": 3.5, "marker-end": "url(#ta2)", transform: `rotate(${th / DEG} ${px} ${py})`}, svg);
+    if (tilt.spring) { const rb = 74;
+      el("path", {d: `M${px + rb * Math.cos(s1)},${py + rb * Math.sin(s1)} A${rb},${rb} 0 0 ${dir > 0 ? 0 : 1} ${px + rb * Math.cos(s0)},${py + rb * Math.sin(s0)}`,
+        fill: "none", stroke: css("--accent2"), "stroke-width": 3.5, "marker-end": "url(#ta3)", transform: `rotate(${th / DEG} ${px} ${py})`}, svg); }
   }
-  label(svg, 20, 30, "τ do peso", css("--accent"), 15); label(svg, 110, 30, tilt.spring ? "τ da mola (contrapeso)" : "", css("--accent2"), 15);
-  const net = tauP - tauS;
-  $("#tiltRead").innerHTML = `θ = <b>${fmt(th / DEG, 0)}°</b> &nbsp; braço = d·sinθ = <b>${fmt(TD * Math.sin(th) * 100, 1)} cm</b><br>
-    τ<sub>P</sub> = <b>${fmt(tauP, 2)} N·m</b> &nbsp; τ<sub>mola</sub> = <b>${fmt(tauS, 2)} N·m</b><br>
-    Στ (parada) = <b>${fmt(net, 2)} N·m</b> ⇒ α = Στ/I = <b>${fmt(net / TI, 1)} rad/s²</b>${tilt.drop ? `<br>ω atual = <b>${fmt(tilt.w, 2)} rad/s</b>` : ""}`;
+  label(svg, 24, 36, "● momento do peso", css("--accent"), 15);
+  if (tilt.spring) label(svg, 24, 60, "● momento da mola", css("--accent2"), 15);
+  label(svg, 24, 418, "Vista lateral · eixo horizontal", css("--muted"), 13, "start", 600);
+  const tauP = TM * g * TD * Math.sin(th), net = tauP - (tilt.spring ? tauP : 0);
+  $("#tiltAo").textContent = `${fmt(th / DEG, 0)}°`;
   $("#tiltA").value = Math.round(th / DEG);
+  $("#tiltP").textContent = fmt(tauP, 2);
+  $("#tiltN").textContent = fmt(net, 2);
+  if (tilt.drop) pill($("#tiltStatus"), `A tombar · ω = ${fmt(Math.abs(tilt.w), 2)} rad/s`, "bad");
+  else if (Math.abs(net) < 0.01) pill($("#tiltStatus"), "✓ Equilibrada: Σ τ = 0", "ok");
+  else pill($("#tiltStatus"), "⚠ Sem contrapeso: tende a tombar", "warn");
 }
 function tiltLoop(ts){
   if (tilt.drop && tilt.last != null) {
-    let dt = Math.min(0.03, (ts - tilt.last) / 1000);
+    const dt = Math.min(0.03, (ts - tilt.last) / 1000);
     for (let k = 0; k < 6; k++) { const h = dt / 6;
-      const tau = TM * g * TD * Math.sin(tilt.th) - (tilt.spring ? TM * g * TD * Math.sin(tilt.th) : 0) - TB * tilt.w;
+      const tau = TM * g * TD * Math.sin(tilt.th) - TB * tilt.w;
       tilt.w += tau / TI * h; tilt.th += tilt.w * h;
       if (Math.abs(tilt.th) >= 60 * DEG) { tilt.th = Math.sign(tilt.th) * 60 * DEG; tilt.w = 0; tilt.drop = false; break; } }
     drawTilt();
@@ -561,15 +671,14 @@ function tiltLoop(ts){
   tilt.last = ts; requestAnimationFrame(tiltLoop);
 }
 $("#tiltA").addEventListener("input", e => { tilt.drop = false; tilt.w = 0; tilt.th = +e.target.value * DEG; drawTilt(); });
-$("#tiltSpring").onclick = e => { tilt.spring = !tilt.spring; e.target.classList.toggle("on", tilt.spring);
-  e.target.setAttribute("aria-pressed", tilt.spring); e.target.textContent = `Contrapeso: ${tilt.spring ? "ligado" : "desligado"}`; drawTilt(); };
-$("#tiltDrop").onclick = () => { if (Math.abs(tilt.th) < 2 * DEG) tilt.th = 3 * DEG; tilt.w = 0; tilt.drop = true; };
+$("#tiltSpring").onclick = e => { tilt.spring = !tilt.spring; tilt.drop = false; const b = e.currentTarget; b.classList.toggle("on", tilt.spring);
+  b.setAttribute("aria-pressed", tilt.spring); b.textContent = tilt.spring ? "Contrapeso ligado" : "Contrapeso desligado"; drawTilt(); };
+$("#tiltDrop").onclick = () => { if (Math.abs(tilt.th) < 2 * DEG) tilt.th = 3 * DEG; tilt.w = 0; tilt.drop = !tilt.spring; drawTilt(); };
 $("#tiltReset").onclick = () => { tilt.drop = false; tilt.w = 0; tilt.th = 25 * DEG; drawTilt(); };
 requestAnimationFrame(tiltLoop);
 
 /* ---------- TRAVELLING ---------- */
 const TR = {D: 2.0, T: 6.0, m: 60, mc: 8, mu: 0.01};
-let trav = {ta: 1.5, t: 0, playing: false, last: null};
 function profile(t, ta){
   const vmax = TR.D / (TR.T - ta), a = vmax / ta, T = TR.T;
   if (t <= 0) return {x: 0, v: 0, a: 0, vmax, amax: a};
@@ -583,95 +692,86 @@ function drawTrav(){
   const defs = el("defs", {}, svg);
   arrowHead(defs, "tv", css("--vel")); arrowHead(defs, "tac", css("--acc")); arrowHead(defs, "tf", css("--force"));
   const p = profile(trav.t, trav.ta);
-  const x0 = 70, x1 = 530, ty = 200, px = x0 + (x1 - x0) * p.x / TR.D;
-  // carril
-  el("line", {x1: 30, y1: ty + 34, x2: 570, y2: ty + 34, stroke: css("--muted"), "stroke-width": 6}, svg);
-  for (let i = 40; i < 570; i += 30) el("rect", {x: i, y: ty + 38, width: 14, height: 6, fill: css("--line")}, svg);
-  label(svg, x0, ty + 64, "x = 0", css("--muted"), 12, "middle", 500); label(svg, x1, ty + 64, `x = ${fmt(TR.D, 1)} m`, css("--muted"), 12, "middle", 500);
-  // dolly
-  el("rect", {x: px - 46, y: ty, width: 92, height: 24, rx: 5, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2}, svg);
-  el("circle", {cx: px - 28, cy: ty + 29, r: 7, fill: css("--text")}, svg); el("circle", {cx: px + 28, cy: ty + 29, r: 7, fill: css("--text")}, svg);
-  el("line", {x1: px, y1: ty, x2: px, y2: ty - 40, stroke: css("--text"), "stroke-width": 3}, svg);
-  el("rect", {x: px - 22, y: ty - 66, width: 44, height: 28, rx: 4, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2}, svg);
-  el("rect", {x: px + 22, y: ty - 60, width: 18, height: 16, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2}, svg);
-  // forças
-  const N = TR.m * g, Fa = p.v > 1e-6 || p.a > 0 ? TR.mu * N : 0, Fop = TR.m * p.a + Fa;
-  const k = 3.2; // px por N (horizontais)
-  vec(svg, px, ty + 12, px, ty + 12 + 70, css("--force"), "tf"); label(svg, px + 6, ty + 96, "P", css("--force"), 15);
-  vec(svg, px - 60, ty + 30, px - 60, ty - 30, css("--force"), "tf"); label(svg, px - 80, ty - 32, "N", css("--force"), 15);
-  if (Math.abs(Fop) > 0.3) { const L = Math.max(-150, Math.min(150, Fop * k));
-    vec(svg, px + (L > 0 ? 46 : -46), ty + 12, px + (L > 0 ? 46 : -46) + L, ty + 12, css("--force"), "tf");
-    label(svg, px + (L > 0 ? 46 : -46) + L, ty + 4, "Fop", css("--force"), 14, L > 0 ? "start" : "end"); }
-  if (Fa > 0) { vec(svg, px - 46, ty + 24, px - 46 - Fa * k * 2, ty + 24, css("--force"), "tf"); label(svg, px - 50 - Fa * k * 2, ty + 20, "Fa", css("--force"), 13, "end"); }
-  // v e a
-  if (p.v > 1e-3) { const L = p.v * 200; vec(svg, px, ty - 84, px + L, ty - 84, css("--vel"), "tv"); label(svg, px + L + 6, ty - 79, "v", css("--vel"), 16); }
-  if (Math.abs(p.a) > 1e-3) { const L = Math.max(-140, Math.min(140, p.a * 55)); vec(svg, px, ty - 104, px + L, ty - 104, css("--acc"), "tac");
-    label(svg, px + L + (L > 0 ? 6 : -6), ty - 99, "a", css("--acc"), 16, L > 0 ? "start" : "end"); }
-  label(svg, 20, 30, `t = ${fmt(trav.t, 2)} s   x = ${fmt(p.x, 2)} m`, css("--text"), 16);
-  // gráficos
-  const gx = 50, gw = 230, gy = 300, gh = 120;
-  [[gx, "v (m/s)", s => profile(s, trav.ta).v, 0.6, css("--vel"), false], [gx + 280, "a (m/s²)", s => profile(s, trav.ta).a, 2.6, css("--acc"), true]]
-  .forEach(([ox, name, fn, vmaxAx, col, sym]) => {
-    const zy = sym ? gy + gh / 2 : gy + gh;
+  const x0 = 110, x1 = 530, ty = 190, px = x0 + (x1 - x0) * p.x / TR.D;
+  el("line", {x1: 30, y1: ty + 36, x2: 610, y2: ty + 36, stroke: css("--muted"), "stroke-width": 6}, svg);
+  for (let i = 40; i < 610; i += 32) el("rect", {x: i, y: ty + 41, width: 14, height: 6, fill: css("--line")}, svg);
+  label(svg, x0, ty + 68, "0 m", css("--muted"), 13, "middle", 600); label(svg, x1, ty + 68, `${fmt(TR.D, 1)} m`, css("--muted"), 13, "middle", 600);
+  el("rect", {x: px - 50, y: ty, width: 100, height: 26, rx: 6, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2.5}, svg);
+  el("circle", {cx: px - 30, cy: ty + 31, r: 7, fill: css("--text")}, svg); el("circle", {cx: px + 30, cy: ty + 31, r: 7, fill: css("--text")}, svg);
+  el("line", {x1: px, y1: ty, x2: px, y2: ty - 36, stroke: css("--text"), "stroke-width": 3}, svg);
+  el("rect", {x: px - 24, y: ty - 64, width: 48, height: 30, rx: 5, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2.5}, svg);
+  el("rect", {x: px + 24, y: ty - 58, width: 18, height: 18, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2.5}, svg);
+  const N = TR.m * g, moving = p.v > 1e-6 || p.a > 0, Fa = moving ? TR.mu * N : 0, Fop = TR.m * p.a + Fa, k = 2.6;
+  vec(svg, px, ty + 13, px, ty + 90, css("--force"), "tf"); label(svg, px + 8, ty + 94, "P", css("--force"), 16);
+  vec(svg, px - 20, ty + 36, px - 20, ty - 26, css("--force"), "tf"); label(svg, px - 28, ty - 24, "N", css("--force"), 16, "end");
+  if (Math.abs(Fop) > 0.3) { const L = Math.max(-140, Math.min(140, Fop * k)), s = L > 0 ? 50 : -50;
+    vec(svg, px + s, ty + 13, px + s + L, ty + 13, css("--force"), "tf"); label(svg, px + s + L + (L > 0 ? 6 : -6), ty + 4, "F op", css("--force"), 14, L > 0 ? "start" : "end"); }
+  if (Fa > 0) { vec(svg, px - 50, ty + 24, px - 50 - Fa * k * 2.4, ty + 24, css("--force"), "tf"); label(svg, px - 54 - Fa * k * 2.4, ty + 30, "F a", css("--force"), 14, "end"); }
+  if (p.v > 1e-3) { const L = p.v * 190; vec(svg, px - 24, ty - 82, px - 24 + L, ty - 82, css("--vel"), "tv"); label(svg, px - 18 + L, ty - 76, "v", css("--vel"), 17); }
+  if (Math.abs(p.a) > 1e-3) { const L = Math.max(-150, Math.min(150, p.a * 60)); vec(svg, px - 24, ty - 106, px - 24 + L, ty - 106, css("--acc"), "tac");
+    label(svg, px - 24 + L + (L > 0 ? 6 : -6), ty - 100, "a", css("--acc"), 17, L > 0 ? "start" : "end"); }
+  label(svg, 24, 36, `t = ${fmt(Math.min(trav.t, TR.T), 1)} s`, css("--text"), 18);
+  label(svg, 24, 60, `x = ${fmt(p.x, 2)} m`, css("--muted"), 15, "start", 600);
+  const gy = 318, gw = 250, gh = 110;
+  [[60, "v (m/s)", s => profile(s, trav.ta).v, 0.6, css("--vel"), false], [350, "a (m/s²)", s => profile(s, trav.ta).a, 2.6, css("--acc"), true]]
+  .forEach(([ox, name, fn, M, col, sym]) => {
+    const zy = sym ? gy + gh / 2 : gy + gh, sc = (sym ? gh / 2 : gh) / M;
+    el("rect", {x: ox - 14, y: gy - 30, width: gw + 28, height: gh + 46, rx: 10, fill: css("--panel2")}, svg);
     el("line", {x1: ox, y1: gy, x2: ox, y2: gy + gh, stroke: css("--muted")}, svg);
     el("line", {x1: ox, y1: zy, x2: ox + gw, y2: zy, stroke: css("--muted")}, svg);
-    label(svg, ox, gy - 8, name, col, 14); label(svg, ox + gw, zy + 16, "t (s)", css("--muted"), 12, "end", 500);
-    let d = ""; const sc = (sym ? gh / 2 : gh) / vmaxAx;
-    for (let i = 0; i <= 300; i++) { const s = TR.T * i / 300; const y = zy - Math.max(-vmaxAx, Math.min(vmaxAx, fn(s))) * sc;
-      d += (i ? "L" : "M") + (ox + gw * s / TR.T) + "," + y; }
-    el("path", {d, fill: "none", stroke: col, "stroke-width": 2.5}, svg);
+    label(svg, ox, gy - 10, name, col, 14); label(svg, ox + gw, zy - 6, "t", css("--muted"), 13, "end", 600);
+    let d = "", dn = "";
+    for (let i = 0; i <= 300; i++) { const s = TR.T * i / 300, y = zy - Math.max(-M, Math.min(M, fn(s))) * sc, x = ox + gw * s / TR.T;
+      d += (i ? "L" : "M") + x + "," + y; if (s <= trav.t) dn += (dn ? "L" : "M") + x + "," + y; }
+    el("path", {d, fill: "none", stroke: col, "stroke-width": 2, opacity: .3}, svg);
+    if (dn) el("path", {d: dn, fill: "none", stroke: col, "stroke-width": 3}, svg);
     const cx = ox + gw * Math.min(trav.t, TR.T) / TR.T;
     el("line", {x1: cx, y1: gy, x2: cx, y2: gy + gh, stroke: css("--accent2"), "stroke-dasharray": "3 3"}, svg);
   });
-  // leituras
-  $("#travRead").innerHTML = `v<sub>máx</sub> = <b>${fmt(p.vmax, 2)} m/s</b> &nbsp; |a|<sub>máx</sub> = <b>${fmt(p.amax, 2)} m/s²</b><br>
-    F<sub>a</sub> = μ<sub>r</sub>·m·g = <b>${fmt(TR.mu * TR.m * g, 1)} N</b><br>
-    Força de inércia na cabeça: m<sub>c</sub>·|a|<sub>máx</sub> = <b>${fmt(TR.mc * p.amax, 1)} N</b><br>
-    Agora: v = <b>${fmt(p.v, 2)} m/s</b>, a = <b>${fmt(p.a, 2)} m/s²</b>, F<sub>op</sub> = <b>${fmt(Fop, 1)} N</b>`;
-  const ph = $("#travPhase");
-  if (p.a > 0) { ph.textContent = "Aceleração: ΣF = m·a ≠ 0"; ph.style.background = css("--acc"); ph.style.color = "#111"; }
-  else if (p.a < 0) { ph.textContent = "Travagem: a oposta a v"; ph.style.background = css("--bad"); ph.style.color = "#fff"; }
-  else if (p.v > 0) { ph.textContent = "MRU: F_op = F_a ⇒ ΣF = 0 (1.ª Lei)"; ph.style.background = css("--ok"); ph.style.color = "#fff"; }
-  else { ph.textContent = "Repouso"; ph.style.background = css("--panel2"); ph.style.color = css("--text"); }
+  $("#travA").textContent = fmt(p.amax, 2);
+  $("#travV").textContent = fmt(p.vmax, 2);
+  $("#travF").textContent = fmt(TR.mc * p.amax, 1);
+  if (p.a > 0) pill($("#travPhase"), "Aceleração: Σ F = m · a", "acc");
+  else if (p.a < 0) pill($("#travPhase"), "Travagem: a oposta a v", "bad");
+  else if (p.v > 0) pill($("#travPhase"), "Velocidade constante: Σ F = 0", "ok");
+  else pill($("#travPhase"), trav.t > 0 ? "Parado no fim do carril" : "Parado", "none");
 }
 function travLoop(ts){
   if (trav.playing && trav.last != null) {
-    trav.t += (ts - trav.last) / 1000;
-    if (trav.t >= TR.T + 0.6) { trav.t = TR.T; trav.playing = false; $("#travPlay").textContent = "▶ Reproduzir"; }
+    const dt = (ts - trav.last) / 1000;
+    if (trav.wait > 0) trav.wait -= dt; else trav.t += dt;
+    if (trav.t >= TR.T + 0.4) { trav.t = TR.T; trav.playing = false; $("#travPlay").textContent = "▶ Reproduzir"; }
     drawTrav();
   }
   trav.last = ts; requestAnimationFrame(travLoop);
 }
 function setProfile(ta, btn){
-  trav.ta = ta; trav.t = 0; trav.playing = false; $("#travPlay").textContent = "▶ Reproduzir";
-  ["#travSmooth", "#travHard"].forEach(s => { const b = $(s); const on = b === btn; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
+  trav.ta = ta; trav.t = 0; trav.wait = 0.3; trav.playing = true; $("#travPlay").textContent = "❚❚ Pausa";
+  ["#travSmooth", "#travHard"].forEach(s => { const b = $(s), on = b === btn; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
   drawTrav();
 }
 $("#travSmooth").onclick = e => setProfile(1.5, e.currentTarget);
 $("#travHard").onclick = e => setProfile(0.15, e.currentTarget);
-$("#travPlay").onclick = () => { if (trav.t >= TR.T) trav.t = 0; trav.playing = !trav.playing; $("#travPlay").textContent = trav.playing ? "❚❚ Pausa" : "▶ Reproduzir"; };
+$("#travPlay").onclick = () => { if (trav.t >= TR.T) trav.t = 0; trav.playing = !trav.playing; trav.wait = 0; $("#travPlay").textContent = trav.playing ? "❚❚ Pausa" : "▶ Reproduzir"; };
 requestAnimationFrame(travLoop);
 
 /* ---------- VIBRAÇÕES ---------- */
 function drawVib(){
   const svg = $("#vibSvg"); svg.innerHTML = "";
-  const ox = 34, oy = 160, w = 290, h = 140, rMax = 4, tMax = 5;
+  const ox = 30, oy = 150, w = 255, h = 130, rMax = 4, tMax = 5;
   const X = r => ox + w * r / rMax, Y = T => oy - h * Math.min(T, tMax) / tMax;
-  el("rect", {x: X(Math.SQRT2), y: oy - h, width: X(rMax) - X(Math.SQRT2), height: h, fill: css("--ok"), "fill-opacity": .12}, svg);
+  el("rect", {x: X(Math.SQRT2), y: oy - h, width: X(rMax) - X(Math.SQRT2), height: h, rx: 6, fill: css("--ok"), "fill-opacity": .13}, svg);
   el("line", {x1: ox, y1: oy, x2: ox + w, y2: oy, stroke: css("--muted")}, svg);
   el("line", {x1: ox, y1: oy, x2: ox, y2: oy - h, stroke: css("--muted")}, svg);
   el("line", {x1: ox, y1: Y(1), x2: ox + w, y2: Y(1), stroke: css("--muted"), "stroke-dasharray": "4 4"}, svg);
-  el("line", {x1: X(Math.SQRT2), y1: oy, x2: X(Math.SQRT2), y2: oy - h, stroke: css("--ok"), "stroke-dasharray": "4 4"}, svg);
   [[0.1, css("--accent")], [0.4, css("--accent2")]].forEach(([z, c]) => { let d = "";
     for (let i = 0; i <= 200; i++) { const r = 0.01 + rMax * i / 200;
       const T = Math.sqrt((1 + (2 * z * r) ** 2) / ((1 - r * r) ** 2 + (2 * z * r) ** 2)); d += (i ? "L" : "M") + X(r) + "," + Y(T); }
-    el("path", {d, fill: "none", stroke: c, "stroke-width": 2.2}, svg); });
-  label(svg, ox - 6, Y(1) + 4, "1", css("--muted"), 11, "end", 500);
-  label(svg, X(Math.SQRT2), oy + 14, "√2", css("--ok"), 12, "middle");
-  label(svg, ox + w, oy + 14, "f / f₀", css("--muted"), 12, "end", 500);
-  label(svg, ox + 4, oy - h + 10, "T", css("--muted"), 12, "start", 500);
-  label(svg, X(2.1), oy - h + 14, "isolamento", css("--ok"), 12);
-  label(svg, X(1.25), Y(4.6), "ζ = 0,1", css("--accent"), 11); label(svg, X(1.5), Y(2.2), "ζ = 0,4", css("--accent2"), 11);
+    el("path", {d, fill: "none", stroke: c, "stroke-width": 3, class: "draw"}, svg); });
+  label(svg, ox - 6, Y(1) + 4, "1", css("--muted"), 12, "end", 600);
+  label(svg, X(Math.SQRT2), oy + 16, "√2", css("--ok"), 13, "middle");
+  label(svg, ox + w, oy + 16, "f / f₀", css("--muted"), 13, "end", 600);
+  label(svg, X(2.7), oy - h + 20, "isola", css("--ok"), 14, "middle");
 }
 
 /* ---------- ESTABILIDADE ---------- */
@@ -682,52 +782,42 @@ function drawStab(){
   arrowHead(defs, "sf", css("--force")); arrowHead(defs, "sx", css("--accent2"));
   const h = +$("#stH").value, phi = +$("#stPhi").value * DEG, x = +$("#stX").value;
   const m = 10, Ms = bag ? 8 : 0, b = h * Math.tan(phi);
-  const sc = 200, gx = 280, gy = 410; // chão
-  const Hx = gx, Hy = gy - h * sc;
-  // chão e base
-  el("line", {x1: 20, y1: gy, x2: 540, y2: gy, stroke: css("--muted"), "stroke-width": 2}, svg);
-  el("rect", {x: gx - b * sc, y: gy - 3, width: 2 * b * sc, height: 6, fill: css("--ok"), "fill-opacity": .6}, svg);
-  label(svg, gx, gy + 22, `base de apoio: 2b = ${fmt(2 * b, 2)} m`, css("--ok"), 13, "middle");
-  // pernas
-  el("path", {d: `M${Hx},${Hy} L${gx - b * sc},${gy} M${Hx},${Hy} L${gx + b * sc},${gy}`, stroke: css("--muted"), "stroke-width": 6, fill: "none"}, svg);
-  // câmara (CG à frente por x)
-  const cgCx = Hx + x * sc, cgCy = Hy - 22;
-  el("rect", {x: Hx - 40, y: Hy - 44, width: 80, height: 40, rx: 6, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2}, svg);
-  el("rect", {x: Hx + 40, y: Hy - 38, width: Math.max(20, x * sc * 2 - 40), height: 28, rx: 5, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2}, svg);
-  // saco de areia
-  if (bag) { el("rect", {x: gx - 22, y: gy - 0.3 * sc - 18, width: 44, height: 30, rx: 8, fill: css("--warn"), "fill-opacity": .85}, svg);
-    el("line", {x1: gx, y1: Hy, x2: gx, y2: gy - 0.3 * sc - 18, stroke: css("--muted"), "stroke-width": 2}, svg); }
-  // CG do sistema (câmara + saco; pernas leves desprezadas)
+  const sc = 190, gx = 300, gy = 400, Hx = gx, Hy = gy - h * sc;
   const M = m + Ms, X = (m * x) / M, Yh = (m * (h + 0.11) + Ms * 0.3) / M;
+  const Ftip = (m * g * (b - x) + Ms * g * b) / h, falls = X >= b;
+  el("line", {x1: 20, y1: gy, x2: 620, y2: gy, stroke: css("--muted"), "stroke-width": 2}, svg);
+  el("rect", {x: gx - b * sc, y: gy - 3, width: 2 * b * sc, height: 6, rx: 3, fill: css("--ok"), "fill-opacity": .7}, svg);
+  label(svg, gx, gy + 26, `base: ${fmt(2 * b, 2)} m`, css("--ok"), 14, "middle");
+  const g0 = el("g", {transform: falls ? `rotate(12 ${gx + b * sc} ${gy})` : ""}, svg);
+  el("path", {d: `M${Hx},${Hy} L${gx - b * sc},${gy} M${Hx},${Hy} L${gx + b * sc},${gy}`, stroke: css("--muted"), "stroke-width": 6, fill: "none", "stroke-linecap": "round"}, g0);
+  el("rect", {x: Hx - 42, y: Hy - 46, width: 84, height: 42, rx: 7, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2.5}, g0);
+  el("rect", {x: Hx + 42, y: Hy - 40, width: Math.max(22, x * sc * 2 - 42), height: 30, rx: 6, fill: css("--panel2"), stroke: css("--text"), "stroke-width": 2.5}, g0);
+  if (bag) { el("line", {x1: gx, y1: Hy, x2: gx, y2: gy - 0.3 * sc - 18, stroke: css("--muted"), "stroke-width": 2}, g0);
+    el("rect", {x: gx - 24, y: gy - 0.3 * sc - 18, width: 48, height: 32, rx: 9, fill: css("--warn")}, g0); }
   const Cx = gx + X * sc, Cy = gy - Yh * sc;
-  el("line", {x1: Cx, y1: Cy, x2: Cx, y2: gy, stroke: css("--force"), "stroke-dasharray": "5 4", "stroke-width": 2}, svg);
-  vec(svg, Cx, Cy, Cx, Cy + 80, css("--force"), "sf", 4);
-  label(svg, Cx + 8, Cy + 70, "P total", css("--force"), 14);
-  el("circle", {cx: Cx, cy: Cy, r: 9, fill: css("--bg"), stroke: css("--text"), "stroke-width": 2}, svg);
-  el("path", {d: `M${Cx - 9},${Cy} A9,9 0 0 1 ${Cx},${Cy - 9} L${Cx},${Cy} Z M${Cx + 9},${Cy} A9,9 0 0 1 ${Cx},${Cy + 9} L${Cx},${Cy} Z`, fill: css("--text")}, svg);
-  label(svg, Cx - 14, Cy - 12, "CG", css("--text"), 14, "end");
-  // pé da frente = pivô de tombamento
-  el("circle", {cx: gx + b * sc, cy: gy, r: 6, fill: css("--accent")}, svg);
-  label(svg, gx + b * sc + 8, gy - 8, "pivô (pé da frente)", css("--accent"), 12);
-  // força horizontal de tombamento à altura h
-  const restoring = m * g * (b - x) + Ms * g * b;
-  const Ftip = restoring / h;
-  if (Ftip > 0) { vec(svg, Hx - 130, Hy, Hx - 50, Hy, css("--accent2"), "sx", 3); label(svg, Hx - 132, Hy - 8, "F (empurrão)", css("--accent2"), 13); }
-  label(svg, 20, 30, `m câmara = ${m} kg${bag ? " · saco 8 kg" : ""}`, css("--text"), 15);
-  $("#stRead").innerHTML = `Meia-base b = h·tanφ = <b>${fmt(b, 2)} m</b> &nbsp; CG do sistema: x = <b>${fmt(X, 2)} m</b>, y = <b>${fmt(Yh, 2)} m</b><br>
-    Momentos no pé da frente: F·h = m g (b − x)${bag ? " + M<sub>s</sub> g b" : ""}<br>
-    Força horizontal para tombar: <b>${Ftip > 0 ? fmt(Ftip, 1) + " N" : "0 N (já tomba)"}</b>`;
-  const st = $("#stStatus");
-  if (X >= b) { st.textContent = "✕ CG fora da base: o tripé tomba"; st.style.background = css("--bad"); st.style.color = "#fff"; }
-  else if (Ftip < 15) { st.textContent = "⚠ Equilíbrio precário"; st.style.background = css("--warn"); st.style.color = "#111"; }
-  else { st.textContent = "✓ Equilíbrio estável"; st.style.background = css("--ok"); st.style.color = "#fff"; }
+  el("line", {x1: Cx, y1: Cy, x2: Cx, y2: gy, stroke: css("--force"), "stroke-dasharray": "5 4", "stroke-width": 2}, g0);
+  vec(g0, Cx, Cy, Cx, Cy + 86, css("--force"), "sf", 4.5);
+  label(g0, Cx + 10, Cy + 78, "P", css("--force"), 16);
+  cgMark(g0, Cx, Cy); label(g0, Cx - 16, Cy - 12, "CG", css("--text"), 15, "end");
+  el("circle", {cx: gx + b * sc, cy: gy, r: 7, fill: css("--accent")}, svg);
+  label(svg, gx + b * sc + 10, gy - 10, "pivô", css("--accent"), 14);
+  if (!falls) { vec(svg, Hx - 150, Hy, Hx - 56, Hy, css("--accent2"), "sx", 4); label(svg, Hx - 150, Hy - 12, "empurrão F", css("--accent2"), 14); }
+  label(svg, 24, 36, `câmara ${m} kg${bag ? " + saco 8 kg" : ""}`, css("--text"), 16);
+  $("#stHo").textContent = `${fmt(h, 2)} m`;
+  $("#stPhio").textContent = `${$("#stPhi").value}°`;
+  $("#stXo").textContent = `${fmt(x, 2)} m`;
+  $("#stF").textContent = falls ? "0 N" : `${fmt(Ftip, 1)} N`;
+  if (falls) pill($("#stStatus"), "✕ CG fora da base: tomba", "bad");
+  else if (Ftip < 15) pill($("#stStatus"), "⚠ Equilíbrio precário", "warn");
+  else pill($("#stStatus"), "✓ Equilíbrio estável", "ok");
 }
 ["#stH", "#stPhi", "#stX"].forEach(s => $(s).addEventListener("input", drawStab));
-$("#stBag").onclick = e => { bag = !bag; e.target.classList.toggle("on", bag); e.target.setAttribute("aria-pressed", bag);
-  e.target.textContent = `Saco de areia (8 kg): ${bag ? "ligado" : "desligado"}`; drawStab(); };
+$("#stBag").onclick = e => { bag = !bag; const b = e.currentTarget; b.classList.toggle("on", bag); b.setAttribute("aria-pressed", bag);
+  b.textContent = bag ? "− Saco de areia" : "+ Saco de areia"; drawStab(); };
 
 function redrawAll(){ drawPan(); drawTilt(); drawTrav(); drawVib(); drawStab(); }
 redrawAll();
+go(Math.max(0, (parseInt(location.hash.slice(1)) || 1) - 1));
 })();
 </script>
 </body>
