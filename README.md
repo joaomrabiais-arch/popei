@@ -1,6 +1,8 @@
 # popei
 
 **Site (atual):** [`site/`](site/) — loja **Poupei**: página de produto do kit de escovagem com aspiração (fornecedor e dados por confirmar: ver [`PRODUTO-KIT.md`](PRODUTO-KIT.md)). Ver [`site/LEIA-ME.md`](site/LEIA-ME.md). Testes: `npm test`.
+**Munchi (ex-NutriVida):** [`munchi/AUDITORIA.md`](munchi/AUDITORIA.md) — auditoria da app de nutrição e plano por fases; original em [`munchi/nutrivida-original.html`](munchi/nutrivida-original.html).
+
 
 Análise e kit de arranque a partir do vídeo TikTok "$12.5k this month — AI Dropshipping" (TeemDrop).
 
