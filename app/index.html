@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#F7F4ED">
 <title>Brota</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
 /* ===== Sistema visual =====
    Uma cor de marca (verde abacate), um destaque raro (coral) e neutros quentes.
@@ -18,7 +18,7 @@
   --r-sm:12px;--r-md:16px;--r-lg:24px;
   --sh-1:0 1px 2px rgba(26,42,31,.04);
   --sh-2:0 16px 48px rgba(26,42,31,.14);
-  --f:"Geist",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --f:"DM Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;--fd:"Bricolage Grotesque","DM Sans",system-ui,sans-serif;
   --ease:cubic-bezier(.2,.8,.2,1);
   --gut:22px;
   color-scheme:light;
@@ -40,8 +40,8 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:400 15px/1.5 var(--f);-webkit-font-smoothing:antialiased;letter-spacing:-.005em;padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
-h1,h2,h3{font-family:var(--f);margin:0;line-height:1.2;color:var(--ink)}
-h1{font-size:26px;font-weight:600;letter-spacing:-.025em}
+h1,h2,h3{font-family:var(--fd);margin:0;line-height:1.2;color:var(--ink)}
+h1{font-size:28px;font-weight:600;letter-spacing:-.03em}
 h2{font-size:17px;font-weight:600;letter-spacing:-.015em}
 h3{font-size:15px;font-weight:600;letter-spacing:-.01em}
 p{margin:0}
@@ -125,7 +125,7 @@ button.li:active{background:var(--surface-2)}
 .ring{position:relative;width:120px;height:120px}
 .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
 .ring .rv{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
-.ring .rv b{font:600 28px/1 var(--f);letter-spacing:-.03em}
+.ring .rv b{font:600 30px/1 var(--fd);letter-spacing:-.03em}
 .ring .rv small{color:var(--muted);font-size:12px;margin-top:4px}
 .ring circle{fill:none;stroke-width:9;stroke-linecap:round}
 .ring .tr{stroke:var(--surface-2)}
@@ -190,7 +190,7 @@ ul.ing li:first-child{border-top:0}
 ul.ing li span:last-child{color:var(--muted);text-align:right}
 .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
 .facts div{background:var(--surface-2);border-radius:var(--r-sm);padding:10px 4px}
-.facts b{display:block;font:600 16px var(--f);font-variant-numeric:tabular-nums}
+.facts b{display:block;font:600 16px var(--fd);font-variant-numeric:tabular-nums}
 .facts small{font-size:11px;color:var(--muted)}
 
 /* Planos */
@@ -273,7 +273,7 @@ ul.ing li span:last-child{color:var(--muted);text-align:right}
 .full .in{max-width:480px;width:100%;margin:0 auto;flex:1;display:flex;flex-direction:column;padding:calc(18px + env(safe-area-inset-top,0px)) var(--gut) calc(22px + env(safe-area-inset-bottom,0px));overflow-y:auto}
 #splash{align-items:center;justify-content:center;text-align:center;transition:opacity .4s}
 #splash.out{opacity:0;pointer-events:none}
-#splash h1{font-size:30px;margin-top:18px;letter-spacing:-.03em}
+#splash h1{font-family:var(--fd);font-size:34px;margin-top:18px;letter-spacing:-.03em}
 #splash p{color:var(--muted);margin-top:4px}
 .bounce{animation:float 2.4s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
@@ -281,7 +281,7 @@ ul.ing li span:last-child{color:var(--muted);text-align:right}
 .obbar i{display:block;height:100%;background:var(--brand);transition:width .35s var(--ease)}
 .ob-q{margin:32px 0 22px}
 .ob-q .mascot{margin-bottom:16px}
-.ob-q .speech b{font:600 22px/1.25 var(--f);letter-spacing:-.02em;color:var(--ink);display:block;margin-bottom:6px}
+.ob-q .speech b{font:600 24px/1.2 var(--fd);letter-spacing:-.02em;color:var(--ink);display:block;margin-bottom:6px}
 .speech{font-size:14px;color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,12px);opacity:0;z-index:90;background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:var(--r-sm);font-weight:500;font-size:14px;transition:all .25s var(--ease);pointer-events:none;width:max-content;max-width:calc(100% - 44px);text-align:center}
 .toast.on{opacity:1;transform:translate(-50%,0)}
@@ -327,7 +327,7 @@ ul.ing li span:last-child{color:var(--muted);text-align:right}
 .bars small{font-size:11px;color:var(--faint)}
 .stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .stat3 div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px;text-align:center}
-.stat3 b{display:block;font:600 20px var(--f);font-variant-numeric:tabular-nums}
+.stat3 b{display:block;font:600 20px var(--fd);font-variant-numeric:tabular-nums}
 .stat3 small{font-size:12px;color:var(--muted)}
 .msg{padding:10px 14px;border-radius:16px;max-width:85%;margin-top:8px;font-size:14px;white-space:pre-wrap;width:fit-content}
 .msg.u{background:var(--brand);color:var(--brand-ink);margin-left:auto;border-bottom-right-radius:6px}
@@ -338,6 +338,15 @@ ul.ing li span:last-child{color:var(--muted);text-align:right}
 .mascot .arm-wave{animation:wave 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:0% 100%}
 @keyframes wave{0%,100%{transform:rotate(0)}50%{transform:rotate(-18deg)}}
 .saving{display:none}
+.mascots{display:flex;align-items:flex-end;gap:4px}
+.tipline{min-height:30px}
+.water .wdrop{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand);flex:none}
+.ob-form .seg{margin-bottom:12px}
+.ref{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center;margin-top:16px}
+.ref div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 4px}
+.ref b{display:block;font:600 18px var(--fd);font-variant-numeric:tabular-nums}
+.ref small{font-size:11px;color:var(--muted)}
+.skip{color:var(--muted);font-size:14px;font-weight:500;padding:12px 0;width:100%}
 </style>
 </head>
 <body>
@@ -460,6 +469,7 @@ ul.ing li span:last-child{color:var(--muted);text-align:right}
 <symbol id="i-coffee" viewBox="0 0 24 24"><path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5zM16 10.5h1.5a2.5 2.5 0 0 1 0 5H16M8 3.5c-.8 1 .8 2 0 3M12 3.5c-.8 1 .8 2 0 3"/></symbol>
 <symbol id="i-bowl" viewBox="0 0 24 24"><path d="M3.5 11h17a8.5 8.5 0 0 1-17 0zM9 19.5h6M8 8c0-2 2-2 2-4M13 8c0-2 2-2 2-4"/></symbol>
 <symbol id="i-apple" viewBox="0 0 24 24"><path d="M12 8c-1.5-1.3-6-1.6-6.5 3.5C5 16 8 20 10 20c1 0 1.2-.5 2-.5s1 .5 2 .5c2 0 5-4 4.5-8.5C18 6.4 13.5 6.7 12 8zM12 8c0-2 .8-3.6 2.5-4.5"/></symbol>
+<symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.5s6 6.6 6 11a6 6 0 0 1-12 0c0-4.4 6-11 6-11z"/></symbol>
 <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z"/></symbol>
 <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7M9.5 17h5"/></symbol>
 <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/></symbol>
@@ -485,7 +495,7 @@ const BRAND = {
   name: "Brota",                    // nome provisório: confirmar registo de marca antes de lançar
   tagline: "Come bem, mexe-te, sem pressão.",
   mascot: "Abi",                    // o abacate
-  mascot2: "Pingo",                 // a gota de água
+  mascot2: "Morango",               // o morango
   storageKey: "brota_v1",
   legacyKeys: ["nutrivida"]         // dados da NutriVida migrados automaticamente
 };
@@ -536,7 +546,7 @@ const lowMotion = () => S.mot || matchMedia("(prefers-reduced-motion:reduce)").m
 /* ========================== Estado ========================== */
 const DEFAULT = { v:1, ob:0, u:null, goal:2000, showKcal:true, wg:8, days:{}, water:{}, favM:[], fav:[], plan:[], shop:[], shopH:[],
   wk:null, wkHist:{}, ch:{}, chPaid:{}, spins:0, round:0, golden:0, owned:[], equip:null, accent:"", theme:"", snd:false, mot:false,
-  ach:{}, well:{}, ropen:[], prof:{ sex:"f", age:30, h:165, w:65, act:"1.375" } };
+  ach:{}, well:{}, ropen:[], macro:null, prof:{ sex:"f", age:30, h:165, w:65, act:"1.375" } };
 let S = structuredClone(DEFAULT);
 
 function load(){
@@ -567,54 +577,81 @@ const isMinor = () => !(S.u && S.u.age === "18 ou mais");
 const kcalOn = () => S.showKcal && !isMinor();
 
 /* ========================== Mascotes (originais) ========================== */
-// Abi, o abacate. Humores: happy, wow, party, think, sleepy, wave. acc = acessório vestido.
+// Abi, o abacate: calmo, sábio, um pouco descontraído. Humores: happy, wave, wow, party, think, sleepy.
 function abi({ mood="happy", size=120, acc, cls="" } = {}){
   if (acc === undefined) acc = S.equip;
-  const look = mood === "think" ? [1,-3] : [0,1];
-  const eyesOpen = `<g class="eyes"><ellipse cx="47" cy="66" rx="8.5" ry="9.5" fill="#fff"/><ellipse cx="73" cy="66" rx="8.5" ry="9.5" fill="#fff"/>
-    <circle cx="${48+look[0]}" cy="${66+look[1]}" r="5" fill="#17261D"/><circle cx="${74+look[0]}" cy="${66+look[1]}" r="5" fill="#17261D"/>
-    <circle cx="${49.8+look[0]}" cy="${64.2+look[1]}" r="1.8" fill="#fff"/><circle cx="${75.8+look[0]}" cy="${64.2+look[1]}" r="1.8" fill="#fff"/></g>`;
-  const eyesClosed = mood === "sleepy"
-    ? `<path d="M40 66q7 5 14 0M66 66q7 5 14 0" stroke="#17261D" stroke-width="3" fill="none" stroke-linecap="round"/>`
-    : `<path d="M40 68q7-8 14 0M66 68q7-8 14 0" stroke="#17261D" stroke-width="3" fill="none" stroke-linecap="round"/>`;
-  const smile = `<path d="M53 79q7 7 14 0" stroke="#17261D" stroke-width="3" fill="none" stroke-linecap="round"/>`;
-  const mouth = { happy:smile, wave:smile, wow:`<ellipse cx="60" cy="81" rx="4.5" ry="5.5" fill="#17261D"/>`,
-    party:`<path d="M51 77q9 13 18 0z" fill="#17261D"/><path d="M55.5 82.5q4.5 3.5 9 0" fill="#F0734F"/>`,
-    think:`<path d="M55 81q5-2 10 0" stroke="#17261D" stroke-width="3" fill="none" stroke-linecap="round"/>`,
-    sleepy:`<ellipse cx="60" cy="81" rx="3" ry="2.5" fill="#17261D"/>` }[mood] || smile;
-  const arm = d => `<path d="${d}" stroke="#24502C" stroke-width="7" fill="none" stroke-linecap="round"/>`;
-  const arms = mood === "party" ? arm("M22 84q-12-10-10-24") + arm("M98 84q12-10 10-24")
-    : mood === "wave" ? arm("M22 92q-9 4-11 12") + `<g class="arm-wave">${arm("M98 92q10-8 12-20")}</g>`
-    : arm("M22 92q-9 4-11 12") + arm("M98 92q9 4 11 12");
+  const INK = "#1F2B22", SKIN = "#4C8445", RIM = "#2F5A2E", FLESH = "#E2EBB4", FLESH2 = "#EEF3CF", PIT = "#9A6743", PIT2 = "#B88660", CHEEK = "#E08F78";
+  const relaxed = mood === "happy" || mood === "wave";   // pálpebras a meio: o olhar calmo do Abi
+  const look = mood === "think" ? [2,-2] : [0,0];
+  const eye = cx => `<ellipse cx="${cx}" cy="66" rx="7.5" ry="8.5" fill="#fff"/><circle cx="${cx+look[0]}" cy="${67+look[1]}" r="4.4" fill="${INK}"/><circle cx="${cx+1.6+look[0]}" cy="${65.2+look[1]}" r="1.5" fill="#fff"/>`
+    + (relaxed ? `<path d="M${cx-8.5} 64.5Q${cx} 57 ${cx+8.5} 64.5L${cx+8.5} 56.5L${cx-8.5} 56.5Z" fill="${FLESH}"/><path d="M${cx-8} 64.3Q${cx} 57.2 ${cx+8} 64.3" stroke="${INK}" stroke-width="2" fill="none" stroke-linecap="round"/>` : "");
+  const closed = mood === "sleepy" ? d => `<path d="M${d-7} 65q7 5 14 0" stroke="${INK}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
+                                   : d => `<path d="M${d-7} 68q7-7 14 0" stroke="${INK}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+  const eyes = (mood === "party" || mood === "sleepy") ? closed(47) + closed(73) : `<g class="eyes">${eye(47)}${eye(73)}</g>`;
+  const brows = mood === "think" ? `<path d="M40 53q7-4 14-1" stroke="${INK}" stroke-width="2" fill="none" stroke-linecap="round"/>`
+    : mood === "wow" ? `<path d="M40 53q7-4 14 0M66 53q7-4 14 0" stroke="${INK}" stroke-width="2" fill="none" stroke-linecap="round"/>` : "";
+  const line = d => `<path d="${d}" stroke="${INK}" stroke-width="2.3" fill="none" stroke-linecap="round"/>`;
+  const mouth = { happy:line("M54.5 79q5.5 4.5 11 0"), wave:line("M54.5 79q5.5 4.5 11 0"), think:line("M56 80.5q4-1.8 8 0"), sleepy:line("M56.5 80q3.5 2 7 0"),
+    wow:`<ellipse cx="60" cy="80.5" rx="3.2" ry="4" fill="${INK}"/>`,
+    party:`<path d="M52 77q8 11 16 0z" fill="${INK}"/><path d="M55.6 82.4q4.4 3 8.8 0" fill="#E9796D"/>` }[mood] || line("M54.5 79q5.5 4.5 11 0");
+  const arm = d => `<path d="${d}" stroke="${RIM}" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+  const arms = mood === "party" ? arm("M21 86q-11-9-9-22") + arm("M99 86q11-9 9-22")
+    : mood === "wave" ? arm("M21 93q-8 4-10 11") + `<g class="arm-wave">${arm("M99 93q9-7 11-18")}</g>`
+    : arm("M21 93q-8 4-10 11") + arm("M99 93q8 4 10 11");
   const A = {
     acc_chef:`<path d="M42 24c-9 0-11-13 0-14 2-7 14-9 18-2 5-7 17-4 17 3 10 1 9 14 0 14z" fill="#fff" stroke="#D8D3C4" stroke-width="2"/><rect x="43" y="21" width="34" height="9" rx="2" fill="#fff" stroke="#D8D3C4" stroke-width="2"/>`,
-    acc_oculos:`<rect x="36" y="58" width="22" height="15" rx="6" fill="#17261D"/><rect x="62" y="58" width="22" height="15" rx="6" fill="#17261D"/><path d="M58 63h4" stroke="#17261D" stroke-width="3"/><path d="M40 62l6-2M66 62l6-2" stroke="#fff" stroke-width="2" opacity=".45"/>`,
-    acc_banda:`<path d="M30 42q30-13 60 0l-2 8q-28-11-56 0z" fill="#F0734F"/><path d="M88 44l9-4-2 9z" fill="#F0734F"/>`,
-    acc_cachecol:`<path d="M23 95q37 14 74 0l1 9q-38 15-76 0z" fill="#C4563A"/><path d="M80 104l6 22-9 1-4-20z" fill="#C4563A"/><path d="M32 99l1 6M44 102l1 6M56 104v6M68 104l-1 6" stroke="#fff" stroke-width="2" opacity=".5"/>`,
-    acc_coroa:`<path d="M40 27l4-17 9 10 7-14 7 14 9-10 4 17z" fill="#D9A13B" stroke="#9A6A12" stroke-width="2" stroke-linejoin="round"/><circle cx="60" cy="20" r="2.5" fill="#fff"/>`
+    acc_oculos:`<rect x="37" y="59" width="21" height="14" rx="6" fill="${INK}"/><rect x="62" y="59" width="21" height="14" rx="6" fill="${INK}"/><path d="M58 64h4" stroke="${INK}" stroke-width="2.5"/><path d="M41 63l6-2M67 63l6-2" stroke="#fff" stroke-width="1.8" opacity=".4"/>`,
+    acc_banda:`<path d="M31 43q29-12 58 0l-2 7q-27-10-54 0z" fill="#D9775A"/><path d="M87 45l8-4-1.5 8z" fill="#D9775A"/>`,
+    acc_cachecol:`<path d="M23 95q37 14 74 0l1 9q-38 15-76 0z" fill="#B95C40"/><path d="M80 104l6 22-9 1-4-20z" fill="#B95C40"/><path d="M32 99l1 6M44 102l1 6M56 104v6M68 104l-1 6" stroke="#fff" stroke-width="1.8" opacity=".45"/>`,
+    acc_coroa:`<path d="M40 27l4-17 9 10 7-14 7 14 9-10 4 17z" fill="#C9A04A" stroke="#8A6420" stroke-width="2" stroke-linejoin="round"/><circle cx="60" cy="20" r="2.5" fill="#fff"/>`
   };
+  const sprout = (acc === "acc_chef" || acc === "acc_coroa") ? "" :
+    `<path d="M60 10q1-5-1-8" stroke="${RIM}" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M60.5 5c5-6 13-6 16-4-3 6-10 8-16 4z" fill="#6FA35F" stroke="${RIM}" stroke-width="1.6" stroke-linejoin="round"/>`;
   return `<svg class="mascot ${cls}" width="${size}" height="${Math.round(size*140/120)}" viewBox="0 0 120 140" role="img" aria-label="${esc(BRAND.mascot)}, o abacate">
-    <ellipse cx="60" cy="137" rx="34" ry="3.5" fill="#17261D" opacity=".08"/>${arms}
-    <path d="M60 8C78 8 86 30 90 46c6 20 18 30 18 52 0 24-22 38-48 38S12 122 12 98c0-22 12-32 18-52C34 30 42 8 60 8z" fill="#3F7D3A" stroke="#24502C" stroke-width="3"/>
-    <path d="M60 17c13 0 19 17 23 31 5 18 15 28 15 50 0 18-17 30-38 30S22 116 22 98c0-22 10-32 15-50 4-14 10-31 23-31z" fill="#DCE9A9"/>
-    <circle cx="60" cy="104" r="18" fill="#94603D"/><ellipse cx="53" cy="97" rx="5" ry="3.5" fill="#B47A52" transform="rotate(-25 53 97)"/>
-    <ellipse cx="37" cy="78" rx="5.5" ry="3.5" fill="#F0734F" opacity=".35"/><ellipse cx="83" cy="78" rx="5.5" ry="3.5" fill="#F0734F" opacity=".35"/>
-    ${(mood === "party" || mood === "sleepy") ? eyesClosed : eyesOpen}${mouth}
-    <ellipse cx="46" cy="136" rx="8" ry="4" fill="#24502C"/><ellipse cx="74" cy="136" rx="8" ry="4" fill="#24502C"/>
+    <ellipse cx="60" cy="137" rx="32" ry="3" fill="${INK}" opacity=".07"/>${arms}${sprout}
+    <path d="M60 9C78 9 86 30 90 46c6 20 18 30 18 52 0 24-22 38-48 38S12 122 12 98c0-22 12-32 18-52C34 30 42 9 60 9z" fill="${SKIN}" stroke="${RIM}" stroke-width="2.5"/>
+    <path d="M60 17c13 0 19 17 23 31 5 18 15 28 15 50 0 18-17 30-38 30S22 116 22 98c0-22 10-32 15-50 4-14 10-31 23-31z" fill="${FLESH}"/>
+    <path d="M60 27c10 0 15 13 18 24 4 15 12 24 12 42 0 14-13 24-30 24S30 107 30 93c0-18 8-27 12-42 3-11 8-24 18-24z" fill="${FLESH2}" opacity=".75"/>
+    <circle cx="60" cy="104" r="17" fill="${PIT}"/><ellipse cx="54" cy="98" rx="5" ry="3.2" fill="${PIT2}" transform="rotate(-28 54 98)"/>
+    <ellipse cx="38" cy="77" rx="5" ry="3" fill="${CHEEK}" opacity=".42"/><ellipse cx="82" cy="77" rx="5" ry="3" fill="${CHEEK}" opacity=".42"/>
+    ${brows}${eyes}${mouth}
+    <ellipse cx="47" cy="136" rx="7.5" ry="3.6" fill="${RIM}"/><ellipse cx="73" cy="136" rx="7.5" ry="3.6" fill="${RIM}"/>
     ${acc && A[acc] ? A[acc] : ""}
-    ${mood === "sleepy" ? `<text x="92" y="30" font-family="DM Sans,sans-serif" font-weight="700" font-size="14" fill="#93A196">z</text><text x="101" y="18" font-family="DM Sans,sans-serif" font-weight="700" font-size="10" fill="#93A196">z</text>` : ""}
+    ${mood === "sleepy" ? `<text x="92" y="32" font-family="DM Sans,sans-serif" font-weight="600" font-size="13" fill="#9AA39C">z</text><text x="100" y="21" font-family="DM Sans,sans-serif" font-weight="600" font-size="9" fill="#9AA39C">z</text>` : ""}
   </svg>`;
 }
-// Pingo, a gota de água. Aparece na hidratação.
-function pingo({ mood="happy", size=56 } = {}){
-  const eyes = mood === "party"
-    ? `<path d="M34 60q6-7 12 0M54 60q6-7 12 0" stroke="#0E3A57" stroke-width="3" fill="none" stroke-linecap="round"/>`
-    : `<g class="eyes"><ellipse cx="40" cy="60" rx="6.5" ry="7.5" fill="#fff"/><ellipse cx="60" cy="60" rx="6.5" ry="7.5" fill="#fff"/><circle cx="41" cy="61" r="4" fill="#0E3A57"/><circle cx="61" cy="61" r="4" fill="#0E3A57"/><circle cx="42.3" cy="59.5" r="1.4" fill="#fff"/><circle cx="62.3" cy="59.5" r="1.4" fill="#fff"/></g>`;
-  const m = mood === "party" ? `<path d="M41 70q9 11 18 0z" fill="#0E3A57"/>` : `<path d="M43 71q7 6 14 0" stroke="#0E3A57" stroke-width="3" fill="none" stroke-linecap="round"/>`;
-  return `<svg class="mascot" width="${size}" height="${Math.round(size*1.12)}" viewBox="0 0 100 112" role="img" aria-label="${esc(BRAND.mascot2)}, a gota de água">
-    <path d="M50 6s36 42 36 68a36 36 0 0 1-72 0C14 48 50 6 50 6z" fill="#5AB4E8" stroke="#2E86BF" stroke-width="3"/>
-    <path d="M30 60c2-10 8-20 14-28" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".55"/>
-    ${eyes}<ellipse cx="31" cy="71" rx="4.5" ry="3" fill="#F0734F" opacity=".35"/><ellipse cx="69" cy="71" rx="4.5" ry="3" fill="#F0734F" opacity=".35"/>${m}</svg>`;
+// Morango: enérgico, curioso, expressivo e um bocadinho traquina. Humores: happy, wink, wow, party, think, sleepy.
+function morango({ mood="happy", size=90, cls="" } = {}){
+  const INK = "#2A1A18", RED = "#D9584B", RIM = "#A8392F", HI = "#E87A6E", SEED = "#F6DDA9", LEAF = "#5E9A4F", LEAFR = "#3D6E35";
+  const eye = cx => `<ellipse cx="${cx}" cy="78" rx="8.5" ry="9.5" fill="#fff"/><circle cx="${cx + (mood === "think" ? 2 : 0)}" cy="${mood === "think" ? 75 : 79}" r="4.8" fill="${INK}"/><circle cx="${cx + 1.8 + (mood === "think" ? 2 : 0)}" cy="${mood === "think" ? 73 : 77}" r="1.7" fill="#fff"/>`;
+  const shut = (cx, up) => `<path d="M${cx-7} ${up ? 80 : 77}q7 ${up ? -7 : 5} 14 0" stroke="${INK}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+  const eyes = mood === "party" ? shut(47, 1) + shut(73, 1) : mood === "sleepy" ? shut(47) + shut(73)
+    : mood === "wink" ? `<g class="eyes">${eye(47)}</g>` + shut(73, 1) : `<g class="eyes">${eye(47)}${eye(73)}</g>`;
+  const brow = d => `<path d="${d}" stroke="${INK}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+  const brows = mood === "sleepy" ? "" : mood === "wow" ? brow("M39 64q8-5 15-1M66 63q7-4 15 1")
+    : brow("M40 65.5l13 1.5") + brow("M67 65q7-6 14-2");   // uma sobrancelha levantada: ar traquina
+  const grin = `<path d="M50 89q10 12 20 0z" fill="${INK}"/><path d="M55 94q5 3.5 10 0" fill="#F2A08F"/>`;
+  const mouth = { happy:grin, wink:grin, party:`<path d="M48 88q12 15 24 0z" fill="${INK}"/><path d="M54 94.5q6 4 12 0" fill="#F2A08F"/>`,
+    wow:`<ellipse cx="60" cy="92" rx="4" ry="5" fill="${INK}"/>`, think:brow("M54 93q6-3.5 12-.5"), sleepy:`<ellipse cx="60" cy="92" rx="2.6" ry="2.2" fill="${INK}"/>` }[mood] || grin;
+  const arm = d => `<path d="${d}" stroke="${RIM}" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+  const arms = mood === "party" ? arm("M20 84q-12-8-10-22") + arm("M100 84q12-8 10-22")
+    : mood === "wink" || mood === "happy" ? arm("M19 90q-9 4-10 12") + `<g class="arm-wave">${arm("M101 88q10-6 12-18")}</g>`
+    : arm("M19 90q-9 4-10 12") + arm("M101 90q9 4 10 12");
+  const seeds = [[34,60],[86,60],[25,82],[95,82],[38,110],[82,110],[60,122],[60,54],[30,100],[90,100]]
+    .map(([x,y]) => `<ellipse cx="${x}" cy="${y}" rx="1.7" ry="2.7" fill="${SEED}"/>`).join("");
+  return `<svg class="mascot ${cls}" width="${size}" height="${Math.round(size*140/120)}" viewBox="0 0 120 140" role="img" aria-label="${esc(BRAND.mascot2)}, o morango">
+    <ellipse cx="60" cy="137" rx="28" ry="3" fill="${INK}" opacity=".07"/>${arms}
+    <path d="M60 40C84 34 106 46 104 72c-2 26-24 52-44 60-20-8-42-34-44-60C14 46 36 34 60 40z" fill="${RED}" stroke="${RIM}" stroke-width="2.5"/>
+    <path d="M30 56c4-8 12-12 20-12" stroke="${HI}" stroke-width="5" fill="none" stroke-linecap="round" opacity=".7"/>
+    ${seeds}
+    <path d="M60 41c-8-10-20-10-26-6 8 4 16 8 26 8s18-4 26-8c-6-4-18-4-26 6z" fill="${LEAF}" stroke="${LEAFR}" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M60 42c-4-8-2-17 2-21 2 6 2 14-2 21z" fill="${LEAF}" stroke="${LEAFR}" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M62 22q4-8-2-12-5-3-2-7" stroke="${LEAFR}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <ellipse cx="35" cy="91" rx="5" ry="3" fill="#F3A08F" opacity=".5"/><ellipse cx="85" cy="91" rx="5" ry="3" fill="#F3A08F" opacity=".5"/>
+    ${brows}${eyes}${mouth}
+    <ellipse cx="49" cy="135" rx="6.5" ry="3.4" fill="${RIM}"/><ellipse cx="71" cy="135" rx="6.5" ry="3.4" fill="${RIM}"/>
+    ${mood === "sleepy" ? `<text x="96" y="44" font-family="DM Sans,sans-serif" font-weight="600" font-size="13" fill="#9AA39C">z</text>` : ""}
+  </svg>`;
 }
 
 /* ========================== Alimentos e receitas ========================== */
@@ -737,10 +774,10 @@ function confetti(){ if (lowMotion()) return; const c = document.createElement("
   const cols = ["#2F6B3A","#F0734F","#D9A13B","#4FA7DC","#DCE9A9"];
   c.innerHTML = Array.from({ length:42 }, (_, i) => `<i style="left:${(rnd()*100).toFixed(1)}%;background:${cols[i%5]};animation-delay:${(rnd()*.5).toFixed(2)}s;animation-duration:${(1.8+rnd()).toFixed(2)}s"></i>`).join("");
   document.body.appendChild(c); setTimeout(() => c.remove(), 3500); }
-function celebrate({ title, name, desc, mood="party", action, kind, onClose }){
+function celebrate({ title, name, desc, mood="party", action, kind, onClose, who }){
   const d = document.createElement("div"); d.className = "celebrate";
   d.innerHTML = `<div class="card stack" role="alertdialog" aria-modal="true" aria-label="${esc(title)}">
-    ${abi({ mood, size:110 })}<p class="small" style="font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:${kind === "gold" ? "var(--gold)" : "var(--brand)"}">${esc(title)}</p>
+    ${who === "morango" ? morango({ mood, size:100 }) : abi({ mood, size:100 })}<p class="small" style="font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:${kind === "gold" ? "var(--gold)" : "var(--brand)"}">${esc(title)}</p>
     <h2>${esc(name)}</h2><p class="muted">${esc(desc)}</p>
     ${action ? `<button class="btn block" data-a>${esc(action.label)}</button>` : ""}<button class="btn ${action ? "ghost" : ""} block" data-x>${action ? "Fechar" : "Boa!"}</button></div>`;
   document.body.appendChild(d); confetti(); snd(kind === "gold" ? "gold" : "win"); $("[data-x]", d).focus();
@@ -785,11 +822,11 @@ function renderHoje(){
   const mTot = Math.max(T.p + T.c + T.g, 1);
   $("#h-sum").innerHTML = `<div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="tr" cx="60" cy="60" r="${R}"/><circle class="fg" cx="60" cy="60" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${C.toFixed(1)}" id="ringfg"/></svg>
       <div class="rv"><b class="num">${kcalOn() ? T.k : md}</b><small>${kcalOn() ? `de ${S.goal} kcal` : "de 4 refeições"}</small></div></div>
-    <div class="macros">${[["Proteína","p","var(--brand)"],["Hidratos","c","var(--brand-2)"],["Gordura","g","var(--brand-3)"]].map(([n,x,col]) =>
-      `<div class="mac"><div class="mh"><span>${n}</span><b>${Math.round(T[x])} g</b></div><div class="bar"><i style="width:${Math.round(T[x]/mTot*100)}%;background:${col}"></i></div></div>`).join("")}</div>`;
+    <div class="macros">${[["Proteína","p","var(--brand)"],["Hidratos","c","var(--brand-2)"],["Gordura","g","var(--brand-3)"]].map(([n,x,col]) => { const tg = kcalOn() && S.macro ? S.macro[x] : 0;
+      return `<div class="mac"><div class="mh"><span>${n}</span><b>${Math.round(T[x])}${tg ? ` <span class="muted" style="font-weight:400">/ ${tg} g</span>` : " g"}</b></div><div class="bar"><i style="width:${Math.min(100, Math.round(T[x]/(tg || mTot)*100))}%;background:${col}"></i></div></div>`; }).join("")}</div>`;
   requestAnimationFrame(() => requestAnimationFrame(() => { const f = $("#ringfg"); if (f) f.style.strokeDashoffset = (C*(1-frac)).toFixed(1); }));
   const tip = heroTip(md);
-  $("#h-tip").innerHTML = `${abi({ mood:tip.m, size:26 })}<span>${esc(tip.t)}</span>`;
+  $("#h-tip").innerHTML = `${tip.who === "morango" ? morango({ mood:tip.m, size:26 }) : abi({ mood:tip.m, size:26 })}<span>${esc(tip.t)}</span>`;
 
   // 2) Refeições: nome + kcal (ou porção) e nada mais
   $("#h-meals").innerHTML = MEALS.map(M => { const it = L.filter(m => m.m === M.id), kc = it.reduce((a,m) => a+(+m.k||0), 0);
@@ -801,7 +838,7 @@ function renderHoje(){
 
   // 3) Água
   const w = S.water[k] || 0, Lt = v => (v*0.25).toLocaleString("pt-PT", { maximumFractionDigits:2 });
-  $("#h-water").innerHTML = `<div class="water">${pingo({ mood: w >= S.wg ? "party" : "happy", size:26 })}<div class="grow"><h3>Água</h3><p class="small muted"><span class="num" style="color:var(--ink)">${Lt(w)} L</span> de ${Lt(S.wg)} L</p></div>
+  $("#h-water").innerHTML = `<div class="water"><span class="wdrop">${icon("drop")}</span><div class="grow"><h3>Água</h3><p class="small muted"><span class="num" style="color:var(--ink)">${Lt(w)} L</span> de ${Lt(S.wg)} L</p></div>
     <button class="iconbtn" id="w-minus" aria-label="Tirar um copo" ${w ? "" : "disabled"}>${icon("minus","sm")}</button><button class="iconbtn" id="w-plus" aria-label="Mais um copo" style="background:var(--brand-soft);color:var(--brand)">${icon("plus","sm")}</button></div>
     <div class="glasses">${Array.from({ length:S.wg }, (_, i) => `<button class="glass ${i < w ? "drunk" : ""}" data-g="${i}" aria-label="Copo ${i+1} de 250 ml${i < w ? ", bebido" : ""}"><i></i></button>`).join("")}</div>`;
   $$("#h-water .glass").forEach(b => b.onclick = () => { const i = +b.dataset.g; setWater(k, i < w ? i : i+1); });
@@ -823,13 +860,15 @@ function renderHoje(){
   const rb = $("#h-more [data-rec]"); if (rb) rb.onclick = () => openRecipe(+rb.dataset.rec);
 }
 function heroTip(md){
-  const hr = new Date().getHours();
-  if (curDay !== today()) return { t:"Estás a ver outro dia. Podes acrescentar ou corrigir.", m:"think" };
+  const hr = new Date().getHours(), tk = today();
+  if (curDay !== tk) return { t:"Estás a ver outro dia. Podes acrescentar ou corrigir.", m:"think" };
   if (hr >= 23 || hr < 5) return { t:"Já é tarde. Bom descanso.", m:"sleepy" };
-  if (!md) return { t:hr < 11 ? "Bom dia. Começa pelo pequeno-almoço." : "Toca no + para registar a primeira refeição.", m:"happy" };
+  if (workoutDone(tk)) return { who:"morango", t:"Treino feito! Hoje mexeste-te a sério.", m:"party" };
+  if (!md) return { t:hr < 11 ? "Bom dia. Começa pelo pequeno-almoço, com calma." : "Toca no + para registar a primeira refeição.", m:"happy" };
   if (md >= 4) return { t:"Dia completo. Refeições regulares fazem diferença.", m:"happy" };
-  if ((S.water[today()]||0) < 3 && hr > 13) return { t:"Lembra-te de beber água.", m:"think" };
-  return { t:"Bom ritmo.", m:"happy" };
+  if ((S.water[tk]||0) < 3 && hr > 13) return { who:"morango", t:"Psst… e a água? Bebe um copo!", m:"wink" };
+  if (todaysChallenges(tk).every(c => challengeDone(c, tk))) return { who:"morango", t:"Desafios todos feitos. Vai à roda!", m:"party" };
+  return { t:"Bom ritmo. Um passo de cada vez.", m:"happy" };
 }
 function setWater(k, v){ const before = S.water[k] || 0; S.water[k] = clamp(v, 0, 20); save(); if (S.water[k] > before) { ach("water"); snd("ok"); } syncChallenges(); renderHoje(); }
 function renderRewardBanner(){ const b = $("#h-spins"); if (!b) return; b.textContent = S.spins ? `${S.spins} giro${S.spins > 1 ? "s" : ""} na roda` : `Roda · ronda ${S.round}/3`; }
@@ -1065,7 +1104,7 @@ function openPlanAdd(k, recipe){
 function renderTreino(){
   const el = $("#p-treino"), p = progOf();
   const minorNote = isMinor() ? `<div class="note warn" style="margin-top:14px">${icon("info","sm")}<span>Se tens menos de 18 anos, mostra estes planos a um adulto ou treinador e começa sempre pela versão mais leve.</span></div>` : "";
-  if (!p) { el.innerHTML = `<div class="card row" style="margin-top:18px;gap:14px">${abi({ mood:"wave", size:70, acc:"acc_banda" })}<div><h3>Escolhe um plano</h3><p class="small muted">Começa pelo que te parece fácil. Podes mudar quando quiseres.</p></div></div>${minorNote}
+  if (!p) { el.innerHTML = `<div class="card row" style="margin-top:18px;gap:14px">${morango({ mood:"happy", size:64 })}<div><h3>Escolhe um plano</h3><p class="small muted">Começa pelo que te parece fácil. Podes mudar quando quiseres.</p></div></div>${minorNote}
     <div class="list" style="margin-top:14px">${PROGRAMS.map(x => `<button class="prog" data-p="${x.id}"><div class="badge acc">${icon("dumbbell")}</div><div class="lt"><b>${esc(x.n)}</b><small>${esc(x.d)}</small><small>${x.days.length}× por semana · ${x.min} min</small><span class="lvl" aria-label="Nível ${x.lvl} de 3">${[1,2,3].map(i => `<i class="${i <= x.lvl ? "on" : ""}"></i>`).join("")}</span></div>${icon("right","sm")}</button>`).join("")}</div>
     <p class="tiny muted" style="margin:12px 4px">Se tens lesões, dores ou alguma condição de saúde, fala com um profissional antes de começar. Para de imediato se sentires dor.</p>`;
     $$("[data-p]", el).forEach(b => b.onclick = () => openProgram(b.dataset.p)); return; }
@@ -1130,14 +1169,14 @@ function wheelSegments(mini){ const W = wheelItems(), n = W.length, a = 360/n;
     const x1 = 100+98*Math.cos(s), y1 = 100+98*Math.sin(s), x2 = 100+98*Math.cos(e), y2 = 100+98*Math.sin(e);
     const ic = { acc:"sparkle", theme:"brush", recipes:"book", badge:"star", discount:"gift" }[w.type] || "gift";
     return `<path d="M100 100L${x1.toFixed(2)} ${y1.toFixed(2)}A98 98 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)}Z" fill="${w.color}" stroke="#fff" stroke-width="${mini ? 3 : 2}"/>`
-      + (mini ? "" : `<g transform="rotate(${i*a} 100 100)"><use href="#i-${ic}" x="89" y="16" width="22" height="22" stroke="#fff" fill="none" style="stroke-width:2.2"/><text x="100" y="52" text-anchor="middle" font-family="DM Sans,sans-serif" font-weight="700" font-size="8.5" fill="#fff">${esc(w.name.split(" ")[0])}</text></g>`); }).join("")
+      + (mini ? "" : `<g transform="rotate(${i*a} 100 100)"><use href="#i-${ic}" x="89" y="16" width="22" height="22" stroke="#fff" fill="none" style="stroke-width:2.2"/><text x="100" y="52" ${(i*a) > 90 && (i*a) < 270 ? 'transform="rotate(180 100 49)" ' : ""}text-anchor="middle" font-family="DM Sans,sans-serif" font-weight="700" font-size="8.5" fill="#fff">${esc(w.name.split(" ")[0])}</text></g>`); }).join("")
     + `<circle cx="100" cy="100" r="98" fill="none" stroke="#F7F4ED" stroke-width="3"/>`; }
 let wheelAngle = 0, spinning = false;
 const nextGolden = () => GOLDEN[Math.min(S.golden, GOLDEN.length-1)];
 function renderRoda(){
   const W = wheelItems(), tot = W.reduce((a, w) => a + w.weight, 0), g = nextGolden();
   const rot = $("#w-rot"); if (!rot.childElementCount) { rot.innerHTML = wheelSegments(false); rot.style.transform = `rotate(${wheelAngle}deg)`; }
-  $("#w-hub").innerHTML = abi({ mood: spinning ? "wow" : "happy", size:52 });
+  $("#w-hub").innerHTML = morango({ mood: spinning ? "wow" : "wink", size:50 });
   $("#w-tries").innerHTML = [0,1,2].map(i => `<i class="${i < S.round ? "on" : ""}"></i>`).join("") + `<span class="gp ${S.round >= 2 ? "lit" : ""}" title="Prémio dourado">${icon("crown","xs")}</span>`;
   $("#w-sub").innerHTML = `Tentativa <b>${Math.min(S.round+1, 3)} de 3</b> desta ronda · Giros disponíveis: <b>${S.spins}</b><br>No fim das 3 tentativas recebes, garantido: <b style="color:var(--gold)">${esc(g.name)}</b>`;
   $("#w-odds").innerHTML = W.map(w => `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${w.color};margin-right:8px"></span>${esc(w.name)}</td><td>${(w.weight/tot*100).toLocaleString("pt-PT", { maximumFractionDigits:1 })}% por giro</td></tr>`).join("")
@@ -1177,7 +1216,7 @@ function grant(p, gold, after){
     : p.type === "recipes" ? { label:"Ver receitas", fn:() => { rFilter = "Todas"; go("receitas"); } } : null;
   const desc = dup ? "Repetido: já tinhas este prémio. Continua a jogar para completar a coleção."
     : p.desc + (p.type === "discount" ? ` Código: ${p.code}. Válido até ${p.expires}. ${p.terms || ""}` : "");
-  celebrate({ title: gold ? "Prémio dourado · garantido" : "Saiu na roda", name:p.name, desc, mood:"party", kind: gold ? "gold" : "",
+  celebrate({ who:"morango", title: gold ? "Prémio dourado · garantido" : "Saiu na roda", name:p.name, desc, mood:"party", kind: gold ? "gold" : "",
     action: action && after ? { label:action.label, fn:() => { action.fn(); setTimeout(after, 300); } } : action,
     onClose: after || undefined });
 }
@@ -1257,36 +1296,71 @@ function openChat(){
     $("#ch-s", b).onclick = send; $("#ch-i", b).onkeydown = e => { if (e.key === "Enter") send(); };
   });
 }
-function openPrefs(){
+/* ===== Referência de energia e macros =====
+   Mifflin-St Jeor × atividade. Perder peso: défice de 15%, no máximo 500 kcal. Ganhar músculo: +10%, no máximo 300 kcal.
+   Nunca abaixo de 1200 (F) / 1500 (M) kcal. Com IMC < 18,5 não se propõe perder peso. Menores: sem calorias. */
+const GOALS = [["perder","Perder peso"],["manter","Manter o peso"],["musculo","Ganhar músculo"],["livre","Comer melhor, sem contar calorias"]];
+const ACTS = [["1.2","Pouco: passo o dia sentado"],["1.375","Às vezes: 1 a 3 treinos por semana"],["1.55","Bastante: 3 a 5 treinos por semana"],["1.725","Muito: 6 ou 7 treinos por semana"]];
+const goalName = id => (GOALS.find(g => g[0] === id) || [,"–"])[1];
+const validBody = p => p.age >= 10 && p.age <= 100 && p.h >= 120 && p.h <= 230 && p.w >= 30 && p.w <= 250;
+function computeRef(p, goal){
+  const bmr = 10*p.w + 6.25*p.h - 5*p.age + (p.sex === "m" ? 5 : -161), tdee = bmr * (+p.act || 1.375);
+  const bmi = p.w / ((p.h/100) ** 2);
+  let g = goal, note = "";
+  if (g === "perder" && bmi < 18.5) { g = "manter"; note = "O teu IMC está abaixo de 18,5, por isso a referência é de manutenção. Se queres perder peso, fala primeiro com um profissional de saúde."; }
+  let k = tdee;
+  if (g === "perder") k = tdee - Math.min(500, tdee * .15);
+  if (g === "musculo") k = tdee + Math.min(300, tdee * .1);
+  k = clamp(Math.round(k / 50) * 50, p.sex === "m" ? 1500 : 1200, 5000);
+  const prot = Math.round(clamp(p.w * ({ perder:1.6, musculo:1.8 }[g] || 1.2), 50, 220)), fat = Math.round(k * .28 / 9);
+  return { kcal:k, p:prot, g:fat, c:Math.max(0, Math.round((k - prot*4 - fat*9) / 4)), goal:g, note, bmi:Math.round(bmi*10)/10 };
+}
+function applyRef(){ // aplica a referência ao estado, a partir de S.prof e S.u.goal
   const u = S.u || {};
+  if (isMinor() || u.goal === "livre" || !validBody(S.prof)) { S.macro = null; if (isMinor() || u.goal === "livre") S.showKcal = false; return null; }
+  const r = computeRef(S.prof, u.goal || "manter"); S.goal = r.kcal; S.macro = { p:r.p, c:r.c, g:r.g }; S.showKcal = true; return r;
+}
+const refCard = r => `<div class="ref"><div><b>${r.kcal}</b><small>kcal</small></div><div><b>${r.p}</b><small>proteína g</small></div><div><b>${r.c}</b><small>hidratos g</small></div><div><b>${r.g}</b><small>gordura g</small></div></div>`;
+function openPrefs(){
+  const u = S.u || {}, p = S.prof;
+  const rows = [["Objetivo", goalName(u.goal)],["Dados", validBody(p) && u.age !== "Prefiro não dizer" ? `${p.age} anos · ${p.h} cm · ${p.w} kg` : "Não indicados"],["Atividade", (ACTS.find(a => a[0] === String(p.act)) || [,"–"])[1]],
+    ["Alimentação", (u.diet||[]).join(", ")],["A evitar", (u.al||[]).join(", ")],["Cozinha", u.cook]];
   openSheet("Preferências", `<div class="stack">
-    <div class="list">${[["Objetivo", u.obj],["Alimentação", (u.diet||[]).join(", ")],["A evitar", (u.al||[]).join(", ")],["Cozinha", u.cook],["Idade", u.age]].map(([a,b2]) => `<div class="li"><div class="lt"><small>${a}</small><b>${esc(b2 || "–")}</b></div></div>`).join("")}</div>
-    <button class="btn soft block" id="pr-redo">Editar respostas</button>
+    <div class="list">${rows.map(([a,b2]) => `<div class="li"><div class="lt"><small>${a}</small><b>${esc(b2 || "–")}</b></div></div>`).join("")}</div>
+    <div class="row"><button class="btn ghost grow" id="pr-calc">Dados e objetivo</button><button class="btn ghost grow" id="pr-redo">Alimentação</button></div>
     ${isMinor() ? `<div class="note">${icon("info","sm")}<span>Para menores de 18 anos (ou se não indicaste a idade), a app não mostra calorias nem metas. O foco são refeições regulares, variadas e água.</span></div>` : `
-    <div class="card stack"><div class="row between"><div><b>Mostrar calorias</b><p class="small muted">Podes usar a app sem contar calorias.</p></div><input type="checkbox" id="pr-k" ${S.showKcal ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none" aria-label="Mostrar calorias"></div>
-    <label class="field"><span>Referência diária (kcal)</span><input id="pr-g" type="number" min="1200" max="5000" step="50" value="${S.goal}"></label>
-    <button class="btn ghost block sm" id="pr-calc">Estimar a minha referência</button>
-    <p class="tiny muted">É uma referência, não uma meta. Passar dela não é falhar.</p></div>`}
+    <div class="card stack"><div class="row between"><div><b>Mostrar calorias e macros</b><p class="small muted">Podes usar a app sem contar nada.</p></div><input type="checkbox" id="pr-k" ${S.showKcal ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none" aria-label="Mostrar calorias"></div>
+    ${S.macro ? `<p class="small muted">Referência atual: ${S.goal} kcal · P ${S.macro.p} g · H ${S.macro.c} g · G ${S.macro.g} g</p>` : ""}
+    <label class="field"><span>Ajustar à mão (kcal)</span><input id="pr-g" type="number" min="1200" max="5000" step="50" value="${S.goal}"></label>
+    <p class="tiny muted">É uma referência, não uma regra. Passar dela num dia não é falhar.</p></div>`}
     <label class="field"><span>Copos de água por dia (250 ml)</span><input id="pr-w" type="number" min="4" max="16" value="${S.wg}"></label>
     <button class="btn block" id="pr-ok">Guardar</button></div>`, b => {
-    $("#pr-redo", b).onclick = () => { closeSheet(); openOnboarding(true); };
-    const c = $("#pr-calc", b); if (c) c.onclick = openCalc;
-    $("#pr-ok", b).onclick = () => { if (!isMinor()) { S.showKcal = $("#pr-k", b).checked; S.goal = clamp(Math.round(+$("#pr-g", b).value || 2000), 1200, 5000); } S.wg = clamp(Math.round(+$("#pr-w", b).value || 8), 4, 16); save(); closeSheet(); toast("Preferências guardadas"); refreshAll(); };
+    $("#pr-redo", b).onclick = () => { closeSheet(); openOnboarding(true, "diet"); };
+    $("#pr-calc", b).onclick = openCalc;
+    $("#pr-ok", b).onclick = () => { if (!isMinor()) { S.showKcal = $("#pr-k", b).checked; const g = clamp(Math.round(+$("#pr-g", b).value || 2000), 1200, 5000);
+        if (S.macro && g !== S.goal) { const f = g / S.goal; S.macro = { p:S.macro.p, g:Math.round(S.macro.g*f), c:Math.max(0, Math.round((g - S.macro.p*4 - Math.round(S.macro.g*f)*9)/4)) }; } S.goal = g; }
+      S.wg = clamp(Math.round(+$("#pr-w", b).value || 8), 4, 16); save(); closeSheet(); toast("Preferências guardadas"); refreshAll(); };
   });
 }
 function openCalc(){
-  const p = S.prof;
-  openSheet("Referência de manutenção", `<div class="stack"><div class="g2"><label class="field"><span>Sexo</span><select id="c-s"><option value="f" ${p.sex === "f" ? "selected" : ""}>Feminino</option><option value="m" ${p.sex === "m" ? "selected" : ""}>Masculino</option></select></label>
-    <label class="field"><span>Idade</span><input id="c-a" type="number" min="18" max="90" value="${p.age}"></label><label class="field"><span>Altura (cm)</span><input id="c-h" type="number" min="120" max="230" value="${p.h}"></label><label class="field"><span>Peso (kg)</span><input id="c-w" type="number" min="30" max="250" value="${p.w}"></label></div>
-    <label class="field"><span>Atividade</span><select id="c-x"><option value="1.2">Pouco ativo</option><option value="1.375">Ligeiramente ativo (1–3 treinos por semana)</option><option value="1.55">Ativo (3–5 treinos por semana)</option><option value="1.725">Muito ativo (6–7 treinos por semana)</option></select></label>
-    <button class="btn block" id="c-ok">Calcular</button><div id="c-r"></div>
-    <p class="tiny muted">Estimativa para adultos (fórmula de Mifflin-St Jeor) para manter o peso. Não serve para gravidez nem para condições de saúde. A app não define défices nem metas de perda de peso. Para isso, fala com um nutricionista.</p></div>`, b => {
-    $("#c-x", b).value = p.act;
-    $("#c-ok", b).onclick = () => { const q = { sex:$("#c-s", b).value, age:+$("#c-a", b).value, h:+$("#c-h", b).value, w:+$("#c-w", b).value, act:$("#c-x", b).value };
-      if (!(q.age >= 18 && q.age <= 90 && q.h >= 120 && q.h <= 230 && q.w >= 30 && q.w <= 250)) { $("#c-r", b).innerHTML = `<p class="small" style="color:var(--accent)">Verifica a idade (18–90), a altura (120–230 cm) e o peso (30–250 kg).</p>`; return; }
-      S.prof = q; save(); const bmr = 10*q.w + 6.25*q.h - 5*q.age + (q.sex === "m" ? 5 : -161), t = clamp(Math.round(bmr * +q.act / 50) * 50, 1200, 5000);
-      $("#c-r", b).innerHTML = `<div class="card row between"><div><h2 class="num">${t} kcal</h2><p class="small muted">referência diária estimada</p></div><button class="btn sm" id="c-use">Usar</button></div>`;
-      $("#c-use", b).onclick = () => { S.goal = t; S.showKcal = true; save(); closeSheet(); toast("Referência atualizada"); refreshAll(); }; };
+  const p = S.prof, u = S.u || {}; let sex = p.sex;
+  openSheet("Dados e objetivo", `<div class="stack"><div class="seg" id="c-s"><button data-v="f" class="${sex === "f" ? "on" : ""}">Feminino</button><button data-v="m" class="${sex === "m" ? "on" : ""}">Masculino</button></div>
+    <div class="g2" style="grid-template-columns:repeat(3,1fr)"><label class="field"><span>Idade</span><input id="c-a" type="number" inputmode="numeric" min="10" max="100" value="${p.age}"></label><label class="field"><span>Altura (cm)</span><input id="c-h" type="number" inputmode="numeric" min="120" max="230" value="${p.h}"></label><label class="field"><span>Peso (kg)</span><input id="c-w" type="number" inputmode="decimal" min="30" max="250" step="0.1" value="${p.w}"></label></div>
+    <label class="field"><span>Atividade</span><select id="c-x">${ACTS.map(a => `<option value="${a[0]}" ${String(p.act) === a[0] ? "selected" : ""}>${a[1]}</option>`).join("")}</select></label>
+    <label class="field"><span>Objetivo</span><select id="c-g">${GOALS.map(g => `<option value="${g[0]}" ${(u.goal || "manter") === g[0] ? "selected" : ""}>${g[1]}</option>`).join("")}</select></label>
+    <div id="c-r"></div><button class="btn block" id="c-ok">Guardar</button>
+    <p class="tiny muted">Estimativa geral (fórmula de Mifflin-St Jeor). Não serve para gravidez, amamentação nem condições de saúde. Para perder peso, o défice nunca passa de 15% nem de 500 kcal. Em caso de dúvida, fala com um nutricionista.</p></div>`, b => {
+    $$("#c-s button", b).forEach(x => x.onclick = () => { sex = x.dataset.v; $$("#c-s button", b).forEach(y => y.classList.toggle("on", y === x)); prev(); });
+    const read = () => ({ sex, age:+$("#c-a", b).value, h:+$("#c-h", b).value, w:+$("#c-w", b).value, act:$("#c-x", b).value });
+    const prev = () => { const q = read(), g = $("#c-g", b).value, el = $("#c-r", b);
+      if (!validBody(q)) { el.innerHTML = `<p class="small" style="color:var(--accent)">Verifica a idade (10–100), a altura (120–230 cm) e o peso (30–250 kg).</p>`; return; }
+      if (q.age < 18) { el.innerHTML = `<div class="note">${icon("info","sm")}<span>Abaixo dos 18 anos a app não calcula calorias. O foco são refeições regulares e variadas.</span></div>`; return; }
+      if (g === "livre") { el.innerHTML = `<p class="small muted">Sem contagem de calorias: o anel do dia mostra as refeições registadas.</p>`; return; }
+      const r = computeRef(q, g); el.innerHTML = refCard(r) + (r.note ? `<div class="note warn" style="margin-top:10px">${icon("info","sm")}<span>${esc(r.note)}</span></div>` : ""); };
+    $$("input,select", b).forEach(x => x.oninput = prev); prev();
+    $("#c-ok", b).onclick = () => { const q = read(); if (!validBody(q)) { toast("Verifica os dados"); return; }
+      S.prof = q; S.u = Object.assign(S.u || {}, { goal:$("#c-g", b).value, obj:goalName($("#c-g", b).value), age: q.age >= 18 ? "18 ou mais" : "Menos de 18" });
+      applyRef(); save(); closeSheet(); toast("Referência atualizada"); refreshAll(); };
   });
 }
 function openLook(){
@@ -1324,33 +1398,65 @@ $("#f-imp").onchange = async e => { const f = e.target.files[0]; e.target.value 
   catch(x) { toast("Ficheiro inválido: não é uma cópia desta app"); } };
 
 /* ========================== Onboarding ========================== */
+// Curto e conduzido pelas mascotes: o Abi pergunta com calma, o Morango entra nas partes de energia.
 const OB = [
-  { k:"name", q:`Olá! Eu sou o ${BRAND.mascot}. Como te chamo?`, s:"Opcional. Não pedimos e-mail.", type:"text" },
-  { k:"obj", one:1, q:"O que te trouxe até aqui?", s:"Escolhe o que mais se aproxima.", o:["Comer de forma mais equilibrada","Conhecer melhor o que como","Organizar as minhas refeições","Começar a treinar","Sentir-me com mais energia"] },
-  { k:"diet", ex:"Como de tudo", q:"Como é a tua alimentação?", s:"Podes escolher várias.", o:["Como de tudo","Vegetariano","Vegan","Pescetariano","Não como carne de porco"] },
-  { k:"al", ex:"Nenhuma", q:"Há algum alimento que tenhas de evitar?", s:"Alergias e intolerâncias. Escondo as receitas que os tenham.", o:["Lactose","Glúten","Frutos secos","Amendoim","Marisco","Ovos","Soja","Peixe","Sésamo","Nenhuma"] },
-  { k:"cook", one:1, q:"E na cozinha, como te dás?", s:"Ajuda-me a sugerir receitas à tua medida.", o:["Estou a começar","Desenrasco-me","Adoro cozinhar"] },
-  { k:"age", one:1, q:"Qual é a tua idade?", s:"Para menores de 18 anos não mostro calorias nem metas.", o:["Menos de 18","18 ou mais","Prefiro não dizer"] }
+  { k:"name", who:"abi", m:"wave", q:`Olá, eu sou o ${BRAND.mascot}. Como te chamo?`, s:"Opcional. Não pedimos e-mail.", type:"text" },
+  { k:"body", who:"abi", m:"think", q:"Conta-me um pouco sobre ti.", s:"Serve só para calcular uma referência. Fica guardado neste aparelho.", type:"body" },
+  { k:"act", who:"morango", m:"wink", one:1, q:`E eu sou o ${BRAND.mascot2}! Quanto te mexes numa semana normal?`, s:"Contam treinos, caminhadas e trabalho físico.", o:ACTS },
+  { k:"goal", who:"morango", m:"happy", one:1, q:"Qual é o teu objetivo agora?", s:"Podes mudar quando quiseres.", o:GOALS },
+  { k:"diet", who:"abi", m:"happy", ex:"Como de tudo", q:"Como é a tua alimentação?", s:"Podes escolher várias.", o:["Como de tudo","Vegetariano","Vegan","Pescetariano","Não como carne de porco"] },
+  { k:"al", who:"abi", m:"think", ex:"Nenhuma", q:"Há algum alimento que tenhas de evitar?", s:"Alergias e intolerâncias. Escondo as receitas que os tenham.", o:["Lactose","Glúten","Frutos secos","Amendoim","Marisco","Ovos","Soja","Peixe","Sésamo","Nenhuma"] },
+  { k:"cook", who:"abi", m:"happy", one:1, q:"E na cozinha, como te dás?", s:"Ajuda-me a sugerir receitas à tua medida.", o:["Estou a começar","Desenrasco-me","Adoro cozinhar"] },
+  { k:"result", type:"result" }
 ];
-function openOnboarding(edit){
-  let n = 0; const A = Object.assign({ name:"", obj:"", diet:[], al:[], cook:"", age:"" }, structuredClone(S.u || {}));
+function openOnboarding(edit, startKey){
+  const A = Object.assign({ name:"", goal:"", act:String(S.prof.act || ""), diet:[], al:[], cook:"", age:"" }, structuredClone(S.u || {}));
+  const B = Object.assign({}, S.prof, { skip: A.age === "Prefiro não dizer" });
+  let n = Math.max(0, OB.findIndex(x => x.k === startKey));
   const ob = $("#ob"), inn = $("#ob-in"); ob.classList.remove("hide");
-  const sel = (s, o) => s.one ? A[s.k] === o : (A[s.k]||[]).includes(o);
-  const tog = (s, o) => { if (s.one) { A[s.k] = o; return; } let a = A[s.k] || []; a = a.includes(o) ? a.filter(x => x !== o) : o === s.ex ? [o] : a.filter(x => x !== s.ex).concat(o); A[s.k] = a; };
-  const valid = s => s.type === "text" || (s.one ? !!A[s.k] : (A[s.k]||[]).length > 0);
+  const minor = () => !B.skip && B.age < 18;
+  const opts = s => (s.k === "goal" && (minor() || B.skip) ? s.o.filter(o => o[0] !== "perder") : s.o).map(o => Array.isArray(o) ? o : [o, o]);
+  const sel = (s, v) => s.one ? String(A[s.k]) === v : (A[s.k]||[]).includes(v);
+  const tog = (s, v) => { if (s.one) { A[s.k] = v; return; } let a = A[s.k] || []; a = a.includes(v) ? a.filter(x => x !== v) : v === s.ex ? [v] : a.filter(x => x !== s.ex).concat(v); A[s.k] = a; };
+  const readBody = () => { if (!$("#ob-age", inn)) return; B.age = +$("#ob-age", inn).value; B.h = +$("#ob-h", inn).value; B.w = +$("#ob-w", inn).value; };
+  const valid = s => s.type === "text" || s.type === "result" || (s.type === "body" ? (B.skip || validBody(B)) : s.one ? !!A[s.k] : (A[s.k]||[]).length > 0);
+  const mascot = s => s.who === "morango" ? morango({ mood:s.m, size:64 }) : abi({ mood:s.m, size:64 });
+  const save1 = () => { if (OB[n].type === "text") A.name = $("#ob-n", inn).value.trim().slice(0,40); if (OB[n].type === "body") readBody(); };
+  const finish = () => {
+    const first = !S.ob;
+    if (!B.skip) S.prof = { sex:B.sex, age:B.age, h:B.h, w:B.w, act:A.act || "1.375" }; else S.prof.act = A.act || S.prof.act;
+    A.age = B.skip ? "Prefiro não dizer" : B.age >= 18 ? "18 ou mais" : "Menos de 18";
+    if (A.goal === "perder" && (minor() || B.skip)) A.goal = "manter";
+    A.obj = goalName(A.goal); S.u = A; S.ob = 1; applyRef(); if (first) S.spins = 3; save(); ob.classList.add("hide"); refreshAll();
+    if (first) setTimeout(() => celebrate({ who:"morango", title:"Presente de boas-vindas", name:"3 giros na roda de prémios", desc:`Gira a roda e ganha acessórios para o ${BRAND.mascot}. No fim das 3 tentativas, o prémio dourado é garantido.`, mood:"party", action:{ label:"Ir à roda", fn:() => go("roda") } }), 300);
+  };
   const draw = () => { const s = OB[n];
+    let body = "", q = s.q, sub = s.s, who = s;
+    if (s.type === "text") body = `<input id="ob-n" maxlength="40" autocomplete="given-name" placeholder="O teu nome" value="${esc(A.name)}" aria-label="Nome">`;
+    else if (s.type === "body") body = `<div class="ob-form"><div class="seg" id="ob-sex"><button data-v="f" class="${B.sex === "f" ? "on" : ""}">Feminino</button><button data-v="m" class="${B.sex === "m" ? "on" : ""}">Masculino</button></div>
+      <div class="g2" style="grid-template-columns:repeat(3,1fr)"><label class="field"><span>Idade</span><input id="ob-age" type="number" inputmode="numeric" min="10" max="100" value="${B.skip ? "" : B.age}"></label><label class="field"><span>Altura (cm)</span><input id="ob-h" type="number" inputmode="numeric" min="120" max="230" value="${B.skip ? "" : B.h}"></label><label class="field"><span>Peso (kg)</span><input id="ob-w" type="number" inputmode="decimal" step="0.1" min="30" max="250" value="${B.skip ? "" : B.w}"></label></div>
+      <button class="skip" id="ob-skip">Prefiro não indicar</button></div>`;
+    else if (s.type === "result") {
+      const prof = { sex:B.sex, age:B.age, h:B.h, w:B.w, act:A.act || "1.375" };
+      const noKcal = B.skip || minor() || A.goal === "livre", r = noKcal ? null : computeRef(prof, A.goal || "manter");
+      who = { who: r ? "morango" : "abi", m:"party" };
+      q = A.name ? `Está tudo pronto, ${A.name}.` : "Está tudo pronto.";
+      sub = r ? "Esta é a tua referência diária. É um ponto de partida, não uma regra." : "Vamos focar-nos em refeições regulares, variadas e em água. Sem contar calorias.";
+      body = r ? refCard(r) + (r.note ? `<div class="note warn" style="margin-top:12px">${icon("info","sm")}<span>${esc(r.note)}</span></div>` : "")
+        + `<p class="tiny muted" style="margin-top:12px">Estimativa geral. Não substitui um nutricionista e não serve para gravidez ou condições de saúde. Podes esconder as calorias em Perfil.</p>` : "";
+    }
+    else body = `<div class="opts">${opts(s).map(([v,l]) => `<button class="opt ${sel(s,v) ? "on" : ""}" data-o="${esc(v)}" aria-pressed="${sel(s,v)}"><span class="tick">${icon("check","xs")}</span>${esc(l)}</button>`).join("")}</div>`;
     inn.innerHTML = `<div class="row">${n ? `<button class="iconbtn" id="ob-b" aria-label="Voltar">${icon("left")}</button>` : `<span style="width:40px"></span>`}<div class="obbar" role="progressbar" aria-valuemin="1" aria-valuemax="${OB.length}" aria-valuenow="${n+1}"><i style="width:${(n+1)/OB.length*100}%"></i></div>${edit ? `<button class="iconbtn" id="ob-x" aria-label="Fechar">${icon("x")}</button>` : `<span style="width:40px"></span>`}</div>
-      <div class="ob-q">${abi({ mood: n === 0 ? "wave" : n === OB.length-1 ? "happy" : "think", size:84 })}<div class="speech"><b style="font:700 19px/1.2 var(--f-display);color:var(--ink);display:block">${esc(s.q)}</b><span class="small muted">${esc(s.s)}</span></div></div>
-      ${s.type === "text" ? `<input id="ob-n" maxlength="40" autocomplete="given-name" placeholder="O teu nome" value="${esc(A.name)}" aria-label="Nome">`
-        : `<div class="opts">${s.o.map(o => `<button class="opt ${sel(s,o) ? "on" : ""}" data-o="${esc(o)}" aria-pressed="${sel(s,o)}"><span class="tick">${icon("check","xs")}</span>${esc(o)}</button>`).join("")}</div>`}
-      <div style="flex:1;min-height:24px"></div><button class="btn block" id="ob-n2" ${valid(s) ? "" : "disabled"} style="height:56px">${n === OB.length-1 ? "Começar" : "Continuar"}</button>`;
+      <div class="ob-q">${s.type === "result" ? `<div class="mascots">${abi({ mood:"happy", size:64 })}${morango({ mood:"party", size:52 })}</div>` : mascot(who)}<div class="speech"><b>${esc(q)}</b><span>${esc(sub)}</span></div></div>
+      ${body}<div style="flex:1;min-height:24px"></div><button class="btn block" id="ob-n2" ${valid(s) ? "" : "disabled"} style="height:54px">${s.type === "result" ? "Começar" : "Continuar"}</button>`;
     $$(".opt", inn).forEach(b => b.onclick = () => { tog(s, b.dataset.o); draw(); });
-    const bb = $("#ob-b", inn); if (bb) bb.onclick = () => { if (s.type === "text") A.name = $("#ob-n", inn).value.trim().slice(0,40); n--; draw(); };
+    $$("#ob-sex button", inn).forEach(x => x.onclick = () => { readBody(); B.sex = x.dataset.v; draw(); });
+    $$("#ob-age,#ob-h,#ob-w", inn).forEach(x => x.oninput = () => { readBody(); B.skip = false; $("#ob-n2", inn).disabled = !validBody(B); });
+    const sk = $("#ob-skip", inn); if (sk) sk.onclick = () => { B.skip = true; n++; draw(); };
+    const bb = $("#ob-b", inn); if (bb) bb.onclick = () => { save1(); n--; draw(); };
     const bx = $("#ob-x", inn); if (bx) bx.onclick = () => ob.classList.add("hide");
     const ni = $("#ob-n", inn); if (ni) { ni.focus(); ni.onkeydown = e => { if (e.key === "Enter") $("#ob-n2", inn).click(); }; }
-    $("#ob-n2", inn).onclick = () => { if (s.type === "text") A.name = $("#ob-n", inn).value.trim().slice(0,40); if (n < OB.length-1) { n++; draw(); return; }
-      const first = !S.ob; S.u = A; S.ob = 1; if (first) S.spins = 3; save(); ob.classList.add("hide"); refreshAll();
-      if (first) setTimeout(() => celebrate({ title:"Presente de boas-vindas", name:"3 giros na roda de prémios", desc:`Gira a roda e ganha acessórios para o ${BRAND.mascot}. No fim das 3 tentativas, o prémio dourado é garantido.`, mood:"party", action:{ label:"Ir à roda", fn:() => go("roda") } }), 300); };
+    $("#ob-n2", inn).onclick = () => { save1(); if (s.type === "body" && validBody(B)) B.skip = false; if (n < OB.length-1) { n++; draw(); return; } finish(); };
   };
   draw();
 }
@@ -1363,7 +1469,7 @@ function refreshAll(){ (RENDER[curTab] || renderHoje)(); }
 load(); applyPrefs();
 document.title = BRAND.name;
 $$("[data-brand]").forEach(e => e.textContent = BRAND.name); $$("[data-tagline]").forEach(e => e.textContent = BRAND.tagline);
-$("#sp-m").innerHTML = abi({ mood:"wave", size:130, acc:null });
+$("#sp-m").innerHTML = `<div class="mascots">${abi({ mood:"wave", size:110, acc:null })}${morango({ mood:"wink", size:76 })}</div>`;
 syncChallenges(); renderHoje();
 (() => { const sp = $("#splash");
   const end = () => { if (!sp.isConnected) return; sp.classList.add("out"); setTimeout(() => sp.remove(), 500); if (!S.ob) openOnboarding(false); };

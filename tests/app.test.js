@@ -25,14 +25,20 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   ok(await page.isVisible("#ob"), "onboarding visível na primeira abertura");
   await page.fill("#ob-n", "Joana"); await shot("02-onboarding");
   await page.click("#ob-n2");
-  for (const opt of ["Comer de forma mais equilibrada", "Como de tudo", "Nenhuma", "Desenrasco-me", "18 ou mais"]) {
+  await page.fill("#ob-age", "30"); await page.fill("#ob-h", "170"); await page.fill("#ob-w", "70"); await shot("02b-dados");
+  await page.click("#ob-n2");
+  for (const opt of ["1.375", "manter", "Como de tudo", "Nenhuma", "Desenrasco-me"]) {
     await page.click(`.opt[data-o="${opt}"]`); await page.click("#ob-n2");
   }
+  await page.waitForTimeout(200); await shot("02c-referencia");
+  ok(/kcal/.test(await page.textContent("#ob-in")), "ecrã final mostra a referência calculada");
+  await page.click("#ob-n2");
   await page.waitForTimeout(600);
   ok(await page.isVisible(".celebrate"), "presente de boas-vindas aparece");
   await shot("03-boas-vindas"); await closeCel();
   let st = await state();
   ok(st.u.name === "Joana" && st.spins === 3, "perfil e 3 giros guardados");
+  ok(st.goal >= 1800 && st.goal <= 2400 && st.macro && st.macro.p > 0 && st.u.age === "18 ou mais", "referência e macros calculados (" + st.goal + " kcal, " + JSON.stringify(st.macro) + ")");
 
   // 2. Adicionar por pesquisa e manual
   await page.click('[data-add="Pequeno-almoço"]'); await page.waitForTimeout(400);
