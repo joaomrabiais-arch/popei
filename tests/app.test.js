@@ -91,7 +91,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
 
   // 8. Roda: 3 tentativas e prémio dourado garantido
   await page.evaluate(() => { S.mot = true; save(); applyPrefs(); });
-  await page.click('.nav [data-tab="hoje"]'); await page.click("#h-reward"); await page.waitForTimeout(400);
+  await page.click('.nav [data-tab="hoje"]'); await page.click("#h-gift"); await page.waitForTimeout(400);
   await shot("13-roda");
   const t = await page.textContent("#w-odds");
   ok(/Garantido/.test(t) && /%/.test(t), "probabilidades e prémio garantido visíveis");
