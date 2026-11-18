@@ -27,7 +27,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   await page.click("#ob-n2");
   await page.fill("#ob-age", "30"); await page.fill("#ob-h", "170"); await page.fill("#ob-w", "70"); await shot("02b-dados");
   await page.click("#ob-n2");
-  for (const opt of ["1.375", "manter", "Como de tudo", "Nenhuma", "Desenrasco-me"]) {
+  for (const opt of ["1.375", "manter", "media", "Como de tudo", "Nenhuma", "Cogumelos", "Desenrasco-me", "sim", "casa", "3", "30", "zero", "Joelhos"]) {
     await page.click(`.opt[data-o="${opt}"]`); await page.click("#ob-n2");
   }
   await page.waitForTimeout(200); await shot("02c-referencia");
@@ -84,9 +84,13 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   await shot("08-plano-semana");
   await page.click('[data-v="mes"]'); await page.waitForTimeout(300); await shot("09-plano-mes");
   await page.click('#p-seg [data-s="treino"]'); await page.waitForTimeout(300); await shot("10-treino-escolher");
-  await page.click('[data-p="zero"]'); await page.waitForTimeout(400);
-  await page.evaluate(() => { const d = (new Date().getDay()+6)%7; [...document.querySelectorAll("#pg-d .chip")].forEach(c => { if (+c.dataset.i === d && !c.classList.contains("on")) c.click(); }); });
-  await page.click("#pg-ok"); await page.waitForTimeout(400);
+  const plan = await page.evaluate(() => S.wk && S.wk.custom);
+  ok(plan && plan.s.length === 3 && plan.days.length === 3, "plano personalizado com 3 treinos por semana");
+  const exs = plan ? plan.s.flatMap(x => x.e.map(e => e[0])).join("|") : "";
+  ok(!/Lunges|Agachamento com|salto/i.test(exs) && /Ponte de glúteos|Sentar e levantar/.test(exs), "plano poupa os joelhos (" + exs + ")");
+  ok(await page.evaluate(() => { const a = generatePlan({ place:"gym", days:4, min:60, lvl:"regular", goal:"musculo" }), b = generatePlan({ place:"casa", days:2, min:20, lvl:"zero", goal:"perder", bmi:32 });
+    return a.s.length === 2 && a.s[0].e.length > b.s[0].e.length && /4 ×/.test(a.s[0].e[1][1]) && /2 ×/.test(b.s[0].e[1][1]) && b.s[0].e.some(e => /Caminhada/.test(e[0])); }), "planos diferentes para pessoas diferentes");
+  await page.evaluate(() => { const d = (new Date().getDay()+6)%7; if (!S.wk.days.includes(d)) S.wk.days.push(d); save(); renderTreino(); }); await page.waitForTimeout(300);
   await page.click("[data-ex] >> nth=0"); await page.waitForTimeout(200);
   await page.click("[data-fin] >> nth=0"); await page.waitForTimeout(500); await closeCel();
   st = await state();
