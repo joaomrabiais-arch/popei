@@ -9,7 +9,9 @@ const COOK_STYLES = [["diario","Cozinho quase todos os dias","Pratos diferentes 
   ["batch","Cozinho em quantidade","2 sessões por semana (domingo e quarta) dão para os almoços e jantares."],["rapido","Quero cozinhar o mínimo","Receitas de 15 minutos ou menos nos dias úteis."]];
 const CTIMES = [["15","Até 15 minutos"],["30","Até 30 minutos"],["45","Até 45 minutos"],["60","Até 1 hora, gosto de cozinhar"]];
 const CUISINES = [["portuguesa","Portuguesa"],["mediterranica","Mediterrânica"],["italiana","Italiana"],["asiatica","Asiática e caril"],["mexicana","Mexicana"],["tudo","Gosto de tudo"]];
-const PORTIONS = [["pequena","Pequenas"],["normal","Normais"],["grande","Grandes, tenho bom apetite"]];
+const PORTIONS = [["pequena","Ligeira","Como pouco de cada vez"],["normal","Normal","Um prato normal"],["grande","Grande","Tenho bom apetite"],["muito","Muito grande","Fico sempre com fome"]];
+const STRICT = [["risca","À risca","Cada cêntimo acima do orçamento conta"],["folga","Com folga","Até 10 % acima, para semanas melhores"],["guia","Só como guia","O orçamento orienta, nunca decide"]];
+const NOVELTY = [["costume","O costume","No máximo uma receita nova por semana"],["equilibrado","Equilibrado","Até duas novidades por semana"],["aventureiro","Aventureiro","Até quatro novidades por semana"]];
 const MARKETS = ["Continente","Pingo Doce","Lidl","Mercadona","Aldi","Intermarché","Auchan","Minipreço","Mercado ou mercearia"];
 // Cozinha de cada prato principal (id da receita → cozinha). Pequenos-almoços e lanches não contam.
 const CUISINE_OF = { 12:"portuguesa",13:"portuguesa",18:"portuguesa",23:"portuguesa",27:"portuguesa",28:"portuguesa",31:"portuguesa",33:"portuguesa",
@@ -51,7 +53,8 @@ const eur = v => v.toLocaleString("pt-PT", { minimumFractionDigits: v < 10 ? 2 :
 function planPrefs(u = S.u || {}){
   const meals = (u.pmeals || []).filter(m => MEALS.some(x => x.id === m));
   return { meals: meals.length ? meals : MEALS.map(m => m.id), style: u.cstyle || "diario", time: +u.ctime || 30, cuis: (u.cuis || []).filter(x => x !== "tudo"),
-    home: (u.home || []).filter(h => PANTRY.some(p => p[0] === h)), tdays: (u.tdays || []).filter(d => d >= 0 && d <= 6), budget: +u.budget > 0 ? +u.budget : 0, portion: u.portion || "normal", goal: u.goal || "manter" };
+    home: (u.home || []).filter(h => PANTRY.some(p => p[0] === h)), tdays: (u.tdays || []).filter(d => d >= 0 && d <= 6), budget: +u.budget > 0 ? +u.budget : 0, portion: u.portion || "normal", goal: u.goal || "manter",
+    people: clamp(+u.people || 1, 1, 8), weMore: u.weMore !== false, strict: u.strict || "folga", novelty: u.novelty || "equilibrado", taste: u.taste && typeof u.taste === "object" ? u.taste : {} };
 }
 // Referência do dia: nos dias de treino mais 8 %, nos de descanso um pouco menos, para a média da semana ficar igual.
 function dayTarget(P, k, ref){ if (!ref) return null; const nT = P.tdays.length, tr = P.tdays.includes(dow(k));
@@ -60,14 +63,15 @@ function dayTarget(P, k, ref){ if (!ref) return null; const nT = P.tdays.length,
 const SPLIT = { "Pequeno-almoço":.25, "Almoço":.35, "Lanche":.1, "Jantar":.3 };
 const mealShares = P => { const t = P.meals.reduce((a, m) => a + SPLIT[m], 0); return Object.fromEntries(P.meals.map(m => [m, SPLIT[m] / t])); };
 const isMain = m => m === "Almoço" || m === "Jantar";
-const PORTION_X = { pequena:.75, normal:1, grande:1.5 };
+const PORTION_X = { pequena:.75, normal:1, grande:1.25, muito:1.5 };
+const NOVELTY_WIN = { costume:[6, 3], equilibrado:[12, 6], aventureiro:[18, 8] }; // janela sem repetir: [pratos principais, outros]
 
 // Gera as refeições de [from, to]. ctx: { ref:{kcal,p}|null, costW, recent:[ids] }. Devolve entradas no formato de S.plan.
 function genWeek(P, from, to, ctx = {}){
   const R = RECIPES.filter(recipeAllowed), ref = ctx.ref || null, sh = ctx.sh || mealShares(P), out = [], used = (ctx.recent || []).slice();
   const days = []; for (let k = from; k <= to; k = addDays(k, 1)) days.push(k);
   const perMeal = P.budget ? P.budget / (7 * P.meals.length) : 0, pro = ["musculo","perder","rendimento"].includes(P.goal);
-  const limit = k => { const we = dow(k) >= 5; let t = we ? Math.max(P.time, 45) : P.time; if (P.style === "rapido" && !we) t = Math.min(t, 15); return t; };
+  const limit = k => { const we = dow(k) >= 5; let t = we && P.weMore ? Math.max(P.time, 60) : P.time; if (P.style === "rapido" && !we) t = Math.min(t, 15); return t; };
   const poolFor = m => R.filter(r => isMain(m) ? (r.c === "Almoço" || r.c === "Jantar") : r.c === m);
   const homeRatio = r => P.home.length ? r.i.filter(([n]) => isHome(n, P.home)).length / r.i.length : 0;
   const rank = (m, k, opt = {}) => { const tg = dayTarget(P, k, ref), T = tg ? tg.kcal * sh[m] : null, tl = limit(k);
@@ -81,7 +85,9 @@ function genWeek(P, from, to, ctx = {}){
       if (isMain(m) && P.cuis.length) sc += P.cuis.includes(CUISINE_OF[r.id]) ? -.3 : .1;
       sc -= homeRatio(r) * .4;
       if (perMeal && ctx.costW) sc += ctx.costW * recipeCost(r, P.home) * x / perMeal * .3;
-      const last = used.lastIndexOf(r.id); if (last >= 0 && used.length - last < (isMain(m) ? 12 : 6)) sc += 1;
+      const win = NOVELTY_WIN[P.novelty] || NOVELTY_WIN.equilibrado, last = used.lastIndexOf(r.id); if (last >= 0 && used.length - last < (isMain(m) ? win[0] : win[1])) sc += 1;
+      const tv = P.taste[r.id]; if (tv === -1) sc += 2.5; else if (tv === 2) sc -= .45; else if (tv === 1) sc -= .2;   // o que a pessoa ensinou ao Abi
+      if (P.novelty === "costume" && tv === undefined && !S.fav.includes(r.id)) sc += .25;
       return { r, x, sc: sc + rnd() * .15 }; }).sort((a, b) => a.sc - b.sc); };
   const push = (k, m, r, x, extra) => { out.push(Object.assign({ id:uid(), date:k, m, n:r.n, r:r.id, x, a:1 }, extra)); used.push(r.id); };
   const portionFor = (r, m, k) => { const tg = dayTarget(P, k, ref); return tg ? clamp(Math.round(tg.kcal * sh[m] / r.k * 2) / 2, .5, 2.5) : (PORTION_X[P.portion] || 1); };
@@ -106,13 +112,14 @@ function genWeek(P, from, to, ctx = {}){
   return out;
 }
 const entryCost = (x, home) => { const r = x.r && RECIPES.find(q => q.id === x.r); return r ? recipeCost(r, home) * (x.x || 1) : 0; };
-const planCost = (E, home) => E.reduce((a, x) => a + entryCost(x, home), 0);
+// Custo da casa: a dose da pessoa (x) mais uma dose para cada pessoa a mais.
+const planCost = (E, home, people = 1) => E.reduce((a, x) => { const r = x.r && RECIPES.find(q => q.id === x.r); return a + (r ? recipeCost(r, home) * ((x.x || 1) + people - 1) : 0); }, 0);
 
 // Com orçamento, tenta outra vez dando mais peso ao preço até caber (3 tentativas, fica a mais barata).
 function genWeekFit(P, from, to, ctx = {}){
-  const share = (dow(to) - dow(from) + 1) / 7; let best = null;
-  for (const costW of P.budget ? [0, 1.5, 4] : [0]) { const E = genWeek(P, from, to, Object.assign({}, ctx, { costW })), c = planCost(E, P.home);
-    if (!best || c < best.c) best = { E, c }; if (!P.budget || c <= P.budget * share) break; }
+  const share = (dow(to) - dow(from) + 1) / 7, cap = P.budget * share * (P.strict === "folga" ? 1.1 : 1), W = !P.budget || P.strict === "guia" ? [0] : P.strict === "risca" ? [0, 1.5, 4, 8] : [0, 1.5, 4]; let best = null;
+  for (const costW of W) { const E = genWeek(P, from, to, Object.assign({}, ctx, { costW })), c = planCost(E, P.home, P.people);
+    if (!best || c < best.c) best = { E, c }; if (c <= cap) break; }
   return best.E;
 }
 const refNow = () => S.macro && kcalOn() ? { kcal:S.goal, p:S.macro.p } : null;

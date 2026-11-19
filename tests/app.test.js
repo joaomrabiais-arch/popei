@@ -28,15 +28,17 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   await page.fill("#ob-age", "30"); await page.click("#ob-n2");
   await page.click('.opt[data-o="manter"]'); await page.click("#ob-n2");
   await page.fill("#ob-h", "170"); await page.fill("#ob-w", "70"); await shot("02b-dados"); await page.click("#ob-n2");
-  ok(/kcal\/dia/.test(await page.textContent(".ob-live")), "estimativa ao vivo mostra energia depois dos dados");
+  ok(/kcal\/dia/.test(await page.textContent(".ob-week")), "faixa da semana mostra energia depois dos dados");
   // Refeições, porções, alimentação, cozinha, em casa, treino; orçamento e supermercado saltados
-  const steps = ["1.375", ["Pequeno-almoço","Almoço","Lanche","Jantar"], "normal", "Como de tudo", "Nenhuma", "Cogumelos", "dobro", "30", "portuguesa", ["Arroz","Azeite"],
-    "DIAS", "sim", "casa", "Nenhum", "30", "zero", "todo", "caminhar", "Joelhos", "SKIP", "SKIP"];
+  const steps = ["1.375", "normal", "PEOPLE", "Nenhuma", "Como de tudo", "Cogumelos", ["Pequeno-almoço","Almoço","Lanche","Jantar"], "dobro", "30", "portuguesa", "equilibrado", "TASTE",
+    "DIAS", "sim", "casa", "Nenhum", "30", "zero", "todo", "caminhar", "Joelhos", "SKIP", ["Arroz","Azeite"], "SKIP"];
   for (const opt of steps) {
     if (opt === "DIAS") { for (const d of [0, 2, 4]) await page.click(`#ob-days [data-i="${d}"]`); await shot("02d-dias"); }
     else if (opt === "SKIP") { await page.click("#ob-skip"); continue; }
+    else if (opt === "PEOPLE") { await page.click('[data-pp="1"]'); await shot("02g-pessoas"); }
+    else if (opt === "TASTE") { for (const v of ["2", "1", "-1"]) await page.click(`[data-tv="${v}"]`); await shot("02h-ensinar"); }
     else for (const o of [].concat(opt)) await page.click(`.opt[data-o="${o}"]`);
-    if (opt === "dobro") await shot("02e-cozinha");
+    if (opt === "dobro") await shot("02e-cozinha"); if (opt === "30") await shot("02i-tempo");
     await page.click("#ob-n2");
   }
   await page.waitForTimeout(200); await shot("02c-referencia");
@@ -49,7 +51,8 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   let st = await state();
   ok(st.u.name === "Joana" && st.spins === 3, "perfil e 3 giros guardados");
   ok(st.goal >= 1800 && st.goal <= 2400 && st.macro && st.macro.p > 0 && st.u.age === "18 ou mais", "referência e macros calculados (" + st.goal + " kcal, " + JSON.stringify(st.macro) + ")");
-  ok(JSON.stringify(st.u.tdays) === "[0,2,4]" && st.u.cstyle === "dobro" && st.u.pmeals.length === 4 && !st.u.budget, "respostas da personalização guardadas");
+  ok(JSON.stringify(st.u.tdays) === "[0,2,4]" && st.u.cstyle === "dobro" && st.u.pmeals.length === 4 && !st.u.budget && st.u.people === 2 && Object.keys(st.u.taste).length === 3, "respostas da personalização guardadas (pessoas e gosto incluídos)");
+  ok(await page.evaluate(() => { const bad = +Object.keys(S.u.taste).find(k => S.u.taste[k] === -1); return !S.plan.some(x => x.r === bad); }), "o prato que a pessoa passou não aparece no plano");
   ok(st.plan.length >= 4 && st.plan.every(x => x.a) && (st.plan.some(x => x.lo) || new Set(st.plan.map(x => x.date)).size < 2), "plano criado logo, com sobras do jantar no almoço seguinte");
   ok(!st.plan.some(x => x.r === 9), "plano sem o que a pessoa não gosta (cogumelos)");
   ok(await page.evaluate(() => !CHALLENGES.find(c => c.id === "planear").auto(today())), "o plano automático não completa o desafio de planear");
@@ -206,7 +209,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   await p3.fill("#ob-n", "Tó"); await p3.click("#ob-n2"); await p3.fill("#ob-age", "15"); await p3.click("#ob-n2");
   ok(!(await p3.isVisible('.opt[data-o="perder"]')), "menor: sem opção de perder peso");
   await p3.click('.opt[data-o="manter"]'); await p3.click("#ob-n2");
-  ok(!(await p3.isVisible("#ob-w")) && /Sem contar calorias/.test(await p3.textContent(".ob-live")), "menor: não pede peso nem mostra calorias");
+  ok(!(await p3.isVisible("#ob-w")) && /sem contar calorias/i.test(await p3.textContent(".ob-week")), "menor: não pede peso nem mostra calorias");
   await p3.screenshot({ path: path.join(OUT, "02f-menor.png") });
   await p3.click("#ob-later"); await p3.waitForTimeout(700);
   const ms = await p3.evaluate(() => ({ kc:kcalOn(), goal:S.u.goal, later:S.u.later, plan:S.plan.length, age:S.u.age }));

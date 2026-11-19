@@ -16,7 +16,7 @@ function calendar(month, sel, dotsFn){
 const shiftMonth = (mo, n) => { const [y, m] = mo.split("-").map(Number); return dkey(new Date(y, m-1+n, 1)).slice(0,7); };
 const mealOrder = m => MEALS.findIndex(x => x.id === m);
 function planSummaryCard(mon){
-  const P = planPrefs(), ref = refNow(), sun = addDays(mon, 6), E = S.plan.filter(x => x.date >= mon && x.date <= sun), cost = planCost(E, P.home);
+  const P = planPrefs(), ref = refNow(), sun = addDays(mon, 6), E = S.plan.filter(x => x.date >= mon && x.date <= sun), cost = planCost(E, P.home, P.people);
   const days = new Set(E.filter(x => x.r).map(x => x.date)).size, kc = E.reduce((a, x) => a + planKcal(x), 0), pr = E.reduce((a, x) => a + planProt(x), 0);
   const over = P.budget && cost > P.budget;
   return `<div class="card plan-sum" style="margin-top:18px"><div class="row between"><div><p class="eyebrow">A tua semana</p><h3>${E.length ? `${E.length} refeições em ${days} dia${days === 1 ? "" : "s"}` : "Ainda sem plano"}</h3></div><button class="btn ghost sm" id="pl-prefs">Preferências</button></div>
@@ -154,7 +154,7 @@ function fmtQty(v, u, rest){ const f = x => x.toLocaleString("pt-PT", { maximumF
   return base + (rest ? " " + rest : ""); }
 function genShop(mon){
   const agg = new Map(), end = addDays(mon, 6);
-  S.plan.filter(x => x.date >= mon && x.date <= end && x.r).forEach(x => { const r = RECIPES.find(q => q.id === x.r); if (!r) return; const f = (x.x || 1) / (r.srv || 1);
+  S.plan.filter(x => x.date >= mon && x.date <= end && x.r).forEach(x => { const r = RECIPES.find(q => q.id === x.r); if (!r) return; const f = ((x.x || 1) + planPrefs().people - 1) / (r.srv || 1); // dose da pessoa + uma por cada pessoa a mais
     r.i.forEach(([n, q, c]) => { const pq = parseQty(q), key = n.toLowerCase() + "|" + (pq ? pq.u + pq.rest : "txt"); const cur = agg.get(key);
       if (pq) agg.set(key, { n, c, v:(cur ? cur.v : 0) + pq.v * f, u:pq.u, rest:pq.rest }); else if (!cur) agg.set(key, { n, c, txt:q }); }); });
   const keep = S.shop.filter(x => !x.auto), done = new Set(S.shop.filter(x => x.auto && x.k).map(x => x.n.toLowerCase()));
