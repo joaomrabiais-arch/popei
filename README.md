@@ -4,6 +4,7 @@
 **App Brota (ex-NutriVida, nome provisório):** [`app/index.html`](app/index.html) — app de nutrição e treino com as mascotes Abi e Pingo. Código em módulos em [`app/src/`](app/src/) (estilos em `css/`, lógica em `js/`, por ordem numérica); `npm run build` monta o ficheiro único `app/index.html`. Testes: `npm run test:app`. IA grátis (Llama na Cloudflare): [`servidor/LEIA-ME.md`](servidor/LEIA-ME.md).
 
 **Auditoria da NutriVida:** [`munchi/AUDITORIA.md`](munchi/AUDITORIA.md) — auditoria da app de nutrição e plano por fases; original em [`munchi/nutrivida-original.html`](munchi/nutrivida-original.html).
+**Auditoria da Brota (atual):** [`app/AUDITORIA.md`](app/AUDITORIA.md) — o que funciona, o que é simulado, bugs críticos e plano por fases.
 
 
 Análise e kit de arranque a partir do vídeo TikTok "$12.5k this month — AI Dropshipping" (TeemDrop).
