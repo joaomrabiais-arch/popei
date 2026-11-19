@@ -458,6 +458,42 @@ ul.ing li span:last-child{color:var(--muted);text-align:right}
 /* Prémios em dourado */
 #h-gift{color:var(--sun-ink)}
 #h-spins{color:var(--sun-ink)}
+/* ===== Personalização e plano semanal ===== */
+/* Progresso por secções no onboarding */
+.obsecs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:0 6px}
+.obsecs i{height:4px;border-radius:2px;background:var(--line);overflow:hidden}
+.obsecs b{display:block;height:100%;background:var(--brand);transition:width .35s var(--ease)}
+.ob-where{text-align:center;margin-top:6px;font-weight:600;letter-spacing:.02em}
+/* Estimativa ao vivo e resumo das escolhas */
+.ob-live{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:14px;padding:10px 14px;border-radius:var(--r-sm);background:var(--brand-soft);color:var(--ink);font-size:13px}
+.ob-live b{font-variant-numeric:tabular-nums;font-weight:700}
+.ob-live .over b,.stat3 .over b{color:var(--accent)}
+.ob-chosen{margin-top:8px;font-size:13px}
+.ob-chosen summary{cursor:pointer;color:var(--ink-2);font-weight:600;padding:4px 0;list-style:none}
+.ob-chosen summary::-webkit-details-marker{display:none}
+.ob-chosen summary::after{content:" ▾";color:var(--muted)}
+.ob-chosen[open] summary::after{content:" ▴"}
+.ob-chosen div{margin-top:6px}
+/* Perguntas sem mascote: título simples, mais compacto */
+.ob-q.plain{margin:22px 0 18px}
+.ob-q.plain .speech{padding:0;background:none}
+.ob-q.plain .speech b{font-size:22px}
+.ob-q .speech span{display:block}
+/* Plano semanal */
+.eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.plan-sum h3{margin-top:2px}
+.chips-sum{margin-top:12px}
+.pill-tr{display:inline-flex;align-items:center;gap:4px;margin-left:8px;height:22px;padding:0 8px;border-radius:7px;background:var(--coral-soft);color:var(--ink);font-size:11px;font-weight:700}
+.pill-tr .ic{color:var(--coral)}
+.ptag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:6px;background:var(--sun-soft);color:var(--ink);font-size:11px;font-weight:600;vertical-align:1px}
+.lnk{font:inherit;color:inherit;text-align:left;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.lnk:hover{text-decoration-color:var(--brand)}
+.daycol .dh{flex-wrap:wrap}
+.pitem{align-items:flex-start;padding:3px 0}
+.pitem .mt{padding-top:2px}
+.pitem .nm{white-space:normal;line-height:1.35;overflow:visible}
+.pitem .num{padding-top:2px}
+.pitem .iconbtn{margin-top:-6px}
 </style>
 </head>
 <body>
@@ -1016,7 +1052,7 @@ const CHALLENGES = [
   { id:"legume", n:"Junta um legume a uma refeição", h:"Toca para marcar" },
   { id:"calma", n:"Faz uma refeição sem ecrãs", h:"Toca para marcar" },
   { id:"mexer", n:"Mexe-te 20 minutos", h:"Caminhar também conta. Toca para marcar" },
-  { id:"planear", n:"Planeia uma refeição de amanhã", h:"Marca-se sozinho", auto:k => S.plan.some(x => x.date === addDays(k,1)) },
+  { id:"planear", n:"Planeia uma refeição de amanhã", h:"Marca-se sozinho", auto:k => S.plan.some(x => x.date === addDays(k,1) && !x.a) },
   { id:"nova", n:"Experimenta uma receita nova", h:"Toca para marcar" }
 ];
 function todaysChallenges(k){ let h = 7; for (const ch of k) h = (h*31 + ch.charCodeAt(0)) >>> 0;
@@ -1127,17 +1163,165 @@ function openSummary(){
   const line = logged >= 5 ? ["morango","Semana muito consistente. Estou orgulhoso!","party"] : logged >= 2 ? ["abi","Boa semana. Cada registo ajuda-te a conhecer-te melhor.","happy"] : ["abi","Uma semana mais calma também conta. Estou aqui quando quiseres.","happy"];
   openSheet("Progresso", `<div class="card row">${(line[0] === "morango" ? morango : abi)({ mood:line[2], size: line[0] === "morango" ? 60 : 44 })}<p>${line[1]}</p></div>
     <div class="stat3" style="margin-top:12px"><div><b>${logged}/7</b><small>dias com registo</small></div><div><b>${wk}</b><small>treinos</small></div><div><b>${chd}</b><small>desafios</small></div></div>
-    <div class="card" style="margin-top:16px"><div class="row between"><h3>Peso</h3>${last && first !== last ? `<span class="small muted">${(last[1]-first[1] > 0 ? "+" : "") + (last[1]-first[1]).toFixed(1).replace(".",",")} kg desde ${first[0].slice(8)}/${first[0].slice(5,7)}</span>` : ""}</div>
+    ${isMinor() ? "" : `<div class="card" style="margin-top:16px"><div class="row between"><h3>Peso</h3>${last && first !== last ? `<span class="small muted">${(last[1]-first[1] > 0 ? "+" : "") + (last[1]-first[1]).toFixed(1).replace(".",",")} kg desde ${first[0].slice(8)}/${first[0].slice(5,7)}</span>` : ""}</div>
       <div style="margin-top:8px">${lineChart(W, { goal: S.u && S.u.tw ? +S.u.tw : null })}</div>
       <div class="row" style="margin-top:10px"><input id="pw-in" type="number" inputmode="decimal" step="0.1" min="30" max="250" placeholder="Peso de hoje (kg)" value="${(S.weights||{})[today()] || ""}" aria-label="Peso de hoje"><button class="btn" id="pw-ok">Registar</button></div>
-      <p class="tiny muted" style="margin-top:8px">Pesa-te à mesma hora, uma ou duas vezes por semana. O peso varia de dia para dia, e é normal.</p></div>
+      <p class="tiny muted" style="margin-top:8px">Pesa-te à mesma hora, uma ou duas vezes por semana. O peso varia de dia para dia, e é normal.</p></div>`}
     ${kcalOn() ? `<div class="card" style="margin-top:12px"><div class="row between"><h3>Energia</h3><span class="small muted">média ${Math.round(kc.reduce((a,b) => a+b, 0) / Math.max(1, kc.filter(Boolean).length))} kcal</span></div>${barChart(kc, lab, { goal:S.goal })}<p class="tiny muted">A linha tracejada é a tua referência.</p></div>` : ""}
     <div class="card" style="margin-top:12px"><h3>Equilíbrio da semana</h3><div class="stackbar" style="margin-top:12px">${pc.map(x => `<i style="width:${(x[1]*100).toFixed(1)}%;background:${x[2]}"></i>`).join("")}</div>
       <div class="row between small" style="margin-top:8px">${pc.map(x => `<span><span class="dot" style="background:${x[2]}"></span>${x[0]} ${Math.round(x[1]*100)}%</span>`).join("")}</div></div>
     <div class="card" style="margin-top:12px"><h3>Água (copos)</h3>${barChart(wa, lab, { goal:S.wg, cls:"soft" })}</div>
     <p class="tiny muted" style="margin-top:12px">Sem "bom" nem "mau": serve só para veres padrões.</p>`, b => {
-    $("#pw-ok", b).onclick = () => { if (!logWeight($("#pw-in", b).value)) { toast("Indica um peso entre 30 e 250 kg"); return; } openSummary(); };
+    if ($("#pw-ok", b)) $("#pw-ok", b).onclick = () => { if (!logWeight($("#pw-in", b).value)) { toast("Indica um peso entre 30 e 250 kg"); return; } openSummary(); };
   });
+}
+/* ========================== Plano alimentar: preferências, custos e gerador ==========================
+   Tudo o que as perguntas iniciais recolhem e que muda o plano vive em S.u:
+     pmeals  refeições a planear        cstyle  forma de cozinhar       ctime  minutos por refeição (dias úteis)
+     cuis    cozinhas preferidas        home    o que já há em casa     tdays  dias de treino (0 = segunda)
+     budget  orçamento semanal (€)      market  supermercado (só fica guardado)   portion  tamanho das porções
+   O gerador é puro (genWeek não mexe no estado) para poder pré-visualizar o plano durante as perguntas. */
+
+const COOK_STYLES = [["diario","Cozinho quase todos os dias","Pratos diferentes todos os dias."],["dobro","Cozinho uma vez, como duas","O jantar de hoje é o almoço de amanhã."],
+  ["batch","Cozinho em quantidade","2 sessões por semana (domingo e quarta) dão para os almoços e jantares."],["rapido","Quero cozinhar o mínimo","Receitas de 15 minutos ou menos nos dias úteis."]];
+const CTIMES = [["15","Até 15 minutos"],["30","Até 30 minutos"],["45","Até 45 minutos"],["60","Até 1 hora, gosto de cozinhar"]];
+const CUISINES = [["portuguesa","Portuguesa"],["mediterranica","Mediterrânica"],["italiana","Italiana"],["asiatica","Asiática e caril"],["mexicana","Mexicana"],["tudo","Gosto de tudo"]];
+const PORTIONS = [["pequena","Pequenas"],["normal","Normais"],["grande","Grandes, tenho bom apetite"]];
+const MARKETS = ["Continente","Pingo Doce","Lidl","Mercadona","Aldi","Intermarché","Auchan","Minipreço","Mercado ou mercearia"];
+// Cozinha de cada prato principal (id da receita → cozinha). Pequenos-almoços e lanches não contam.
+const CUISINE_OF = { 12:"portuguesa",13:"portuguesa",18:"portuguesa",23:"portuguesa",27:"portuguesa",28:"portuguesa",31:"portuguesa",33:"portuguesa",
+  11:"mediterranica",15:"mediterranica",24:"mediterranica",32:"mediterranica",101:"mediterranica",25:"mediterranica",
+  14:"italiana",20:"italiana",29:"italiana",34:"italiana", 19:"asiatica",21:"asiatica",26:"asiatica",30:"asiatica",103:"asiatica", 16:"mexicana",17:"mexicana",22:"mexicana" };
+// O que pode já haver em casa: [rótulo, expressão que apanha o ingrediente nas receitas]
+const PANTRY = [["Arroz",/^arroz/i],["Massa",/^massa(?! de pizza)|esparguete|lasanha/i],["Flocos de aveia",/aveia(?! \S*bebida)|^flocos de aveia/i],["Ovos",/^ovos?\b|ovos cozidos/i],
+  ["Leite ou bebida vegetal",/^leite(?! de coco)|^bebida/i],["Iogurte",/iogurte/i],["Atum em lata",/atum/i],["Grão-de-bico",/grão/i],["Feijão",/feijão(?!-verde)/i],["Lentilhas",/lentilhas/i],
+  ["Tomate pelado ou polpa",/polpa de tomate|tomate pelado/i],["Batata",/^batata(?!-doce| palha)/i],["Cebola e alho",/^cebola|^alho/i],["Azeite",/^azeite/i],["Pão",/^pão(?! ralado| de hambúrguer)/i],
+  ["Banana",/banana/i],["Frango",/frango/i],["Queijo",/queijo|mozzarella|ricota|requeijão/i],["Frutos secos",/nozes|amêndoas|frutos secos/i],["Especiarias e ervas",/caril|cominhos|canela|orégãos|pimentão|cúrcuma/i]];
+
+/* ===== Preços de referência =====
+   shortcut: preços médios aproximados de supermercado em Portugal, escritos à mão e não verificados; mudam com a loja e a época.
+   Trocar por uma tabela com fonte (ou preços do supermercado escolhido) antes de prometer valores. [expressão, €/kg ou €/L, € por unidade] */
+const PRICES = [[/manteiga de amendoim/i,9],[/leite de coco/i,4],[/^leite|^bebida/i,1.1],[/aveia/i,2.2,.1],[/banana/i,1.4,.2],[/pão ralado/i,3],[/pão de hambúrguer/i,0,.4],[/^pão|tortilha/i,3.5,.2],
+  [/abacate/i,6,1],[/ovo/i,0,.25],[/lim(ão|a)/i,2,.3],[/frutos vermelhos/i,8],[/iogurte grego/i,5],[/iogurte/i,2.5,.35],[/granola/i,7],[/^mel/i,8],[/manteiga/i,9],[/chia/i,12],[/requeijão/i,7],
+  [/polpa de tomate|tomate pelado/i,1.6],[/tomate/i,2.2,.3],[/^azeite/i,9],[/cogumelos/i,5],[/manga/i,3,1.4],[/grão/i,2.5],[/pepino/i,1.5,.5],[/cebola/i,1.2,.2],[/peito de frango/i,7.5],
+  [/pernas de frango/i,0,1.1],[/^arroz/i,1.6],[/alface|rúcula/i,0,.5],[/bacalhau/i,14],[/batata palha/i,8],[/massa de pizza/i,0,1.5],[/^massa|esparguete/i,1.6],[/folhas de lasanha/i,0,.12],
+  [/atum/i,0,1.2],[/^alho/i,6,.05],[/quinoa/i,7],[/batata-doce/i,2,.5],[/courgette/i,2,.6],[/pimento/i,3,.6],[/tahini|sésamo/i,12],[/feijão-verde/i,4],[/feijão/i,2.5],[/milho/i,3],
+  [/salmão/i,16,2.5],[/edamame/i,7],[/espinafres/i,5],[/ricota|mozzarella/i,8],[/caril em pó/i,20],[/^cominhos/i,20],[/^batata/i,1.1,.15],[/cenoura/i,1,.12],[/abóbora/i,1.5],[/couve/i,2],
+  [/brócolos/i,3],[/queijo fresco/i,7],[/feta/i,12],[/lentilhas/i,2.6],[/chouriço/i,12],[/dourada|robalo/i,12],[/carne picada/i,8],[/tofu/i,8],[/molho de soja/i,5],[/aipo/i,0,.3],
+  [/nozes/i,15],[/amêndoas/i,12],[/húmus/i,8],[/maçã/i,1.8,.3],[/tâmaras/i,8],[/cacau/i,15],[/passas/i,6],[/tangerina/i,2,.25],[/vinagre/i,2],[/melancia/i,.9]];
+const priceOf = n => PRICES.find(p => p[0].test(n)) || [null, 5, .5];
+const isHome = (n, home) => (home || []).some(h => { const p = PANTRY.find(x => x[0] === h); return p && p[1].test(n); });
+// Custo de um ingrediente na quantidade da receita. "q.b." e especiarias soltas contam como zero.
+function ingCost(n, q){ const pq = parseQty(q); if (!pq) return 0; const [, kg, un] = priceOf(n);
+  if (pq.u === "g" || pq.u === "ml") return pq.v / 1000 * kg;
+  const sp = /^c\. (sopa|chá)/.exec(pq.rest); if (sp) return pq.v * (sp[1] === "sopa" ? 15 : 5) / 1000 * kg;
+  return pq.v * (un || kg * .15); }
+// € por dose, sem contar o que a pessoa já tem em casa.
+const recipeCost = (r, home) => r.i.reduce((a, [n, q]) => a + (isHome(n, home) ? 0 : ingCost(n, q)), 0) / (r.srv || 1);
+const eur = v => v.toLocaleString("pt-PT", { minimumFractionDigits: v < 10 ? 2 : 0, maximumFractionDigits: v < 10 ? 2 : 0 }) + " €";
+
+function planPrefs(u = S.u || {}){
+  const meals = (u.pmeals || []).filter(m => MEALS.some(x => x.id === m));
+  return { meals: meals.length ? meals : MEALS.map(m => m.id), style: u.cstyle || "diario", time: +u.ctime || 30, cuis: (u.cuis || []).filter(x => x !== "tudo"),
+    home: (u.home || []).filter(h => PANTRY.some(p => p[0] === h)), tdays: (u.tdays || []).filter(d => d >= 0 && d <= 6), budget: +u.budget > 0 ? +u.budget : 0, portion: u.portion || "normal", goal: u.goal || "manter" };
+}
+// Referência do dia: nos dias de treino mais 8 %, nos de descanso um pouco menos, para a média da semana ficar igual.
+function dayTarget(P, k, ref){ if (!ref) return null; const nT = P.tdays.length, tr = P.tdays.includes(dow(k));
+  const f = !nT || nT === 7 ? 1 : tr ? 1.08 : 1 - .08 * nT / (7 - nT);
+  return { kcal: Math.round(ref.kcal * f / 10) * 10, p: Math.round(ref.p * (tr ? 1.1 : 1)), tr }; }
+const SPLIT = { "Pequeno-almoço":.25, "Almoço":.35, "Lanche":.1, "Jantar":.3 };
+const mealShares = P => { const t = P.meals.reduce((a, m) => a + SPLIT[m], 0); return Object.fromEntries(P.meals.map(m => [m, SPLIT[m] / t])); };
+const isMain = m => m === "Almoço" || m === "Jantar";
+const PORTION_X = { pequena:.75, normal:1, grande:1.5 };
+
+// Gera as refeições de [from, to]. ctx: { ref:{kcal,p}|null, costW, recent:[ids] }. Devolve entradas no formato de S.plan.
+function genWeek(P, from, to, ctx = {}){
+  const R = RECIPES.filter(recipeAllowed), ref = ctx.ref || null, sh = ctx.sh || mealShares(P), out = [], used = (ctx.recent || []).slice();
+  const days = []; for (let k = from; k <= to; k = addDays(k, 1)) days.push(k);
+  const perMeal = P.budget ? P.budget / (7 * P.meals.length) : 0, pro = ["musculo","perder","rendimento"].includes(P.goal);
+  const limit = k => { const we = dow(k) >= 5; let t = we ? Math.max(P.time, 45) : P.time; if (P.style === "rapido" && !we) t = Math.min(t, 15); return t; };
+  const poolFor = m => R.filter(r => isMain(m) ? (r.c === "Almoço" || r.c === "Jantar") : r.c === m);
+  const homeRatio = r => P.home.length ? r.i.filter(([n]) => isHome(n, P.home)).length / r.i.length : 0;
+  const rank = (m, k, opt = {}) => { const tg = dayTarget(P, k, ref), T = tg ? tg.kcal * sh[m] : null, tl = limit(k);
+    let pool = poolFor(m); if (opt.batch) pool = pool.filter(r => (r.srv || 1) >= 2);
+    return pool.map(r => { const x = T ? clamp(Math.round(T / r.k * 2) / 2, .5, 2.5) : (PORTION_X[P.portion] || 1);
+      let sc = T ? Math.abs(r.k * x - T) / T : 0;
+      const pm = tg ? tg.p * sh[m] : 0, pp = r.p * x;                                           // proteína: chegar à quota da refeição, sem a ultrapassar muito
+      sc -= pm && pp > pm * 1.25 ? -(pp - pm * 1.25) / pm * .5 : (r.p * 4 / r.k) * (pro ? .9 : .4) * (tg && tg.tr ? 1.4 : 1);
+      if (tg && tg.tr && (P.goal === "musculo" || P.goal === "rendimento")) sc -= (r.h * 4 / r.k) * .3; // e hidratos para o treino
+      if (r.t > tl) sc += .5 + (r.t - tl) / 60;
+      if (isMain(m) && P.cuis.length) sc += P.cuis.includes(CUISINE_OF[r.id]) ? -.3 : .1;
+      sc -= homeRatio(r) * .4;
+      if (perMeal && ctx.costW) sc += ctx.costW * recipeCost(r, P.home) * x / perMeal * .3;
+      const last = used.lastIndexOf(r.id); if (last >= 0 && used.length - last < (isMain(m) ? 12 : 6)) sc += 1;
+      return { r, x, sc: sc + rnd() * .15 }; }).sort((a, b) => a.sc - b.sc); };
+  const push = (k, m, r, x, extra) => { out.push(Object.assign({ id:uid(), date:k, m, n:r.n, r:r.id, x, a:1 }, extra)); used.push(r.id); };
+  const portionFor = (r, m, k) => { const tg = dayTarget(P, k, ref); return tg ? clamp(Math.round(tg.kcal * sh[m] / r.k * 2) / 2, .5, 2.5) : (PORTION_X[P.portion] || 1); };
+  const mains = P.meals.filter(isMain);
+
+  // Pratos principais segundo a forma de cozinhar
+  if (P.style === "batch" && mains.length) {
+    const blocks = [[], []]; days.forEach(k => blocks[dow(k) <= 2 ? 0 : 1].push(k));
+    blocks.forEach((B, bi) => { if (!B.length) return; const lk = uid(), when = bi ? "quarta" : "domingo";
+      const picks = []; for (let j = 0; j < mains.length; j++) { const c = rank(mains[j], B[0], { batch:1 }).find(o => !picks.includes(o.r)); if (c) picks.push(c.r); }
+      if (!picks.length) return;
+      B.forEach((k, di) => mains.forEach((m, j) => { const r = picks[(j + di) % picks.length]; push(k, m, r, portionFor(r, m, k), { lk: lk + r.id, bt: when }); })); });
+  } else if (P.style === "dobro" && mains.length === 2) {
+    let prev = null;
+    days.forEach(k => { if (prev) push(k, "Almoço", prev.r, portionFor(prev.r, "Almoço", k), { lk: prev.lk, lo:1 });
+      else { const c = rank("Almoço", k)[0]; if (c) push(k, "Almoço", c.r, c.x); }
+      const d = rank("Jantar", k)[0]; if (d) { const lk = uid(); push(k, "Jantar", d.r, d.x, { lk }); prev = { r:d.r, lk }; } });
+  } else mains.forEach(m => days.forEach(k => { const c = rank(m, k)[0]; if (c) push(k, m, c.r, c.x); }));
+
+  // Pequeno-almoço e lanche: escolhidos dia a dia
+  P.meals.filter(m => !isMain(m)).forEach(m => days.forEach(k => { const c = rank(m, k)[0]; if (c) push(k, m, c.r, c.x); }));
+  return out;
+}
+const entryCost = (x, home) => { const r = x.r && RECIPES.find(q => q.id === x.r); return r ? recipeCost(r, home) * (x.x || 1) : 0; };
+const planCost = (E, home) => E.reduce((a, x) => a + entryCost(x, home), 0);
+
+// Com orçamento, tenta outra vez dando mais peso ao preço até caber (3 tentativas, fica a mais barata).
+function genWeekFit(P, from, to, ctx = {}){
+  const share = (dow(to) - dow(from) + 1) / 7; let best = null;
+  for (const costW of P.budget ? [0, 1.5, 4] : [0]) { const E = genWeek(P, from, to, Object.assign({}, ctx, { costW })), c = planCost(E, P.home);
+    if (!best || c < best.c) best = { E, c }; if (!P.budget || c <= P.budget * share) break; }
+  return best.E;
+}
+const refNow = () => S.macro && kcalOn() ? { kcal:S.goal, p:S.macro.p } : null;
+
+// Preenche a semana de `mon` a partir de `from` (por omissão, segunda). Só substitui entradas automáticas; o que a pessoa planeou à mão fica.
+function buildWeekPlan(mon, replace, from){
+  const start = from && from > mon ? from : mon, end = addDays(mon, 6), P = planPrefs();
+  if (replace) S.plan = S.plan.filter(x => x.date < start || x.date > end || !x.a);
+  const busy = new Set(S.plan.filter(x => x.date >= start && x.date <= end).map(x => x.date + "|" + x.m));
+  const recent = S.plan.filter(x => x.date < start && x.date >= addDays(start, -7) && x.r).map(x => x.r);
+  const E = genWeekFit(P, start, end, { ref:refNow(), recent }).filter(x => !busy.has(x.date + "|" + x.m));
+  E.forEach(x => { if (x.lo && !E.some(y => y !== x && y.lk === x.lk && !y.lo)) delete x.lo; }); // sobra cujo prato original não entrou
+  S.plan.push(...E); return E.length;
+}
+// Troca um prato por outra opção com as mesmas regras. Sobras e pratos feitos em quantidade mudam em conjunto.
+function swapPlanEntry(id){
+  const e = S.plan.find(x => x.id === id); if (!e) return false;
+  const group = e.lk ? S.plan.filter(x => x.lk === e.lk) : [e], P = planPrefs();
+  const near = S.plan.filter(x => x.date >= addDays(e.date, -3) && x.date <= addDays(e.date, 3) && x.r).map(x => x.r).concat(e.r);
+  let alt = genWeek(Object.assign({}, P, { meals:[e.m], style:"diario" }), e.date, e.date, { ref:refNow(), recent:near, sh:mealShares(P) })[0], r = alt && RECIPES.find(q => q.id === alt.r);
+  if (!r || r.id === e.r || (group.length > 1 && (r.srv || 1) < 2)) {
+    const pool = RECIPES.filter(q => recipeAllowed(q) && q.id !== e.r && (isMain(e.m) ? isMain(q.c) : q.c === e.m) && (group.length < 2 || (q.srv || 1) >= 2));
+    if (!pool.length) return false; r = pool[Math.floor(rnd() * pool.length)]; alt = null; }
+  group.forEach(x => { x.r = r.id; x.n = r.n; }); if (alt) e.x = alt.x; return true;
+}
+// Frases curtas com as escolhas, para os resumos.
+function prefsSummary(u = S.u || {}){
+  const P = planPrefs(u), L = [];
+  L.push(P.meals.length === 4 ? "4 refeições por dia" : P.meals.join(", "));
+  L.push((COOK_STYLES.find(c => c[0] === P.style) || [,""])[1]);
+  L.push((CTIMES.find(c => c[0] === String(P.time)) || [,"Até 30 minutos"])[1]);
+  if (P.cuis.length) L.push(P.cuis.map(c => (CUISINES.find(x => x[0] === c) || [,c])[1]).join(", "));
+  L.push(P.tdays.length ? "Treino: " + P.tdays.map(d => DOW[d]).join(" ") : "Sem dias de treino");
+  if (P.budget) L.push(`Até ${P.budget} € por semana`);
+  if (P.home.length) L.push(`${P.home.length} básico(s) em casa`);
+  if (u.market) L.push(u.market);
+  return L;
 }
 /* ========================== HOJE ========================== */
 let curDay = today();
@@ -1429,28 +1613,43 @@ function calendar(month, sel, dotsFn){
 }
 const shiftMonth = (mo, n) => { const [y, m] = mo.split("-").map(Number); return dkey(new Date(y, m-1+n, 1)).slice(0,7); };
 const mealOrder = m => MEALS.findIndex(x => x.id === m);
+function planSummaryCard(mon){
+  const P = planPrefs(), ref = refNow(), sun = addDays(mon, 6), E = S.plan.filter(x => x.date >= mon && x.date <= sun), cost = planCost(E, P.home);
+  const days = new Set(E.filter(x => x.r).map(x => x.date)).size, kc = E.reduce((a, x) => a + planKcal(x), 0), pr = E.reduce((a, x) => a + planProt(x), 0);
+  const over = P.budget && cost > P.budget;
+  return `<div class="card plan-sum" style="margin-top:18px"><div class="row between"><div><p class="eyebrow">A tua semana</p><h3>${E.length ? `${E.length} refeições em ${days} dia${days === 1 ? "" : "s"}` : "Ainda sem plano"}</h3></div><button class="btn ghost sm" id="pl-prefs">Preferências</button></div>
+    ${E.length ? `<div class="stat3" style="margin-top:14px">${ref && days ? `<div><b>${Math.round(kc / days)}</b><small>kcal por dia (ref. ${ref.kcal})</small></div><div><b>${Math.round(pr / days)} g</b><small>proteína por dia (ref. ${ref.p} g)</small></div>` : `<div><b>${P.meals.length}</b><small>refeições por dia</small></div><div><b>${P.tdays.length}</b><small>dias de treino</small></div>`}
+      <div class="${over ? "over" : ""}"><b>≈ ${eur(cost)}</b><small>${P.budget ? `estimativa, orçamento ${P.budget} €` : "custo estimado"}</small></div></div>` : ""}
+    <div class="chips-sum">${prefsSummary().map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>
+    ${over ? `<p class="small" style="margin-top:6px;color:var(--accent)">Fica acima do orçamento mesmo com as opções mais baratas. Indica o que já tens em casa ou planeia menos refeições.</p>` : ""}
+    <p class="tiny muted" style="margin-top:8px">Custos com preços médios aproximados, sem contar o que já tens em casa. Variam com a loja e a época.</p></div>`;
+}
 function renderPlanRef(){
-  const el = $("#p-ref"), mon = mondayOf(planSel);
-  const dayList = k => { const it = S.plan.filter(x => x.date === k).sort((a,b) => mealOrder(a.m) - mealOrder(b.m));
-    return `<div class="daycol"><div class="dh"><b>${k === today() ? "Hoje · " : ""}${DOWL[dow(k)]} ${parseK(k).getDate()}</b>${kcalOn() && it.some(x => x.r) ? `<span class="tiny muted" style="margin-left:auto;margin-right:4px">${it.reduce((a, x) => a + planKcal(x), 0)} kcal · ${it.reduce((a, x) => a + planProt(x), 0)} g prot.</span>` : ""}<button class="iconbtn" data-padd="${k}" aria-label="Planear ${fmtDay(k)}">${icon("plus","sm")}</button></div>
-      ${it.map(x => `<div class="pitem"><span class="mt">${esc(x.m)}</span><span class="nm">${esc(x.n)}${x.x && x.x !== 1 ? ` <span class="muted">× ${String(x.x).replace(".", ",")}</span>` : ""}</span>${kcalOn() && planKcal(x) ? `<span class="small muted num">${planKcal(x)}</span>` : ""}<button class="iconbtn" data-pdel="${x.id}" aria-label="Remover ${esc(x.n)}">${icon("x","xs")}</button></div>`).join("") || `<p class="small muted" style="margin-top:2px">Nada planeado.</p>`}</div>`; };
+  const el = $("#p-ref"), mon = mondayOf(planSel), P = planPrefs(), ref = refNow();
+  const dayList = k => { const it = S.plan.filter(x => x.date === k).sort((a,b) => mealOrder(a.m) - mealOrder(b.m)), tg = dayTarget(P, k, ref), tr = P.tdays.includes(dow(k));
+    const kc = it.reduce((a, x) => a + planKcal(x), 0), pr = it.reduce((a, x) => a + planProt(x), 0);
+    return `<div class="daycol"><div class="dh"><b>${k === today() ? "Hoje · " : ""}${DOWL[dow(k)]} ${parseK(k).getDate()}</b>${tr ? `<span class="pill-tr">${icon("dumbbell","xs")} Treino</span>` : ""}${kcalOn() && it.some(x => x.r) ? `<span class="tiny muted" style="margin-left:auto;margin-right:4px">${kc}${tg ? ` / ${tg.kcal}` : ""} kcal · ${pr} g prot.</span>` : `<span style="margin-left:auto"></span>`}<button class="iconbtn" data-padd="${k}" aria-label="Planear ${fmtDay(k)}">${icon("plus","sm")}</button></div>
+      ${it.map(x => `<div class="pitem"><span class="mt">${esc(x.m)}</span><span class="nm">${x.r ? `<button class="lnk" data-prec="${x.r}">${esc(x.n)}</button>` : esc(x.n)}${x.x && x.x !== 1 ? ` <span class="muted">× ${String(x.x).replace(".", ",")}</span>` : ""}${x.lo ? `<span class="ptag">Sobras de ontem</span>` : x.bt ? `<span class="ptag">Cozinhado ${x.bt === "domingo" ? "ao domingo" : "à quarta"}</span>` : ""}</span>${kcalOn() && planKcal(x) ? `<span class="small muted num">${planKcal(x)}</span>` : ""}${x.r ? `<button class="iconbtn" data-psw="${x.id}" aria-label="Trocar ${esc(x.n)}" title="Trocar">${icon("copy","xs")}</button>` : ""}<button class="iconbtn" data-pdel="${x.id}" aria-label="Remover ${esc(x.n)}">${icon("x","xs")}</button></div>`).join("") || `<p class="small muted" style="margin-top:2px">${k < today() ? "Já passou." : "Nada planeado."}</p>`}</div>`; };
   const sun = addDays(mon, 6);
-  el.innerHTML = `<div class="seg" style="margin-top:18px"><button data-v="semana" class="${planView === "semana" ? "on" : ""}">Semana</button><button data-v="mes" class="${planView === "mes" ? "on" : ""}">Mês</button></div>
+  el.innerHTML = planSummaryCard(mon) + `<div class="seg" style="margin-top:16px"><button data-v="semana" class="${planView === "semana" ? "on" : ""}">Semana</button><button data-v="mes" class="${planView === "mes" ? "on" : ""}">Mês</button></div>
     ${planView === "semana"
       ? `<div class="row between" style="margin-top:16px"><button class="iconbtn" data-wk="-7" aria-label="Semana anterior">${icon("left","sm")}</button><b>${parseK(mon).getDate()} de ${MONTHS[parseK(mon).getMonth()]} – ${parseK(sun).getDate()} de ${MONTHS[parseK(sun).getMonth()]}</b><button class="iconbtn" data-wk="7" aria-label="Semana seguinte">${icon("right","sm")}</button></div>
          <div class="list" style="margin-top:10px">${DOW.map((_, i) => dayList(addDays(mon, i))).join("")}</div>`
       : `<div class="card" style="margin-top:16px">${calendar(planMonth, planSel, k => S.plan.filter(x => x.date === k).slice(0,3).map(() => "<i></i>").join(""))}</div><div class="list" style="margin-top:12px">${dayList(planSel)}</div>`}
-    <div class="stack" style="margin-top:16px"><button class="btn block" id="pl-auto">${icon("sparkle","sm")} Criar plano da semana à tua medida</button><button class="btn soft block" id="pl-shop">${icon("cart","sm")} Gerar lista de compras da semana</button></div>
-    <p class="tiny muted" style="margin:10px 4px 0">O plano usa a tua referência de calorias e proteína, as alergias, a dieta e o que não gostas. As porções são ajustadas a ti (× 1,5 = uma porção e meia).</p>`;
+    <div class="stack" style="margin-top:16px"><button class="btn block" id="pl-auto">${icon("sparkle","sm")} ${S.plan.some(x => x.date >= mon && x.date <= sun && x.a) ? "Refazer o plano da semana" : "Criar o plano da semana"}</button><button class="btn soft block" id="pl-shop">${icon("cart","sm")} Gerar lista de compras da semana</button></div>
+    <p class="tiny muted" style="margin:10px 4px 0">O plano segue as tuas preferências: refeições, forma de cozinhar, tempo, cozinhas, dias de treino, alergias, o que não gostas, o que tens em casa e o orçamento. Refazer só muda o que foi sugerido; o que planeaste à mão fica.</p>`;
   $$("[data-v]", el).forEach(b => b.onclick = () => { planView = b.dataset.v; planMonth = planSel.slice(0,7); renderPlanRef(); });
   $$("[data-wk]", el).forEach(b => b.onclick = () => { planSel = addDays(planSel, +b.dataset.wk); renderPlanRef(); });
   $$("[data-mo]", el).forEach(b => b.onclick = () => { planMonth = shiftMonth(planMonth, +b.dataset.mo); renderPlanRef(); });
   $$(".cal [data-k]", el).forEach(b => b.onclick = () => { planSel = b.dataset.k; renderPlanRef(); });
   $$("[data-padd]", el).forEach(b => b.onclick = () => openPlanAdd(b.dataset.padd));
+  $$("[data-prec]", el).forEach(b => b.onclick = () => openRecipe(+b.dataset.prec));
+  $$("[data-psw]", el).forEach(b => b.onclick = () => { if (swapPlanEntry(b.dataset.psw)) { save(); renderPlanRef(); toast("Trocado por outra opção"); } else toast("Não há outra opção compatível"); });
   $$("[data-pdel]", el).forEach(b => b.onclick = () => { S.plan = S.plan.filter(x => x.id !== b.dataset.pdel); save(); renderPlanRef(); });
-  $("#pl-auto").onclick = async () => { const has = S.plan.some(x => x.date >= mon && x.date <= sun);
-    const repl = has && await confirmDlg("Já tens refeições nesta semana. Substituir tudo pelo plano feito para ti? Se cancelares, só preencho o que falta.", "Substituir");
-    const n = buildWeekPlan(mon, repl); save(); renderPlanRef(); toast(n ? `${n} refeições planeadas à tua medida` : "A semana já estava preenchida"); if (n) { ach("plan"); say("plan", true); } syncChallenges(); };
+  $("#pl-prefs", el).onclick = openPlanPrefs;
+  $("#pl-auto").onclick = async () => { const from = mon < today() ? today() : mon; if (from > sun) { toast("Esta semana já passou"); return; }
+    if (S.plan.some(x => x.date >= from && x.date <= sun && x.a) && !await confirmDlg("Refazer as sugestões desta semana? O que planeaste à mão fica igual.", "Refazer")) return;
+    const n = buildWeekPlan(mon, true, from); save(); renderPlanRef(); toast(n ? `${n} refeições planeadas à tua medida` : "A semana já estava preenchida"); if (n) { ach("plan"); say("plan", true); } };
   $("#pl-shop").onclick = () => { const n = genShop(mon); save(); toast(n ? `${n} produtos na lista, com as quantidades somadas` : "Nada para adicionar. Planeia receitas primeiro."); if (n) { planSub = "compras"; renderPlanos(); } };
 }
 function openPlanAdd(k, recipe){
@@ -1536,28 +1735,6 @@ function renderCompras(){
   bindShopHead(el);
 }
 
-/* ========================== Plano de refeições à medida ========================== */
-// Usa a referência da pessoa (kcal e proteína), as alergias, a dieta e o que não gosta.
-// Divide o dia (25/35/10/30 %), escolhe receitas e ajusta as porções em meias porções (0,5 a 2,5).
-const SPLIT = { "Pequeno-almoço":.25, "Almoço":.35, "Lanche":.1, "Jantar":.3 };
-const mealTargets = () => Object.fromEntries(MEALS.map(m => [m.id, Math.round((S.goal || 2000) * SPLIT[m.id])]));
-function buildWeekPlan(mon, replace){
-  const R = RECIPES.filter(recipeAllowed), goal = (S.u || {}).goal || "manter", T = mealTargets(), end = addDays(mon, 6);
-  if (replace) S.plan = S.plan.filter(x => x.date < mon || x.date > end);
-  const used = []; let n = 0;
-  for (let i = 0; i < 7; i++) { const k = addDays(mon, i);
-    for (const M of MEALS) { const m = M.id; if (S.plan.some(x => x.date === k && x.m === m)) continue;
-      const pool = R.filter(r => m === "Lanche" ? r.c === "Lanche" : m === "Pequeno-almoço" ? r.c === "Pequeno-almoço" : (r.c === "Almoço" || r.c === "Jantar"));
-      if (!pool.length) continue;
-      const ranked = pool.map(r => { const x = clamp(Math.round(T[m] / r.k * 2) / 2, .5, 2.5), kc = r.k * x;
-        let sc = Math.abs(kc - T[m]) / T[m];
-        if (goal === "musculo" || goal === "perder") sc -= Math.min(.35, r.p * 4 / r.k);   // mais proteína por caloria
-        const last = used.lastIndexOf(r.id); if (last >= 0 && used.length - last < 10) sc += 1;  // variedade
-        return [r, sc + rnd() * .2, x]; }).sort((a, b) => a[1] - b[1]);
-      const [r, , x] = ranked[0]; used.push(r.id);
-      S.plan.push({ id:uid(), date:k, m, n:r.n, r:r.id, x }); n++; } }
-  return n;
-}
 const planKcal = x => { const r = x.r && RECIPES.find(q => q.id === x.r); return r ? Math.round(r.k * (x.x || 1)) : 0; };
 const planProt = x => { const r = x.r && RECIPES.find(q => q.id === x.r); return r ? Math.round(r.p * (x.x || 1)) : 0; };
 
@@ -1576,8 +1753,9 @@ function genShop(mon){
       if (pq) agg.set(key, { n, c, v:(cur ? cur.v : 0) + pq.v * f, u:pq.u, rest:pq.rest }); else if (!cur) agg.set(key, { n, c, txt:q }); }); });
   const keep = S.shop.filter(x => !x.auto), done = new Set(S.shop.filter(x => x.auto && x.k).map(x => x.n.toLowerCase()));
   S.shop = keep; let n = 0;
-  for (const it of agg.values()) { if (keep.some(x => x.n.toLowerCase() === it.n.toLowerCase())) continue;
-    S.shop.push({ n:it.n, q: it.txt || fmtQty(it.v, it.u, it.rest), c:CATS.includes(it.c) ? it.c : "Outros", k: done.has(it.n.toLowerCase()) ? 1 : 0, auto:1 }); n++; }
+  const home = planPrefs().home; // o que já há em casa entra marcado, para confirmar
+  for (const it of agg.values()) { if (keep.some(x => x.n.toLowerCase() === it.n.toLowerCase())) continue; const q = it.txt || fmtQty(it.v, it.u, it.rest), h = isHome(it.n, home);
+    S.shop.push({ n:it.n, q: h ? "já tens? " + q : q, c:CATS.includes(it.c) ? it.c : "Outros", k: done.has(it.n.toLowerCase()) || h ? 1 : 0, auto:1 }); n++; }
   return n;
 }
 // Básicos para o objetivo, filtrados pela dieta, alergias e o que a pessoa não gosta.
@@ -1665,6 +1843,7 @@ function renderPerfil(){
     ["trophy","gold","Conquistas",`${Object.keys(S.ach).length} de ${ACH.length}`, openAch],
     ["leaf","","Bem-estar","Sono, energia e humor", openWell],
     ["chat","acc",`Falar com o ${BRAND.mascot}`,"Perguntas sobre alimentação", openChat],
+    ["bowl","","Plano alimentar","Refeições, cozinha, treino, orçamento", openPlanPrefs],
     ["target","","Preferências","Alimentação, alergias, calorias", openPrefs],
     ["brush","","Aparência e som","Tema, cores, animações", openLook],
     ["info","","Como funciona a app","Visita guiada de 1 minuto", () => startTour()],
@@ -1719,7 +1898,7 @@ function openChat(){
 /* ===== Referência de energia e macros =====
    Mifflin-St Jeor × atividade. Perder peso: défice de 15%, no máximo 500 kcal. Ganhar músculo: +10%, no máximo 300 kcal.
    Nunca abaixo de 1200 (F) / 1500 (M) kcal. Com IMC < 18,5 não se propõe perder peso. Menores: sem calorias. */
-const GOALS = [["perder","Perder peso"],["manter","Manter o peso"],["musculo","Ganhar músculo"],["livre","Comer melhor, sem contar calorias"]];
+const GOALS = [["perder","Perder gordura"],["manter","Manter o peso"],["musculo","Ganhar músculo"],["rendimento","Render mais no desporto"],["livre","Comer melhor, sem contar calorias"]];
 const ACTS = [["1.2","Pouco: passo o dia sentado"],["1.375","Às vezes: 1 a 3 treinos por semana"],["1.55","Bastante: 3 a 5 treinos por semana"],["1.725","Muito: 6 ou 7 treinos por semana"]];
 const goalName = id => (GOALS.find(g => g[0] === id) || [,"–"])[1];
 const validBody = p => p.age >= 10 && p.age <= 100 && p.h >= 120 && p.h <= 230 && p.w >= 30 && p.w <= 250;
@@ -1733,7 +1912,7 @@ function computeRef(p, goal, pace){
   if (g === "perder") { k = tdee - Math.min(cap, want); if (want > cap) note = note || `Para a tua segurança, o défice fica limitado a ${Math.round(cap)} kcal por dia. O ritmo real pode ser um pouco mais lento.`; }
   if (g === "musculo") k = tdee + ((+pace || .5) >= .5 ? Math.min(300, tdee * .1) : Math.min(180, tdee * .07));
   k = clamp(Math.round(k / 50) * 50, p.sex === "m" ? 1500 : 1200, 5000);
-  const prot = Math.round(clamp(p.w * ({ perder:1.6, musculo:1.8 }[g] || 1.2), 50, 220)), fat = Math.round(k * .28 / 9);
+  const prot = Math.round(clamp(p.w * ({ perder:1.6, musculo:1.8, rendimento:1.6 }[g] || 1.2), 50, 220)), fat = Math.round(k * .28 / 9);
   return { delta:Math.round(k - tdee), kcal:k, p:prot, g:fat, c:Math.max(0, Math.round((k - prot*4 - fat*9) / 4)), goal:g, note, bmi:Math.round(bmi*10)/10 };
 }
 function applyRef(){ // aplica a referência ao estado, a partir de S.prof e S.u.goal
@@ -1756,7 +1935,7 @@ function openPrefs(){
     <p class="tiny muted">É uma referência, não uma regra. Passar dela num dia não é falhar.</p></div>`}
     <label class="field"><span>Copos de água por dia (250 ml)</span><input id="pr-w" type="number" min="4" max="16" value="${S.wg}"></label>
     <button class="btn block" id="pr-ok">Guardar</button></div>`, b => {
-    $("#pr-redo", b).onclick = () => { closeSheet(); openOnboarding(true, "diet"); };
+    $("#pr-redo", b).onclick = () => { closeSheet(); openPlanPrefs(); };
     $("#pr-calc", b).onclick = openCalc;
     $("#pr-ok", b).onclick = () => { if (!isMinor()) { S.showKcal = $("#pr-k", b).checked; const g = clamp(Math.round(+$("#pr-g", b).value || 2000), 1200, 5000);
         if (S.macro && g !== S.goal) { const f = g / S.goal; S.macro = { p:S.macro.p, g:Math.round(S.macro.g*f), c:Math.max(0, Math.round((g - S.macro.p*4 - Math.round(S.macro.g*f)*9)/4)) }; } S.goal = g; }
@@ -1768,7 +1947,7 @@ function openCalc(){
   openSheet("Dados e objetivo", `<div class="stack"><div class="seg" id="c-s"><button data-v="f" class="${sex === "f" ? "on" : ""}">Feminino</button><button data-v="m" class="${sex === "m" ? "on" : ""}">Masculino</button></div>
     <div class="g2" style="grid-template-columns:repeat(3,1fr)"><label class="field"><span>Idade</span><input id="c-a" type="number" inputmode="numeric" min="10" max="100" value="${p.age}"></label><label class="field"><span>Altura (cm)</span><input id="c-h" type="number" inputmode="numeric" min="120" max="230" value="${p.h}"></label><label class="field"><span>Peso (kg)</span><input id="c-w" type="number" inputmode="decimal" min="30" max="250" step="0.1" value="${p.w}"></label></div>
     <label class="field"><span>Atividade</span><select id="c-x">${ACTS.map(a => `<option value="${a[0]}" ${String(p.act) === a[0] ? "selected" : ""}>${a[1]}</option>`).join("")}</select></label>
-    <label class="field"><span>Objetivo</span><select id="c-g">${GOALS.map(g => `<option value="${g[0]}" ${(u.goal || "manter") === g[0] ? "selected" : ""}>${g[1]}</option>`).join("")}</select></label>
+    <label class="field"><span>Objetivo</span><select id="c-g">${GOALS.filter(g => g[0] !== "perder" || !isMinor()).map(g => `<option value="${g[0]}" ${(u.goal || "manter") === g[0] ? "selected" : ""}>${g[1]}</option>`).join("")}</select></label>
     <div id="c-r"></div><button class="btn block" id="c-ok">Guardar</button>
     <p class="tiny muted">Estimativa geral (fórmula de Mifflin-St Jeor). Não serve para gravidez, amamentação nem condições de saúde. Para perder peso, o défice nunca passa de 15% nem de 500 kcal. Em caso de dúvida, fala com um nutricionista.</p></div>`, b => {
     $$("#c-s button", b).forEach(x => x.onclick = () => { sex = x.dataset.v; $$("#c-s button", b).forEach(y => y.classList.toggle("on", y === x)); prev(); });
@@ -1818,109 +1997,191 @@ $("#f-imp").onchange = async e => { const f = e.target.files[0]; e.target.value 
     if (o.v) localStorage.setItem(BRAND.storageKey, JSON.stringify(o)); else { localStorage.removeItem(BRAND.storageKey); localStorage.setItem(BRAND.legacyKeys[0], JSON.stringify(o)); }
     location.reload(); }
   catch(x) { toast("Ficheiro inválido: não é uma cópia desta app"); } };
-/* ========================== Onboarding ========================== */
-// Uma conversa curta com as mascotes. O Abi trata da comida e dos dados; o Morango do movimento e do treino.
-// `when` esconde passos que não se aplicam (ex.: perguntas do ginásio só se a pessoa quiser um plano).
+/* ========================== Onboarding: personalização do plano ==========================
+   Cinco secções curtas. Cada pergunta muda alguma coisa no plano; todas se podem saltar (fica um valor por omissão).
+   Em cima: progresso por secção, estimativa ao vivo (energia, proteína, custo da semana) e o resumo das escolhas.
+   As mascotes só aparecem nos momentos-chave: início, treino e fim. */
 const nm = A => A.name ? `, ${A.name}` : "";
+const OB_SECS = ["Sobre ti","Refeições","Cozinha","Treino","Extras"];
+const GOAL_D = { perder:"Devagar e sem dietas restritivas.", manter:"Comer bem e manter o peso.", musculo:"Mais proteína e um pequeno excedente.", rendimento:"Energia para treinar e recuperar.", livre:"Sem números: só refeições equilibradas." };
 const OB = [
-  { k:"name", who:"abi", m:"wave", q:() => `Olá! Eu sou o ${BRAND.mascot}. Como te chamo?`, s:"Só o primeiro nome chega. Não pedimos e-mail.", type:"text" },
-  { k:"body", who:"abi", m:"happy", q:A => `Prazer${nm(A)}! Conta-me um pouco sobre ti.`, s:"Serve para calcular uma referência e adaptar o treino. Fica só neste aparelho.", type:"body" },
-  { k:"act", who:"morango", m:"wink", one:1, q:() => "Quanto te mexes numa semana normal?", s:"Contam treinos, caminhadas e trabalho físico.", o:ACTS },
-  { k:"goal", who:"morango", m:"happy", one:1, q:() => "Qual é o teu objetivo agora?", s:"Podes mudar quando quiseres.", o:GOALS },
-  { k:"tw", who:"abi", m:"think", type:"target", when:A => (A.goal === "perder" || A.goal === "musculo") && !A._noBody, q:() => "Onde gostavas de chegar?", s:"Escolhe um ritmo realista. Devagar também lá chega, e dura mais." },
-  { k:"hard", who:"abi", m:"think", ex:"Nada em especial", q:() => "O que te tem dificultado mais?", s:"Escolhe tudo o que se aplica. Vou ajustar as dicas.", o:["Falta de tempo","Petiscar entre refeições","Fins de semana","Comer fora","Stress ou ansiedade","Pouca motivação","Não sei o que cozinhar","Nada em especial"] },
-  { k:"meals", who:"abi", m:"happy", one:1, q:() => "Quantas refeições costumas fazer por dia?", s:"Contam os lanches.", o:[["2","2 ou menos"],["3","3"],["4","4"],["5","5 ou mais"]] },
-  { k:"sleep", who:"abi", m:"sleepy", one:1, q:() => "E quantas horas dormes, normalmente?", s:"O sono mexe com a fome e com a energia.", o:[["5","Menos de 6"],["6","6 a 7"],["7","7 a 8"],["8","Mais de 8"]] },
-  { k:"dietq", who:"abi", m:"think", one:1, q:() => "Como descreves a tua alimentação hoje?", s:"Sem julgamentos. É só para saber por onde começar.", o:[["boa","Equilibrada, quase sempre"],["media","Razoável, com altos e baixos"],["caos","Desorganizada: salto refeições ou como à pressa"],["nsei","Não sei bem"]] },
-  { k:"diet", who:"abi", m:"happy", ex:"Como de tudo", q:() => "Há alguma forma de comer que sigas?", s:"Podes escolher várias.", o:["Como de tudo","Vegetariano","Vegan","Pescetariano","Não como carne de porco"] },
-  { k:"al", who:"abi", m:"think", ex:"Nenhuma", q:() => "Tens alergias ou intolerâncias?", s:"Escondo as receitas que as tenham. Confirma sempre os rótulos.", o:["Lactose","Glúten","Frutos secos","Amendoim","Marisco","Ovos","Soja","Peixe","Sésamo","Nenhuma"] },
-  { k:"dislikes", who:"abi", m:"wow", ex:"Nada em especial", q:() => "E há coisas de que simplesmente não gostas?", s:"Também as tiro das sugestões.", o:["Cogumelos","Coentros","Cebola","Pimento","Peixe","Leguminosas","Picante","Nada em especial"], other:1 },
-  { k:"cook", who:"abi", m:"happy", one:1, q:() => "E na cozinha, como te dás?", s:"Ajuda-me a sugerir receitas à tua medida.", o:["Estou a começar","Desenrasco-me","Adoro cozinhar"] },
-  { k:"gym", who:"morango", m:"wow", one:1, q:A => `Queres que te monte um plano de treino${nm(A)}?`, s:"Feito à tua medida. Podes ativar mais tarde no separador Planos.", o:[["sim","Sim, quero treinar"],["nao","Agora não"]] },
-  { k:"place", who:"morango", m:"think", one:1, when:A => A.gym === "sim", q:() => "Onde vais treinar?", s:"Escolhe o sítio onde treinas mais vezes.", o:[["gym","No ginásio"],["equip","Em casa, com halteres ou elásticos"],["casa","Em casa, sem material"],["rua","Na rua ou num parque"]] },
-  { k:"equip", who:"morango", m:"think", ex:"Nenhum", when:A => A.gym === "sim" && A.place !== "gym", q:() => "Que material tens à mão?", s:"Escolhe tudo o que tens. Uso-o nos exercícios.", o:["Halteres","Elásticos","Kettlebell","Barra de elevações","Banco ou degrau","Tapete","Nenhum"] },
-  { k:"gdaysSel", who:"morango", m:"happy", type:"days", when:A => A.gym === "sim", q:() => "Em que dias consegues treinar?", s:"Escolhe 2 a 6 dias. Pelo menos um dia de descanso por semana." },
-  { k:"gmin", who:"morango", m:"wink", one:1, when:A => A.gym === "sim", q:() => "E quanto tempo tens por treino?", s:"Conta com o aquecimento.", o:[["20","20 minutos"],["30","30 minutos"],["45","45 minutos"],["60","1 hora"]] },
-  { k:"lvl", who:"morango", m:"think", one:1, when:A => A.gym === "sim", q:() => "Que experiência tens a treinar?", s:"Ajusta as séries e a dificuldade.", o:[["zero","Nunca treinei ou parei há muito"],["algum","Já treinei um pouco"],["regular","Treino com regularidade"]] },
-  { k:"focus", who:"morango", m:"wink", one:1, when:A => A.gym === "sim", q:() => "Queres dar mais atenção a alguma zona?", s:"O plano continua equilibrado, com mais volume aqui.", o:[["todo","Corpo todo, equilibrado"],["pernas","Pernas e glúteos"],["cima","Peito, costas e braços"],["core","Abdominais e core"],["cardio","Resistência e cardio"]] },
-  { k:"cardio", who:"morango", m:"happy", one:1, when:A => A.gym === "sim", q:() => "Que cardio preferes?", s:"Uso-o no aquecimento e no fim dos treinos.", o:[["caminhar","Caminhar"],["correr","Correr"],["bicicleta","Bicicleta"],["nadar","Nadar"],["nenhum","Prefiro não fazer cardio"]] },
-  { k:"lim", who:"morango", m:"think", ex:"Nenhuma", when:A => A.gym === "sim", q:() => "Tens alguma zona a poupar?", s:"Troco os exercícios que podem incomodar. Se tens dor, fala primeiro com um profissional.", o:["Joelhos","Costas","Ombros","Nenhuma"] },
-  { k:"result", type:"result" }
+  { k:"name", sec:0, who:"abi", m:"wave", type:"text", q:() => `Olá! Eu sou o ${BRAND.mascot}. Vamos montar o teu plano.`, s:"São cerca de 3 minutos. Podes saltar qualquer pergunta e mudar tudo depois no Perfil. Como te chamo?" },
+  { k:"agep", sec:0, type:"age", q:A => `Que idade tens${nm(A)}?`, s:"Abaixo dos 18 anos a app não mostra calorias nem metas de peso." },
+  { k:"goal", sec:0, one:1, q:() => "O que queres agora?", s:"Podes mudar quando quiseres.", o:A => GOALS.filter(g => g[0] !== "perder" || isAdultA(A)).map(g => [g[0], g[1], GOAL_D[g[0]]]) },
+  { k:"body", sec:0, type:"body", when:A => isAdultA(A) && A.goal !== "livre", q:() => "A tua altura e peso atuais", s:"Servem para a referência de energia e proteína. Ficam só neste aparelho." },
+  { k:"tw", sec:0, type:"target", when:A => isAdultA(A) && !A._noBody && (A.goal === "perder" || A.goal === "musculo"), q:() => "Onde gostavas de chegar?", s:"Opcional. Escolhe um ritmo realista: devagar também lá chega, e dura mais." },
+  { k:"act", sec:0, one:1, q:() => "Quanto te mexes numa semana normal?", s:"Contam treinos, caminhadas e trabalho físico.", o:ACTS },
+  { k:"pmeals", sec:1, q:() => "Que refeições queres que planeie?", s:"Só planeio estas. As outras registas como quiseres.", o:() => MEALS.map(m => [m.id, m.id === "Lanche" ? "Lanches" : m.id]) },
+  { k:"portion", sec:1, one:1, q:() => "Como preferes as porções?", s:A => obNoKcal(A) ? "Ajusto as quantidades de cada receita." : "Com a tua referência as porções ajustam-se sozinhas. Isto conta se esconderes as calorias.", o:PORTIONS },
+  { k:"diet", sec:1, ex:"Como de tudo", q:() => "Segues alguma forma de comer?", s:"Podes escolher várias.", o:["Como de tudo","Vegetariano","Vegan","Pescetariano","Não como carne de porco"] },
+  { k:"al", sec:1, ex:"Nenhuma", q:() => "Tens alergias ou intolerâncias?", s:"Tiro do plano as receitas que as tenham. Confirma sempre os rótulos.", o:["Lactose","Glúten","Frutos secos","Amendoim","Marisco","Ovos","Soja","Peixe","Sésamo","Nenhuma"] },
+  { k:"dislikes", sec:1, ex:"Nada em especial", q:() => "Há coisas de que não gostas?", s:"Também as tiro das sugestões.", o:["Cogumelos","Coentros","Cebola","Pimento","Peixe","Leguminosas","Picante","Nada em especial"], other:1 },
+  { k:"cstyle", sec:2, one:1, q:() => "Como gostas de cozinhar?", s:"Muda a forma como a semana é montada.", o:COOK_STYLES },
+  { k:"ctime", sec:2, one:1, q:() => "Quanto tempo tens para cozinhar num dia de semana?", s:"Ao fim de semana conto com até 45 minutos.", o:CTIMES },
+  { k:"cuis", sec:2, ex:"tudo", q:() => "Que cozinhas te apetecem mais?", s:"Dou-lhes prioridade nos almoços e jantares.", o:CUISINES },
+  { k:"home", sec:2, ex:"Nada disto", q:() => "O que costumas ter em casa?", s:"Uso primeiro o que já tens e marco-o na lista de compras para confirmares.", o:() => PANTRY.map(p => p[0]).concat("Nada disto") },
+  { k:"tdays", sec:3, type:"tdays", q:() => "Em que dias treinas ou fazes desporto?", s:"Nesses dias o plano leva mais proteína e hidratos. Se não treinas, também está bem." },
+  { k:"gym", sec:3, who:"morango", m:"wow", one:1, q:A => `Queres que te monte um plano de treino${nm(A)}?`, s:"Feito à tua medida. Podes ativá-lo mais tarde em Planos.", o:[["sim","Sim, quero treinar"],["nao","Agora não"]] },
+  { k:"place", sec:3, one:1, when:A => A.gym === "sim", q:() => "Onde vais treinar?", s:"Escolhe o sítio onde treinas mais vezes.", o:[["gym","No ginásio"],["equip","Em casa, com halteres ou elásticos"],["casa","Em casa, sem material"],["rua","Na rua ou num parque"]] },
+  { k:"equip", sec:3, ex:"Nenhum", when:A => A.gym === "sim" && A.place !== "gym", q:() => "Que material tens à mão?", s:"Escolhe tudo o que tens.", o:["Halteres","Elásticos","Kettlebell","Barra de elevações","Banco ou degrau","Tapete","Nenhum"] },
+  { k:"gdaysSel", sec:3, type:"days", when:A => A.gym === "sim" && !gymDaysOk(A.tdays), q:() => "Em que dias consegues treinar?", s:"Para o plano de treino, escolhe 2 a 6 dias." },
+  { k:"gmin", sec:3, one:1, when:A => A.gym === "sim", q:() => "Quanto tempo tens por treino?", s:"Conta com o aquecimento.", o:[["20","20 minutos"],["30","30 minutos"],["45","45 minutos"],["60","1 hora"]] },
+  { k:"lvl", sec:3, one:1, when:A => A.gym === "sim", q:() => "Que experiência tens a treinar?", s:"Ajusta as séries e a dificuldade.", o:[["zero","Nunca treinei ou parei há muito"],["algum","Já treinei um pouco"],["regular","Treino com regularidade"]] },
+  { k:"focus", sec:3, one:1, when:A => A.gym === "sim", q:() => "Queres dar mais atenção a alguma zona?", s:"O plano continua equilibrado.", o:[["todo","Corpo todo, equilibrado"],["pernas","Pernas e glúteos"],["cima","Peito, costas e braços"],["core","Abdominais e core"],["cardio","Resistência e cardio"]] },
+  { k:"cardio", sec:3, one:1, when:A => A.gym === "sim", q:() => "Que cardio preferes?", s:"Uso-o no aquecimento e no fim dos treinos.", o:[["caminhar","Caminhar"],["correr","Correr"],["bicicleta","Bicicleta"],["nadar","Nadar"],["nenhum","Prefiro não fazer cardio"]] },
+  { k:"lim", sec:3, ex:"Nenhuma", when:A => A.gym === "sim", q:() => "Tens alguma zona a poupar?", s:"Troco os exercícios que podem incomodar. Se tens dor, fala primeiro com um profissional.", o:["Joelhos","Costas","Ombros","Nenhuma"] },
+  { k:"budget", sec:4, type:"budget", q:() => "Tens um orçamento para a comida da semana?", s:"Opcional. Se for preciso, escolho receitas mais em conta. Os preços são estimativas." },
+  { k:"market", sec:4, one:1, q:() => "Onde costumas fazer compras?", s:"Opcional. Por agora só fica guardado: ainda não temos preços por supermercado.", o:MARKETS },
+  { k:"result", sec:4, type:"result" }
 ];
-function openOnboarding(edit, startKey){
-  const A = Object.assign({ name:"", goal:"", act:String(S.prof.act || ""), dietq:"", diet:[], al:[], dislikes:[], cook:"", gym:"", place:"", gdays:"", gmin:"", lvl:"", lim:[], age:"", tw:"", pace:"0.5", hard:[], meals:"", sleep:"", equip:[], gdaysSel:[], focus:"", cardio:"" }, structuredClone(S.u || {}));
-  const B = Object.assign({}, S.prof, { skip: A.age === "Prefiro não dizer" });
-  const vis = () => OB.filter(s => !s.when || s.when(A));
+const gymDaysOk = d => Array.isArray(d) && d.length >= 2 && d.length <= 6;
+const isAdultA = A => A.ageN >= 18;
+const obNoKcal = A => !isAdultA(A) || A.goal === "livre" || A._noBody || !validBody(Object.assign({}, A._b || {}, { age:A.ageN }));
+// Corre fn como se S.u já fosse A (para pré-visualizar o plano com as respostas atuais).
+function withU(A, fn){ const o = S.u; S.u = Object.assign({}, o || {}, A, { age: A.ageN >= 18 ? "18 ou mais" : A.ageN ? "Menos de 18" : "Prefiro não dizer" }); try { return fn(); } finally { S.u = o; } }
+
+function openOnboarding(edit, startKey, single){
+  const prevAge = S.u && S.u.age === "18 ou mais" ? (S.prof.age >= 18 ? S.prof.age : 30) : S.u && S.u.age === "Menos de 18" ? Math.min(S.prof.age, 17) : 0;
+  const A = Object.assign({ name:"", goal:"", act:String(S.prof.act || ""), diet:[], al:[], dislikes:[], pmeals:[], portion:"", cstyle:"", ctime:"", cuis:[], home:[], tdays:null, budget:"", market:"",
+    gym:"", place:"", gmin:"", lvl:"", lim:[], tw:"", pace:"0.5", equip:[], gdaysSel:[], focus:"", cardio:"" }, structuredClone(S.u || {}));
+  A.ageN = S.ob ? prevAge : 0; A._b = Object.assign({}, S.prof);
+  if (!S.ob || (S.u || {}).age !== "18 ou mais" || !validBody(A._b)) A._noBody = true; // na primeira vez o corpo por omissão não conta: só o que a pessoa indicar
+  const B = A._b, vis = () => single ? OB.filter(s => s.k === startKey) : OB.filter(s => !s.when || s.when(A));
   let n = Math.max(0, vis().findIndex(x => x.k === startKey)), mood = null;
   const ob = $("#ob"), inn = $("#ob-in"); ob.classList.remove("hide");
-  const minor = () => !B.skip && B.age < 18;
-  const opts = s => (s.k === "goal" && (minor() || B.skip) ? s.o.filter(o => o[0] !== "perder") : s.o).map(o => Array.isArray(o) ? o : [o, o]);
-  const sel = (s, v) => s.one ? String(A[s.k]) === v : (A[s.k]||[]).includes(v);
+  const optsOf = s => (typeof s.o === "function" ? s.o(A) : s.o).map(o => Array.isArray(o) ? o : [o, o]);
+  const sel = (s, v) => s.one ? String(A[s.k]) === v : (A[s.k] || []).includes(v);
   const tog = (s, v) => { if (s.one) { A[s.k] = v; return; } let a = A[s.k] || []; a = a.includes(v) ? a.filter(x => x !== v) : v === s.ex ? [v] : a.filter(x => x !== s.ex).concat(v); A[s.k] = a; };
-  const readBody = () => { if (!$("#ob-age", inn)) return; B.age = +$("#ob-age", inn).value; B.h = +$("#ob-h", inn).value; B.w = +$("#ob-w", inn).value; };
+  const ageOk = () => A.ageN >= 10 && A.ageN <= 100;
   const validTarget = () => { const t = +A.tw, minW = 18.5 * (B.h / 100) ** 2; if (!(t >= 35 && t <= 250) || !A.pace) return false; return A.goal === "perder" ? (t < B.w && t >= minW) : t > B.w; };
   const twMsg = () => { const el = $("#ob-twn", inn); if (!el) return; const t = +A.tw, minW = Math.ceil(18.5 * (B.h / 100) ** 2);
     el.textContent = !t ? "" : A.goal === "perder" && t >= B.w ? "Para perder peso, escolhe um valor abaixo do atual." : A.goal === "perder" && t < minW ? `Esse peso fica abaixo de um IMC saudável. Escolhe ${minW} kg ou mais.` : A.goal === "musculo" && t <= B.w ? "Para ganhar músculo, escolhe um valor acima do atual." : ""; };
-  const valid = s => s.type === "text" || s.type === "result" || (s.type === "target" ? validTarget() : s.type === "days" ? (A.gdaysSel || []).length >= 2 && (A.gdaysSel || []).length <= 6 : s.type === "body" ? (B.skip || validBody(B)) : s.one ? !!A[s.k] : (A[s.k]||[]).length > 0 || (s.other && !!(A.dislikesOther||"").trim()));
-  const faceOf = s => face(s.who || "abi", { mood: mood || s.m, size: s.who === "morango" ? 104 : 86 });
-  const save1 = s => { if (s.type === "text") A.name = $("#ob-n", inn).value.trim().slice(0,40); if (s.type === "body") readBody(); if (s.other) A.dislikesOther = $("#ob-o", inn).value.slice(0,80); if (s.type === "target") A.tw = $("#ob-tw", inn).value; };
-  const planFor = prof => generatePlan({ place:A.place || "casa", days:(A.gdaysSel || []).length || 3, dayIdx:A.gdaysSel, equip:(A.equip || []).filter(x => x !== "Nenhum"), focus:A.focus || "todo", cardio:A.cardio || "caminhar", min:A.gmin || 30, lvl:A.lvl || "zero", goal:A.goal || "manter",
-    lim:(A.lim||[]).filter(x => x !== "Nenhuma"), bmi: validBody(prof) ? prof.w / ((prof.h/100) ** 2) : 22, age: validBody(prof) ? prof.age : 30 });
-  const finish = () => {
+  const valid = s => ({ text:1, result:1, tdays:Array.isArray(A.tdays), age:ageOk(), body:validBody(Object.assign({}, B, { age:A.ageN })), target:validTarget(), days:gymDaysOk(A.gdaysSel),
+    budget:+A.budget >= 10 && +A.budget <= 500 })[s.type] ?? (s.one ? !!A[s.k] : (A[s.k] || []).length > 0 || (s.other && !!(A.dislikesOther || "").trim()));
+  const readIn = s => { const v = id => { const e = $(id, inn); return e ? e.value : ""; };
+    if (s.type === "text") A.name = v("#ob-n").trim().slice(0, 40);
+    if (s.type === "age") A.ageN = Math.round(+v("#ob-age")) || 0;
+    if (s.type === "body") { B.h = +v("#ob-h"); B.w = +v("#ob-w"); B.age = A.ageN; }
+    if (s.type === "target") A.tw = v("#ob-tw");
+    if (s.type === "budget") A.budget = v("#ob-bud");
+    if (s.other) A.dislikesOther = v("#ob-o").slice(0, 80); };
+  const planFor = () => generatePlan({ place:A.place || "casa", days:(gymDaysOk(A.tdays) ? A.tdays : A.gdaysSel || []).length || 3, dayIdx:gymDaysOk(A.tdays) ? A.tdays : A.gdaysSel, equip:(A.equip || []).filter(x => x !== "Nenhum"),
+    focus:A.focus || "todo", cardio:A.cardio || "caminhar", min:A.gmin || 30, lvl:A.lvl || "zero", goal:A.goal || "manter", lim:(A.lim || []).filter(x => x !== "Nenhuma"),
+    bmi: !obNoKcal(A) || validBody(B) ? B.w / ((B.h / 100) ** 2) : 22, age: A.ageN || 30 });
+  const refOf = () => obNoKcal(A) ? null : computeRef(Object.assign({}, B, { age:A.ageN, act:A.act || "1.375" }), A.goal || "manter", A.pace);
+  // Pré-visualização da semana com as respostas atuais (não toca no estado guardado).
+  const preview = () => { const r = refOf(), mon = mondayOf(today());
+    return withU(A, () => { const P = planPrefs(S.u), E = genWeekFit(P, mon, addDays(mon, 6), { ref: r ? { kcal:r.kcal, p:r.p } : null }); return { r, P, E, cost:planCost(E, P.home) }; }); };
+
+  const finish = later => {
     const first = !S.ob;
-    if (!B.skip) S.prof = { sex:B.sex, age:B.age, h:B.h, w:B.w, act:A.act || "1.375" }; else S.prof.act = A.act || S.prof.act;
-    A.age = B.skip ? "Prefiro não dizer" : B.age >= 18 ? "18 ou mais" : "Menos de 18";
-    if (A.goal === "perder" && (minor() || B.skip)) A.goal = "manter";
+    if (isAdultA(A) && !A._noBody && validBody(Object.assign({}, B, { age:A.ageN }))) S.prof = { sex:B.sex, age:A.ageN, h:B.h, w:B.w, act:A.act || "1.375" };
+    else { if (A.ageN) S.prof.age = A.ageN; S.prof.act = A.act || S.prof.act; }
+    A.age = A.ageN >= 18 ? "18 ou mais" : A.ageN ? "Menos de 18" : "Prefiro não dizer";
+    if (!A.goal || (A.goal === "perder" && !isAdultA(A))) A.goal = "manter";
+    if (!isAdultA(A)) A.tw = "";
     const extra = (A.dislikesOther || "").split(",").map(x => x.trim()).filter(Boolean);
-    A.dislikes = (A.dislikes || []).filter(x => x !== "Nada em especial").concat(extra).slice(0, 20); delete A.dislikesOther;
-    delete A._noBody; A.obj = goalName(A.goal); S.u = A; S.ob = 1; applyRef();
-    if (first || !S.plan.some(x => x.date >= mondayOf(today()))) buildWeekPlan(mondayOf(today()), false);
-    if (A.gym === "sim") { const pl = planFor(S.prof); S.wkHist = Object.assign(S.wkHist || {}, (S.wk && S.wk.done) || {}); S.wk = { prog:"custom", custom:pl, days:pl.days.slice(), start:today(), done:{}, ex:{} }; }
+    A.dislikes = (A.dislikes || []).filter(x => x !== "Nada em especial").concat(extra).filter((x, i, a) => a.indexOf(x) === i).slice(0, 20); delete A.dislikesOther;
+    A.tdays = Array.isArray(A.tdays) ? A.tdays : []; if (gymDaysOk(A.tdays)) A.gdaysSel = A.tdays.slice();
+    if (later) A.later = 1; else delete A.later;
+    const keyChanged = startKey;
+    delete A._noBody; delete A._b; delete A.ageN; A.obj = goalName(A.goal); S.u = A; S.ob = 1; applyRef();
+    // Plano da semana: refeito a partir de hoje (só o que foi sugerido); perto do fim de semana, prepara também a seguinte.
+    const mon = mondayOf(today()); buildWeekPlan(mon, true, today()); if (dow(today()) >= 4) buildWeekPlan(addDays(mon, 7), true);
+    if (A.gym === "sim" && (!single || keyChanged === "tdays" || keyChanged === "gym")) { const pl = planFor(); S.wkHist = Object.assign(S.wkHist || {}, (S.wk && S.wk.done) || {}); S.wk = { prog:"custom", custom:pl, days:pl.days.slice(), start:today(), done:{}, ex:{} }; }
     if (first) S.spins = 3; save(); ob.classList.add("hide"); refreshAll();
     if (first) setTimeout(() => celebrate({ who:"morango", title:"Presente de boas-vindas", name:"3 giros na roda de prémios", desc:`Gira a roda e ganha acessórios para o ${BRAND.mascot}. No fim das 3 tentativas, o prémio dourado é garantido.`, mood:"party", action:{ label:"Ir à roda", fn:() => go("roda") }, onClose:() => setTimeout(() => { if (!S.tourDone) startTour(); }, 300) }), 300);
-    else say(A.gym === "sim" ? "plan" : "hello", true);
+    else { toast(single ? "Guardado. O plano desta semana foi atualizado." : "Preferências guardadas e plano atualizado"); if (!single) say(A.gym === "sim" ? "plan" : "hello", true); }
   };
-  const draw = () => { const V = vis(); n = Math.min(n, V.length-1); const s = V[n];
-    let body = "", q = s.q ? s.q(A) : "", sub = s.s || "", head = faceOf(s);
+
+  const liveBar = pv => { const r = pv.r, L = [];
+    L.push(r ? `<span><b>${r.kcal}</b> kcal/dia</span><span><b>${r.p} g</b> proteína</span>` : `<span>Sem contar calorias</span>`);
+    L.push(`<span class="${pv.P.budget && pv.cost > pv.P.budget ? "over" : ""}"><b>≈ ${eur(pv.cost)}</b> por semana${pv.P.budget ? ` · orçamento ${pv.P.budget} €` : ""}</span>`);
+    return `<div class="ob-live" aria-live="polite">${L.join("")}</div>`; };
+  const chosen = () => { const L = withU(A, () => prefsSummary(S.u)); const al = (A.al || []).filter(x => x !== "Nenhuma"), dt = (A.diet || []).filter(x => x !== "Como de tudo");
+    if (A.goal) L.unshift(goalName(A.goal)); if (dt.length) L.push(dt.join(", ")); if (al.length) L.push("Sem " + al.join(", ").toLowerCase());
+    return `<details class="ob-chosen"><summary>As tuas escolhas (${L.length})</summary><div>${L.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div></details>`; };
+  const optBtn = (s, [v, l, d]) => `<button class="opt ${sel(s, v) ? "on" : ""}" data-o="${esc(v)}" aria-pressed="${sel(s, v)}"><span class="tick">${icon("check","xs")}</span>${d ? `<span><b style="display:block;font-weight:600">${esc(l)}</b><small class="muted">${esc(d)}</small></span>` : esc(l)}</button>`;
+
+  const draw = () => { const V = vis(); n = Math.min(n, V.length - 1); const s = V[n], pv = preview();
+    let body = "", q = s.q ? s.q(A) : "", sub = typeof s.s === "function" ? s.s(A) : s.s || "", head = s.who ? face(s.who, { mood: mood || s.m, size: s.who === "morango" ? 96 : 84 }) : "";
     if (s.type === "text") body = `<input id="ob-n" maxlength="40" autocomplete="given-name" placeholder="O teu nome" value="${esc(A.name)}" aria-label="Nome">`;
+    else if (s.type === "age") body = `<label class="field"><span>Idade</span><input id="ob-age" type="number" inputmode="numeric" min="10" max="100" value="${A.ageN || ""}"></label><p class="small" id="ob-agen" style="margin-top:8px;color:var(--muted)"></p>`;
     else if (s.type === "body") body = `<div class="ob-form"><div class="seg" id="ob-sex"><button data-v="f" class="${B.sex === "f" ? "on" : ""}">Feminino</button><button data-v="m" class="${B.sex === "m" ? "on" : ""}">Masculino</button></div>
-      <div class="g2" style="grid-template-columns:repeat(3,1fr)"><label class="field"><span>Idade</span><input id="ob-age" type="number" inputmode="numeric" min="10" max="100" value="${B.skip ? "" : B.age}"></label><label class="field"><span>Altura (cm)</span><input id="ob-h" type="number" inputmode="numeric" min="120" max="230" value="${B.skip ? "" : B.h}"></label><label class="field"><span>Peso (kg)</span><input id="ob-w" type="number" inputmode="decimal" step="0.1" min="30" max="250" value="${B.skip ? "" : B.w}"></label></div>
-      <button class="skip" id="ob-skip">Prefiro não indicar</button></div>`;
-    else if (s.type === "result") {
-      const prof = { sex:B.sex, age:B.age, h:B.h, w:B.w, act:A.act || "1.375" };
-      const noKcal = B.skip || minor() || A.goal === "livre", r = noKcal ? null : computeRef(prof, A.goal || "manter", A.pace);
-      const pl = A.gym === "sim" ? planFor(B.skip ? {} : prof) : null;
-      head = `<div class="mascots">${abi({ mood:"party", size:86 })}${morango({ mood:"party", size:104 })}</div>`;
-      q = `Está tudo pronto${nm(A)}.`;
-      sub = { caos:"Vamos começar pelo mais simples: refeições a horas e água. O resto vem depois.", boa:"Já tens uma boa base. Vamos ajudar-te a manter o ritmo.", media:"Vamos tornar os dias bons mais frequentes, sem pressão." }[A.dietq] || "Vamos devagar, um hábito de cada vez.";
-      body = (r ? `<p class="small muted" style="margin-top:4px">A tua referência diária:</p>${refCard(r)}` + (A.tw && r.delta && (A.goal === "perder" || A.goal === "musculo") ? `<p class="small" style="margin-top:12px">Ao ritmo escolhido, chegas aos <b>${esc(A.tw)} kg</b> em cerca de <b>${Math.max(1, Math.round(Math.abs(B.w - A.tw) / (Math.abs(r.delta) * 7 / 7700)))} semanas</b>. Sem pressa: o importante é ir mantendo.</p>` : "") + (r.note ? `<div class="note warn" style="margin-top:12px">${icon("info","sm")}<span>${esc(r.note)}</span></div>` : "")
-               : `<div class="note" style="margin-top:4px">${icon("info","sm")}<span>Sem contar calorias: o anel do dia mostra as refeições que registas.</span></div>`)
-        + (pl ? `<div class="card" style="margin-top:14px"><div class="row"><span class="badge">${icon("dumbbell")}</span><div class="grow"><b>${esc(pl.n)}</b><p class="small muted">${pl.days.map(d => DOW[d]).join(" · ")} · ${pl.s.map(x => x.n).join(", ")}</p></div></div><p class="tiny muted" style="margin-top:10px">${esc(pl.d)}</p></div>` : "")
-        + `<p class="tiny muted" style="margin-top:12px">Estimativas gerais. Não substituem um nutricionista nem um treinador e não servem para gravidez ou condições de saúde.</p>`;
-    }
+      <div class="g2"><label class="field"><span>Altura (cm)</span><input id="ob-h" type="number" inputmode="numeric" min="120" max="230" value="${A._noBody ? "" : B.h || ""}"></label><label class="field"><span>Peso atual (kg)</span><input id="ob-w" type="number" inputmode="decimal" step="0.1" min="30" max="250" value="${A._noBody ? "" : B.w || ""}"></label></div></div>`;
     else if (s.type === "target") { const lose = A.goal === "perder", P = lose ? [["0.25","Devagar","cerca de 0,25 kg por semana"],["0.5","Equilibrado","cerca de 0,5 kg por semana"],["0.75","Mais rápido","cerca de 0,75 kg por semana"]] : [["0.25","Devagar","menos gordura ganha"],["0.5","Equilibrado","o ritmo mais comum"]];
       body = `<label class="field"><span>Peso desejado (kg)</span><input id="ob-tw" type="number" inputmode="decimal" step="0.5" min="35" max="250" value="${esc(A.tw || "")}" placeholder="Agora: ${B.w} kg"></label><p class="small" id="ob-twn" style="margin-top:8px;color:var(--accent)"></p>
         <div class="opts" id="ob-pace" style="margin-top:10px">${P.map(([v,l,d]) => `<button class="opt ${String(A.pace) === v ? "on" : ""}" data-v="${v}"><span class="tick">${icon("check","xs")}</span><span><b style="display:block;font-weight:600">${l}</b><small class="muted">${d}</small></span></button>`).join("")}</div>`; }
-    else if (s.type === "days") body = `<div class="row" id="ob-days" style="flex-wrap:wrap;gap:8px">${DOWL.map((d, i) => `<button class="chip ${(A.gdaysSel || []).includes(i) ? "on" : ""}" data-i="${i}" aria-pressed="${(A.gdaysSel || []).includes(i)}">${d}</button>`).join("")}</div><p class="small muted" style="margin-top:12px">${(A.gdaysSel || []).length} dia(s) escolhido(s).</p>`;
-    else body = `<div class="opts">${opts(s).map(([v,l]) => `<button class="opt ${sel(s,v) ? "on" : ""}" data-o="${esc(v)}" aria-pressed="${sel(s,v)}"><span class="tick">${icon("check","xs")}</span>${esc(l)}</button>`).join("")}</div>`
-      + (s.other ? `<input id="ob-o" maxlength="80" placeholder="Outros, separados por vírgulas" value="${esc(A.dislikesOther || "")}" style="margin-top:10px" aria-label="Outros alimentos">` : "");
-    inn.innerHTML = `<div class="row">${n ? `<button class="iconbtn" id="ob-b" aria-label="Voltar">${icon("left")}</button>` : `<span style="width:40px"></span>`}<div class="obbar" role="progressbar" aria-valuemin="1" aria-valuemax="${V.length}" aria-valuenow="${n+1}"><i style="width:${(n+1)/V.length*100}%"></i></div>${edit ? `<button class="iconbtn" id="ob-x" aria-label="Fechar">${icon("x")}</button>` : `<span style="width:40px"></span>`}</div>
-      <div class="ob-q">${head}<div class="speech bub-${s.who || "abi"}"><b>${esc(q)}</b><span>${esc(sub)}</span></div></div>
-      ${body}<div style="flex:1;min-height:24px"></div><button class="btn block" id="ob-n2" ${valid(s) ? "" : "disabled"} style="height:54px">${s.type === "result" ? "Começar" : "Continuar"}</button>`;
-    $$(".opt", inn).forEach(b => b.onclick = () => { save1(s); tog(s, b.dataset.o); mood = s.who === "morango" ? (s.k === "gym" && b.dataset.o === "nao" ? "think" : "party") : "happy"; draw(); });
-    $$("#ob-sex button", inn).forEach(x => x.onclick = () => { readBody(); B.sex = x.dataset.v; draw(); });
-    $$("#ob-age,#ob-h,#ob-w", inn).forEach(x => x.oninput = () => { readBody(); B.skip = false; $("#ob-n2", inn).disabled = !validBody(B); });
+    else if (s.type === "tdays" || s.type === "days") { const key = s.type === "tdays" ? "tdays" : "gdaysSel", D = A[key] || [];
+      body = `<div class="row" id="ob-days" style="flex-wrap:wrap;gap:8px">${DOWL.map((d, i) => `<button class="chip ${D.includes(i) ? "on" : ""}" data-i="${i}" aria-pressed="${D.includes(i)}">${d}</button>`).join("")}</div>
+        ${s.type === "tdays" ? `<button class="opt ${Array.isArray(A.tdays) && !A.tdays.length ? "on" : ""}" id="ob-notr" style="margin-top:12px;width:100%"><span class="tick">${icon("check","xs")}</span>Não treino, por agora</button>` : ""}
+        <p class="small muted" style="margin-top:12px">${D.length} dia(s) escolhido(s).</p>`; }
+    else if (s.type === "budget") body = `<label class="field"><span>Orçamento semanal (€), só para ti</span><input id="ob-bud" type="number" inputmode="numeric" min="10" max="500" step="5" value="${esc(A.budget || "")}" placeholder="Ex.: 50"></label>
+      <p class="small muted" style="margin-top:8px">Com as escolhas de agora, a semana fica em cerca de <b>${eur(pv.cost)}</b>.</p>`;
+    else if (s.type === "result") { const r = pv.r, pl = A.gym === "sim" ? planFor() : null, k0 = today(), E0 = pv.E.filter(x => x.date === k0).sort((a, b) => mealOrder(a.m) - mealOrder(b.m));
+      head = `<div class="mascots">${abi({ mood:"party", size:80 })}${morango({ mood:"party", size:96 })}</div>`; q = `O teu plano está pronto${nm(A)}.`;
+      sub = "Feito com as tuas respostas. Podes trocar qualquer prato e mudar as preferências quando quiseres.";
+      body = (r ? `<p class="small muted">A tua referência diária${pv.P.tdays.length ? " (nos dias de treino um pouco mais)" : ""}:</p>${refCard(r)}${r.note ? `<div class="note warn" style="margin-top:12px">${icon("info","sm")}<span>${esc(r.note)}</span></div>` : ""}`
+               : `<div class="note">${icon("info","sm")}<span>Sem contar calorias: o plano equilibra as refeições e as porções por ti.</span></div>`)
+        + `<div class="card" style="margin-top:14px"><div class="row between"><b>Hoje no teu plano</b><span class="small muted">≈ ${eur(pv.cost)} por semana</span></div>
+           ${E0.length ? E0.map(x => `<div class="pitem"><span class="mt">${esc(x.m)}</span><span class="nm">${esc(x.n)}${x.lo ? `<span class="ptag">Sobras</span>` : x.bt ? `<span class="ptag">Em quantidade</span>` : ""}</span></div>`).join("") : `<p class="small muted" style="margin-top:6px">Sem receitas compatíveis com estas escolhas. Experimenta tirar uma restrição.</p>`}</div>`
+        + (pl ? `<div class="card" style="margin-top:12px"><div class="row"><span class="badge">${icon("dumbbell")}</span><div class="grow"><b>${esc(pl.n)}</b><p class="small muted">${pl.days.map(d => DOW[d]).join(" · ")} · ${pl.s.map(x => x.n).join(", ")}</p></div></div></div>` : "")
+        + `<p class="tiny muted" style="margin-top:12px">Estimativas gerais: os valores das receitas e os preços são aproximados. Não substitui um nutricionista e não serve para gravidez ou condições de saúde.</p>`; }
+    else body = `<div class="opts">${optsOf(s).map(o => optBtn(s, o)).join("")}</div>` + (s.other ? `<input id="ob-o" maxlength="80" placeholder="Outros, separados por vírgulas" value="${esc(A.dislikesOther || "")}" style="margin-top:10px" aria-label="Outros alimentos">` : "");
+    const secI = s.sec, inSec = V.filter(x => x.sec === secI), posIn = inSec.indexOf(s) + 1;
+    const bars = OB_SECS.map((_, i) => { const L = V.filter(x => x.sec === i), done = i < secI ? L.length : i === secI ? posIn : 0; return `<i><b style="width:${L.length ? done / L.length * 100 : 0}%"></b></i>`; }).join("");
+    inn.innerHTML = `<div class="row">${n ? `<button class="iconbtn" id="ob-b" aria-label="Voltar">${icon("left")}</button>` : `<span style="width:40px"></span>`}
+        <div class="grow">${single ? "" : `<div class="obsecs" role="progressbar" aria-valuemin="1" aria-valuemax="${V.length}" aria-valuenow="${n + 1}" aria-label="Progresso">${bars}</div><p class="tiny muted ob-where">${OB_SECS[secI]} · ${posIn} de ${inSec.length}</p>`}</div>
+        ${edit ? `<button class="iconbtn" id="ob-x" aria-label="Fechar">${icon("x")}</button>` : s.type !== "result" && n > 0 ? `<button class="skip" id="ob-later" style="width:auto;padding:8px 0 8px 8px">Terminar depois</button>` : `<span style="width:40px"></span>`}</div>
+      ${s.type !== "result" && n > 0 ? liveBar(pv) + chosen() : ""}
+      <div class="ob-q ${s.who ? "" : "plain"}">${head}<div class="speech ${s.who ? "bub-" + s.who : ""}"><b>${esc(q)}</b><span>${esc(sub)}</span></div></div>
+      ${body}<div style="flex:1;min-height:20px"></div>
+      <button class="btn block" id="ob-n2" ${valid(s) ? "" : "disabled"} style="height:54px">${s.type === "result" ? "Ver o meu plano" : single ? "Guardar" : "Continuar"}</button>
+      ${s.type !== "result" && s.type !== "text" ? `<button class="skip" id="ob-skip">${single ? "Cancelar" : "Saltar esta pergunta"}</button>` : ""}`;
+    const nextBtn = $("#ob-n2", inn), recheck = () => { nextBtn.disabled = !valid(s); };
+    $$(".opts .opt", inn).forEach(b => b.onclick = () => { readIn(s); tog(s, b.dataset.o); mood = s.who === "morango" ? (b.dataset.o === "nao" ? "think" : "party") : "happy"; draw(); });
+    $$("#ob-sex button", inn).forEach(x => x.onclick = () => { readIn(s); B.sex = x.dataset.v; draw(); });
+    $$("#ob-h,#ob-w", inn).forEach(x => x.oninput = () => { readIn(s); A._noBody = false; recheck(); });
+    const ag = $("#ob-age", inn); if (ag) { const msg = () => { $("#ob-agen", inn).textContent = A.ageN && A.ageN < 18 && A.ageN >= 10 ? "Combinado: sem calorias nem metas de peso. Vamos focar-nos em refeições regulares e variadas." : ""; };
+      ag.oninput = () => { readIn(s); msg(); recheck(); }; msg(); ag.focus(); ag.onkeydown = e => { if (e.key === "Enter" && !nextBtn.disabled) nextBtn.click(); }; }
     $$("#ob-pace button", inn).forEach(x => x.onclick = () => { A.tw = $("#ob-tw", inn).value; A.pace = x.dataset.v; mood = "happy"; draw(); });
-    $$("#ob-days button", inn).forEach(x => x.onclick = () => { const i = +x.dataset.i, a = A.gdaysSel || []; A.gdaysSel = a.includes(i) ? a.filter(y => y !== i) : a.concat(i).sort((p, q) => p - q); mood = "happy"; draw(); });
-    const twi = $("#ob-tw", inn); if (twi) { twi.oninput = () => { A.tw = twi.value; twMsg(); $("#ob-n2", inn).disabled = !valid(s); }; twMsg(); }
-    const oo = $("#ob-o", inn); if (oo) oo.oninput = () => { A.dislikesOther = oo.value.slice(0,80); $("#ob-n2", inn).disabled = !valid(s); };
-    const sk = $("#ob-skip", inn); if (sk) sk.onclick = () => { B.skip = true; A._noBody = true; mood = null; n++; draw(); };
-    const bb = $("#ob-b", inn); if (bb) bb.onclick = () => { save1(s); mood = null; n--; draw(); };
+    $$("#ob-days button", inn).forEach(x => x.onclick = () => { const key = s.type === "tdays" ? "tdays" : "gdaysSel", i = +x.dataset.i, a = A[key] || []; A[key] = a.includes(i) ? a.filter(y => y !== i) : a.concat(i).sort((p, q2) => p - q2); draw(); });
+    const nt = $("#ob-notr", inn); if (nt) nt.onclick = () => { A.tdays = []; draw(); };
+    const twi = $("#ob-tw", inn); if (twi) { twi.oninput = () => { A.tw = twi.value; twMsg(); recheck(); }; twMsg(); }
+    const bud = $("#ob-bud", inn); if (bud) bud.oninput = () => { A.budget = bud.value; recheck(); };
+    const oo = $("#ob-o", inn); if (oo) oo.oninput = () => { A.dislikesOther = oo.value.slice(0, 80); recheck(); };
+    const sk = $("#ob-skip", inn); if (sk) sk.onclick = () => { if (single) { ob.classList.add("hide"); return; }
+      if (s.type === "body") A._noBody = true; if (s.type === "budget") A.budget = ""; if (s.type === "target") A.tw = "";
+      mood = null; if (n < vis().length - 1) { n++; draw(); } else finish(); };
+    const bb = $("#ob-b", inn); if (bb) bb.onclick = () => { readIn(s); mood = null; n--; draw(); };
     const bx = $("#ob-x", inn); if (bx) bx.onclick = () => ob.classList.add("hide");
-    const ni = $("#ob-n", inn); if (ni) { ni.focus(); ni.onkeydown = e => { if (e.key === "Enter") $("#ob-n2", inn).click(); }; }
-    $("#ob-n2", inn).onclick = () => { save1(s); if (s.type === "body" && validBody(B)) { B.skip = false; A._noBody = false; } mood = null; if (n < vis().length-1) { n++; draw(); return; } finish(); };
+    const lt = $("#ob-later", inn); if (lt) lt.onclick = () => { readIn(s); finish(true); };
+    const ni = $("#ob-n", inn); if (ni) { if (!edit) ni.focus(); ni.onkeydown = e => { if (e.key === "Enter") nextBtn.click(); }; }
+    nextBtn.onclick = () => { readIn(s); if (s.type === "body") A._noBody = false; if (s.type === "budget" && !valid(s)) A.budget = ""; mood = null;
+      if (single || n >= vis().length - 1) { finish(); return; } n++; draw(); };
   };
   draw();
+}
+
+// Perfil e Planos: todas as respostas que mudam o plano, cada uma editável sozinha.
+function openPlanPrefs(){
+  const u = S.u || {}, P = planPrefs(), p = S.prof, lab = (L, v) => (L.find(x => x[0] === String(v)) || [,"–"])[1];
+  const rows = [
+    ["Sobre ti", [["goal","Objetivo", goalName(u.goal)], ["agep","Idade", u.age === "18 ou mais" ? `${p.age} anos` : u.age || "–"],
+      ...(u.age === "18 ou mais" ? [["body","Altura e peso", validBody(p) ? `${p.h} cm · ${p.w} kg` : "Não indicados"]] : []), ["act","Atividade", lab(ACTS, p.act)]]],
+    ["Refeições", [["pmeals","Refeições a planear", P.meals.join(", ")], ["portion","Porções", lab(PORTIONS, P.portion)], ["diet","Alimentação", (u.diet || []).join(", ") || "Como de tudo"],
+      ["al","Alergias e intolerâncias", (u.al || []).join(", ") || "Nenhuma"], ["dislikes","Não gosto", (u.dislikes || []).join(", ") || "–"]]],
+    ["Cozinha", [["cstyle","Forma de cozinhar", lab(COOK_STYLES, P.style)], ["ctime","Tempo nos dias úteis", lab(CTIMES, P.time)], ["cuis","Cozinhas", P.cuis.map(c => lab(CUISINES, c)).join(", ") || "Gosto de tudo"],
+      ["home","Em casa", P.home.join(", ") || "–"]]],
+    ["Treino", [["tdays","Dias de treino", P.tdays.length ? P.tdays.map(d => DOWL[d]).join(", ") : "Não treino"]]],
+    ["Extras", [["budget","Orçamento semanal", P.budget ? P.budget + " €" : "Sem orçamento"], ["market","Supermercado", u.market || "–"]]]];
+  openSheet("Preferências do plano", `<p class="small muted">Cada resposta muda o plano. Ao guardar, as sugestões desta semana são refeitas a partir de hoje; o que planeaste à mão fica.</p>
+    ${rows.map(([t, L]) => `<p class="shop-cat">${t}</p><div class="list">${L.map(([k, a, v]) => `<button class="li" data-ek="${k}"><span class="lt"><small>${a}</small><b>${esc(v || "–")}</b></span>${icon("right","sm")}</button>`).join("")}</div>`).join("")}
+    <button class="btn ghost block" id="pp-all" style="margin-top:16px">Responder a tudo outra vez</button>
+    ${isMinor() ? `<p class="tiny muted" style="margin-top:10px">Para menores de 18 anos a app não mostra calorias nem metas de peso.</p>` : ""}`, b => {
+    $$("[data-ek]", b).forEach(x => x.onclick = () => { closeSheet(); openOnboarding(true, x.dataset.ek, true); });
+    $("#pp-all", b).onclick = () => { closeSheet(); openOnboarding(true); };
+  });
 }
 
 /* ========================== Tutorial rápido ========================== */

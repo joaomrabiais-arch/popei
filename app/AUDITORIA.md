@@ -139,3 +139,19 @@ App ──HTTPS──▶ Função no servidor (Supabase Edge Function ou Cloudfl
 3. Uma decisão sobre a tabela de alimentos.
 4. A licença do Morango.
 5. As fotografias, ou rede sem bloqueio para as ir buscar.
+
+## Atualização (19/11/2026, personalização e plano semanal)
+
+- **C3 resolvido:**
+  - a idade é pedida antes do corpo;
+  - menores não veem "Perder gordura", nem peso, nem peso-alvo, nem calorias;
+  - o registo de peso sai do Progresso;
+  - o ecrã "Dados e objetivo" também esconde "perder".
+- **C4 resolvido:** o desafio "planear" só conta refeições planeadas à mão.
+- **Novo:**
+  - 5 secções de perguntas, todas com opção de saltar;
+  - gerador do plano em `app/src/js/09-plano-alimentar.js`.
+- **Por resolver:**
+  - os custos usam preços de referência escritos à mão (por verificar);
+  - o supermercado só fica guardado;
+  - continua a haver só 45 receitas, por isso há pouca variedade quando há muitas restrições.

@@ -1,106 +1,188 @@
-/* ========================== Onboarding ========================== */
-// Uma conversa curta com as mascotes. O Abi trata da comida e dos dados; o Morango do movimento e do treino.
-// `when` esconde passos que não se aplicam (ex.: perguntas do ginásio só se a pessoa quiser um plano).
+/* ========================== Onboarding: personalização do plano ==========================
+   Cinco secções curtas. Cada pergunta muda alguma coisa no plano; todas se podem saltar (fica um valor por omissão).
+   Em cima: progresso por secção, estimativa ao vivo (energia, proteína, custo da semana) e o resumo das escolhas.
+   As mascotes só aparecem nos momentos-chave: início, treino e fim. */
 const nm = A => A.name ? `, ${A.name}` : "";
+const OB_SECS = ["Sobre ti","Refeições","Cozinha","Treino","Extras"];
+const GOAL_D = { perder:"Devagar e sem dietas restritivas.", manter:"Comer bem e manter o peso.", musculo:"Mais proteína e um pequeno excedente.", rendimento:"Energia para treinar e recuperar.", livre:"Sem números: só refeições equilibradas." };
 const OB = [
-  { k:"name", who:"abi", m:"wave", q:() => `Olá! Eu sou o ${BRAND.mascot}. Como te chamo?`, s:"Só o primeiro nome chega. Não pedimos e-mail.", type:"text" },
-  { k:"body", who:"abi", m:"happy", q:A => `Prazer${nm(A)}! Conta-me um pouco sobre ti.`, s:"Serve para calcular uma referência e adaptar o treino. Fica só neste aparelho.", type:"body" },
-  { k:"act", who:"morango", m:"wink", one:1, q:() => "Quanto te mexes numa semana normal?", s:"Contam treinos, caminhadas e trabalho físico.", o:ACTS },
-  { k:"goal", who:"morango", m:"happy", one:1, q:() => "Qual é o teu objetivo agora?", s:"Podes mudar quando quiseres.", o:GOALS },
-  { k:"tw", who:"abi", m:"think", type:"target", when:A => (A.goal === "perder" || A.goal === "musculo") && !A._noBody, q:() => "Onde gostavas de chegar?", s:"Escolhe um ritmo realista. Devagar também lá chega, e dura mais." },
-  { k:"hard", who:"abi", m:"think", ex:"Nada em especial", q:() => "O que te tem dificultado mais?", s:"Escolhe tudo o que se aplica. Vou ajustar as dicas.", o:["Falta de tempo","Petiscar entre refeições","Fins de semana","Comer fora","Stress ou ansiedade","Pouca motivação","Não sei o que cozinhar","Nada em especial"] },
-  { k:"meals", who:"abi", m:"happy", one:1, q:() => "Quantas refeições costumas fazer por dia?", s:"Contam os lanches.", o:[["2","2 ou menos"],["3","3"],["4","4"],["5","5 ou mais"]] },
-  { k:"sleep", who:"abi", m:"sleepy", one:1, q:() => "E quantas horas dormes, normalmente?", s:"O sono mexe com a fome e com a energia.", o:[["5","Menos de 6"],["6","6 a 7"],["7","7 a 8"],["8","Mais de 8"]] },
-  { k:"dietq", who:"abi", m:"think", one:1, q:() => "Como descreves a tua alimentação hoje?", s:"Sem julgamentos. É só para saber por onde começar.", o:[["boa","Equilibrada, quase sempre"],["media","Razoável, com altos e baixos"],["caos","Desorganizada: salto refeições ou como à pressa"],["nsei","Não sei bem"]] },
-  { k:"diet", who:"abi", m:"happy", ex:"Como de tudo", q:() => "Há alguma forma de comer que sigas?", s:"Podes escolher várias.", o:["Como de tudo","Vegetariano","Vegan","Pescetariano","Não como carne de porco"] },
-  { k:"al", who:"abi", m:"think", ex:"Nenhuma", q:() => "Tens alergias ou intolerâncias?", s:"Escondo as receitas que as tenham. Confirma sempre os rótulos.", o:["Lactose","Glúten","Frutos secos","Amendoim","Marisco","Ovos","Soja","Peixe","Sésamo","Nenhuma"] },
-  { k:"dislikes", who:"abi", m:"wow", ex:"Nada em especial", q:() => "E há coisas de que simplesmente não gostas?", s:"Também as tiro das sugestões.", o:["Cogumelos","Coentros","Cebola","Pimento","Peixe","Leguminosas","Picante","Nada em especial"], other:1 },
-  { k:"cook", who:"abi", m:"happy", one:1, q:() => "E na cozinha, como te dás?", s:"Ajuda-me a sugerir receitas à tua medida.", o:["Estou a começar","Desenrasco-me","Adoro cozinhar"] },
-  { k:"gym", who:"morango", m:"wow", one:1, q:A => `Queres que te monte um plano de treino${nm(A)}?`, s:"Feito à tua medida. Podes ativar mais tarde no separador Planos.", o:[["sim","Sim, quero treinar"],["nao","Agora não"]] },
-  { k:"place", who:"morango", m:"think", one:1, when:A => A.gym === "sim", q:() => "Onde vais treinar?", s:"Escolhe o sítio onde treinas mais vezes.", o:[["gym","No ginásio"],["equip","Em casa, com halteres ou elásticos"],["casa","Em casa, sem material"],["rua","Na rua ou num parque"]] },
-  { k:"equip", who:"morango", m:"think", ex:"Nenhum", when:A => A.gym === "sim" && A.place !== "gym", q:() => "Que material tens à mão?", s:"Escolhe tudo o que tens. Uso-o nos exercícios.", o:["Halteres","Elásticos","Kettlebell","Barra de elevações","Banco ou degrau","Tapete","Nenhum"] },
-  { k:"gdaysSel", who:"morango", m:"happy", type:"days", when:A => A.gym === "sim", q:() => "Em que dias consegues treinar?", s:"Escolhe 2 a 6 dias. Pelo menos um dia de descanso por semana." },
-  { k:"gmin", who:"morango", m:"wink", one:1, when:A => A.gym === "sim", q:() => "E quanto tempo tens por treino?", s:"Conta com o aquecimento.", o:[["20","20 minutos"],["30","30 minutos"],["45","45 minutos"],["60","1 hora"]] },
-  { k:"lvl", who:"morango", m:"think", one:1, when:A => A.gym === "sim", q:() => "Que experiência tens a treinar?", s:"Ajusta as séries e a dificuldade.", o:[["zero","Nunca treinei ou parei há muito"],["algum","Já treinei um pouco"],["regular","Treino com regularidade"]] },
-  { k:"focus", who:"morango", m:"wink", one:1, when:A => A.gym === "sim", q:() => "Queres dar mais atenção a alguma zona?", s:"O plano continua equilibrado, com mais volume aqui.", o:[["todo","Corpo todo, equilibrado"],["pernas","Pernas e glúteos"],["cima","Peito, costas e braços"],["core","Abdominais e core"],["cardio","Resistência e cardio"]] },
-  { k:"cardio", who:"morango", m:"happy", one:1, when:A => A.gym === "sim", q:() => "Que cardio preferes?", s:"Uso-o no aquecimento e no fim dos treinos.", o:[["caminhar","Caminhar"],["correr","Correr"],["bicicleta","Bicicleta"],["nadar","Nadar"],["nenhum","Prefiro não fazer cardio"]] },
-  { k:"lim", who:"morango", m:"think", ex:"Nenhuma", when:A => A.gym === "sim", q:() => "Tens alguma zona a poupar?", s:"Troco os exercícios que podem incomodar. Se tens dor, fala primeiro com um profissional.", o:["Joelhos","Costas","Ombros","Nenhuma"] },
-  { k:"result", type:"result" }
+  { k:"name", sec:0, who:"abi", m:"wave", type:"text", q:() => `Olá! Eu sou o ${BRAND.mascot}. Vamos montar o teu plano.`, s:"São cerca de 3 minutos. Podes saltar qualquer pergunta e mudar tudo depois no Perfil. Como te chamo?" },
+  { k:"agep", sec:0, type:"age", q:A => `Que idade tens${nm(A)}?`, s:"Abaixo dos 18 anos a app não mostra calorias nem metas de peso." },
+  { k:"goal", sec:0, one:1, q:() => "O que queres agora?", s:"Podes mudar quando quiseres.", o:A => GOALS.filter(g => g[0] !== "perder" || isAdultA(A)).map(g => [g[0], g[1], GOAL_D[g[0]]]) },
+  { k:"body", sec:0, type:"body", when:A => isAdultA(A) && A.goal !== "livre", q:() => "A tua altura e peso atuais", s:"Servem para a referência de energia e proteína. Ficam só neste aparelho." },
+  { k:"tw", sec:0, type:"target", when:A => isAdultA(A) && !A._noBody && (A.goal === "perder" || A.goal === "musculo"), q:() => "Onde gostavas de chegar?", s:"Opcional. Escolhe um ritmo realista: devagar também lá chega, e dura mais." },
+  { k:"act", sec:0, one:1, q:() => "Quanto te mexes numa semana normal?", s:"Contam treinos, caminhadas e trabalho físico.", o:ACTS },
+  { k:"pmeals", sec:1, q:() => "Que refeições queres que planeie?", s:"Só planeio estas. As outras registas como quiseres.", o:() => MEALS.map(m => [m.id, m.id === "Lanche" ? "Lanches" : m.id]) },
+  { k:"portion", sec:1, one:1, q:() => "Como preferes as porções?", s:A => obNoKcal(A) ? "Ajusto as quantidades de cada receita." : "Com a tua referência as porções ajustam-se sozinhas. Isto conta se esconderes as calorias.", o:PORTIONS },
+  { k:"diet", sec:1, ex:"Como de tudo", q:() => "Segues alguma forma de comer?", s:"Podes escolher várias.", o:["Como de tudo","Vegetariano","Vegan","Pescetariano","Não como carne de porco"] },
+  { k:"al", sec:1, ex:"Nenhuma", q:() => "Tens alergias ou intolerâncias?", s:"Tiro do plano as receitas que as tenham. Confirma sempre os rótulos.", o:["Lactose","Glúten","Frutos secos","Amendoim","Marisco","Ovos","Soja","Peixe","Sésamo","Nenhuma"] },
+  { k:"dislikes", sec:1, ex:"Nada em especial", q:() => "Há coisas de que não gostas?", s:"Também as tiro das sugestões.", o:["Cogumelos","Coentros","Cebola","Pimento","Peixe","Leguminosas","Picante","Nada em especial"], other:1 },
+  { k:"cstyle", sec:2, one:1, q:() => "Como gostas de cozinhar?", s:"Muda a forma como a semana é montada.", o:COOK_STYLES },
+  { k:"ctime", sec:2, one:1, q:() => "Quanto tempo tens para cozinhar num dia de semana?", s:"Ao fim de semana conto com até 45 minutos.", o:CTIMES },
+  { k:"cuis", sec:2, ex:"tudo", q:() => "Que cozinhas te apetecem mais?", s:"Dou-lhes prioridade nos almoços e jantares.", o:CUISINES },
+  { k:"home", sec:2, ex:"Nada disto", q:() => "O que costumas ter em casa?", s:"Uso primeiro o que já tens e marco-o na lista de compras para confirmares.", o:() => PANTRY.map(p => p[0]).concat("Nada disto") },
+  { k:"tdays", sec:3, type:"tdays", q:() => "Em que dias treinas ou fazes desporto?", s:"Nesses dias o plano leva mais proteína e hidratos. Se não treinas, também está bem." },
+  { k:"gym", sec:3, who:"morango", m:"wow", one:1, q:A => `Queres que te monte um plano de treino${nm(A)}?`, s:"Feito à tua medida. Podes ativá-lo mais tarde em Planos.", o:[["sim","Sim, quero treinar"],["nao","Agora não"]] },
+  { k:"place", sec:3, one:1, when:A => A.gym === "sim", q:() => "Onde vais treinar?", s:"Escolhe o sítio onde treinas mais vezes.", o:[["gym","No ginásio"],["equip","Em casa, com halteres ou elásticos"],["casa","Em casa, sem material"],["rua","Na rua ou num parque"]] },
+  { k:"equip", sec:3, ex:"Nenhum", when:A => A.gym === "sim" && A.place !== "gym", q:() => "Que material tens à mão?", s:"Escolhe tudo o que tens.", o:["Halteres","Elásticos","Kettlebell","Barra de elevações","Banco ou degrau","Tapete","Nenhum"] },
+  { k:"gdaysSel", sec:3, type:"days", when:A => A.gym === "sim" && !gymDaysOk(A.tdays), q:() => "Em que dias consegues treinar?", s:"Para o plano de treino, escolhe 2 a 6 dias." },
+  { k:"gmin", sec:3, one:1, when:A => A.gym === "sim", q:() => "Quanto tempo tens por treino?", s:"Conta com o aquecimento.", o:[["20","20 minutos"],["30","30 minutos"],["45","45 minutos"],["60","1 hora"]] },
+  { k:"lvl", sec:3, one:1, when:A => A.gym === "sim", q:() => "Que experiência tens a treinar?", s:"Ajusta as séries e a dificuldade.", o:[["zero","Nunca treinei ou parei há muito"],["algum","Já treinei um pouco"],["regular","Treino com regularidade"]] },
+  { k:"focus", sec:3, one:1, when:A => A.gym === "sim", q:() => "Queres dar mais atenção a alguma zona?", s:"O plano continua equilibrado.", o:[["todo","Corpo todo, equilibrado"],["pernas","Pernas e glúteos"],["cima","Peito, costas e braços"],["core","Abdominais e core"],["cardio","Resistência e cardio"]] },
+  { k:"cardio", sec:3, one:1, when:A => A.gym === "sim", q:() => "Que cardio preferes?", s:"Uso-o no aquecimento e no fim dos treinos.", o:[["caminhar","Caminhar"],["correr","Correr"],["bicicleta","Bicicleta"],["nadar","Nadar"],["nenhum","Prefiro não fazer cardio"]] },
+  { k:"lim", sec:3, ex:"Nenhuma", when:A => A.gym === "sim", q:() => "Tens alguma zona a poupar?", s:"Troco os exercícios que podem incomodar. Se tens dor, fala primeiro com um profissional.", o:["Joelhos","Costas","Ombros","Nenhuma"] },
+  { k:"budget", sec:4, type:"budget", q:() => "Tens um orçamento para a comida da semana?", s:"Opcional. Se for preciso, escolho receitas mais em conta. Os preços são estimativas." },
+  { k:"market", sec:4, one:1, q:() => "Onde costumas fazer compras?", s:"Opcional. Por agora só fica guardado: ainda não temos preços por supermercado.", o:MARKETS },
+  { k:"result", sec:4, type:"result" }
 ];
-function openOnboarding(edit, startKey){
-  const A = Object.assign({ name:"", goal:"", act:String(S.prof.act || ""), dietq:"", diet:[], al:[], dislikes:[], cook:"", gym:"", place:"", gdays:"", gmin:"", lvl:"", lim:[], age:"", tw:"", pace:"0.5", hard:[], meals:"", sleep:"", equip:[], gdaysSel:[], focus:"", cardio:"" }, structuredClone(S.u || {}));
-  const B = Object.assign({}, S.prof, { skip: A.age === "Prefiro não dizer" });
-  const vis = () => OB.filter(s => !s.when || s.when(A));
+const gymDaysOk = d => Array.isArray(d) && d.length >= 2 && d.length <= 6;
+const isAdultA = A => A.ageN >= 18;
+const obNoKcal = A => !isAdultA(A) || A.goal === "livre" || A._noBody || !validBody(Object.assign({}, A._b || {}, { age:A.ageN }));
+// Corre fn como se S.u já fosse A (para pré-visualizar o plano com as respostas atuais).
+function withU(A, fn){ const o = S.u; S.u = Object.assign({}, o || {}, A, { age: A.ageN >= 18 ? "18 ou mais" : A.ageN ? "Menos de 18" : "Prefiro não dizer" }); try { return fn(); } finally { S.u = o; } }
+
+function openOnboarding(edit, startKey, single){
+  const prevAge = S.u && S.u.age === "18 ou mais" ? (S.prof.age >= 18 ? S.prof.age : 30) : S.u && S.u.age === "Menos de 18" ? Math.min(S.prof.age, 17) : 0;
+  const A = Object.assign({ name:"", goal:"", act:String(S.prof.act || ""), diet:[], al:[], dislikes:[], pmeals:[], portion:"", cstyle:"", ctime:"", cuis:[], home:[], tdays:null, budget:"", market:"",
+    gym:"", place:"", gmin:"", lvl:"", lim:[], tw:"", pace:"0.5", equip:[], gdaysSel:[], focus:"", cardio:"" }, structuredClone(S.u || {}));
+  A.ageN = S.ob ? prevAge : 0; A._b = Object.assign({}, S.prof);
+  if (!S.ob || (S.u || {}).age !== "18 ou mais" || !validBody(A._b)) A._noBody = true; // na primeira vez o corpo por omissão não conta: só o que a pessoa indicar
+  const B = A._b, vis = () => single ? OB.filter(s => s.k === startKey) : OB.filter(s => !s.when || s.when(A));
   let n = Math.max(0, vis().findIndex(x => x.k === startKey)), mood = null;
   const ob = $("#ob"), inn = $("#ob-in"); ob.classList.remove("hide");
-  const minor = () => !B.skip && B.age < 18;
-  const opts = s => (s.k === "goal" && (minor() || B.skip) ? s.o.filter(o => o[0] !== "perder") : s.o).map(o => Array.isArray(o) ? o : [o, o]);
-  const sel = (s, v) => s.one ? String(A[s.k]) === v : (A[s.k]||[]).includes(v);
+  const optsOf = s => (typeof s.o === "function" ? s.o(A) : s.o).map(o => Array.isArray(o) ? o : [o, o]);
+  const sel = (s, v) => s.one ? String(A[s.k]) === v : (A[s.k] || []).includes(v);
   const tog = (s, v) => { if (s.one) { A[s.k] = v; return; } let a = A[s.k] || []; a = a.includes(v) ? a.filter(x => x !== v) : v === s.ex ? [v] : a.filter(x => x !== s.ex).concat(v); A[s.k] = a; };
-  const readBody = () => { if (!$("#ob-age", inn)) return; B.age = +$("#ob-age", inn).value; B.h = +$("#ob-h", inn).value; B.w = +$("#ob-w", inn).value; };
+  const ageOk = () => A.ageN >= 10 && A.ageN <= 100;
   const validTarget = () => { const t = +A.tw, minW = 18.5 * (B.h / 100) ** 2; if (!(t >= 35 && t <= 250) || !A.pace) return false; return A.goal === "perder" ? (t < B.w && t >= minW) : t > B.w; };
   const twMsg = () => { const el = $("#ob-twn", inn); if (!el) return; const t = +A.tw, minW = Math.ceil(18.5 * (B.h / 100) ** 2);
     el.textContent = !t ? "" : A.goal === "perder" && t >= B.w ? "Para perder peso, escolhe um valor abaixo do atual." : A.goal === "perder" && t < minW ? `Esse peso fica abaixo de um IMC saudável. Escolhe ${minW} kg ou mais.` : A.goal === "musculo" && t <= B.w ? "Para ganhar músculo, escolhe um valor acima do atual." : ""; };
-  const valid = s => s.type === "text" || s.type === "result" || (s.type === "target" ? validTarget() : s.type === "days" ? (A.gdaysSel || []).length >= 2 && (A.gdaysSel || []).length <= 6 : s.type === "body" ? (B.skip || validBody(B)) : s.one ? !!A[s.k] : (A[s.k]||[]).length > 0 || (s.other && !!(A.dislikesOther||"").trim()));
-  const faceOf = s => face(s.who || "abi", { mood: mood || s.m, size: s.who === "morango" ? 104 : 86 });
-  const save1 = s => { if (s.type === "text") A.name = $("#ob-n", inn).value.trim().slice(0,40); if (s.type === "body") readBody(); if (s.other) A.dislikesOther = $("#ob-o", inn).value.slice(0,80); if (s.type === "target") A.tw = $("#ob-tw", inn).value; };
-  const planFor = prof => generatePlan({ place:A.place || "casa", days:(A.gdaysSel || []).length || 3, dayIdx:A.gdaysSel, equip:(A.equip || []).filter(x => x !== "Nenhum"), focus:A.focus || "todo", cardio:A.cardio || "caminhar", min:A.gmin || 30, lvl:A.lvl || "zero", goal:A.goal || "manter",
-    lim:(A.lim||[]).filter(x => x !== "Nenhuma"), bmi: validBody(prof) ? prof.w / ((prof.h/100) ** 2) : 22, age: validBody(prof) ? prof.age : 30 });
-  const finish = () => {
+  const valid = s => ({ text:1, result:1, tdays:Array.isArray(A.tdays), age:ageOk(), body:validBody(Object.assign({}, B, { age:A.ageN })), target:validTarget(), days:gymDaysOk(A.gdaysSel),
+    budget:+A.budget >= 10 && +A.budget <= 500 })[s.type] ?? (s.one ? !!A[s.k] : (A[s.k] || []).length > 0 || (s.other && !!(A.dislikesOther || "").trim()));
+  const readIn = s => { const v = id => { const e = $(id, inn); return e ? e.value : ""; };
+    if (s.type === "text") A.name = v("#ob-n").trim().slice(0, 40);
+    if (s.type === "age") A.ageN = Math.round(+v("#ob-age")) || 0;
+    if (s.type === "body") { B.h = +v("#ob-h"); B.w = +v("#ob-w"); B.age = A.ageN; }
+    if (s.type === "target") A.tw = v("#ob-tw");
+    if (s.type === "budget") A.budget = v("#ob-bud");
+    if (s.other) A.dislikesOther = v("#ob-o").slice(0, 80); };
+  const planFor = () => generatePlan({ place:A.place || "casa", days:(gymDaysOk(A.tdays) ? A.tdays : A.gdaysSel || []).length || 3, dayIdx:gymDaysOk(A.tdays) ? A.tdays : A.gdaysSel, equip:(A.equip || []).filter(x => x !== "Nenhum"),
+    focus:A.focus || "todo", cardio:A.cardio || "caminhar", min:A.gmin || 30, lvl:A.lvl || "zero", goal:A.goal || "manter", lim:(A.lim || []).filter(x => x !== "Nenhuma"),
+    bmi: !obNoKcal(A) || validBody(B) ? B.w / ((B.h / 100) ** 2) : 22, age: A.ageN || 30 });
+  const refOf = () => obNoKcal(A) ? null : computeRef(Object.assign({}, B, { age:A.ageN, act:A.act || "1.375" }), A.goal || "manter", A.pace);
+  // Pré-visualização da semana com as respostas atuais (não toca no estado guardado).
+  const preview = () => { const r = refOf(), mon = mondayOf(today());
+    return withU(A, () => { const P = planPrefs(S.u), E = genWeekFit(P, mon, addDays(mon, 6), { ref: r ? { kcal:r.kcal, p:r.p } : null }); return { r, P, E, cost:planCost(E, P.home) }; }); };
+
+  const finish = later => {
     const first = !S.ob;
-    if (!B.skip) S.prof = { sex:B.sex, age:B.age, h:B.h, w:B.w, act:A.act || "1.375" }; else S.prof.act = A.act || S.prof.act;
-    A.age = B.skip ? "Prefiro não dizer" : B.age >= 18 ? "18 ou mais" : "Menos de 18";
-    if (A.goal === "perder" && (minor() || B.skip)) A.goal = "manter";
+    if (isAdultA(A) && !A._noBody && validBody(Object.assign({}, B, { age:A.ageN }))) S.prof = { sex:B.sex, age:A.ageN, h:B.h, w:B.w, act:A.act || "1.375" };
+    else { if (A.ageN) S.prof.age = A.ageN; S.prof.act = A.act || S.prof.act; }
+    A.age = A.ageN >= 18 ? "18 ou mais" : A.ageN ? "Menos de 18" : "Prefiro não dizer";
+    if (!A.goal || (A.goal === "perder" && !isAdultA(A))) A.goal = "manter";
+    if (!isAdultA(A)) A.tw = "";
     const extra = (A.dislikesOther || "").split(",").map(x => x.trim()).filter(Boolean);
-    A.dislikes = (A.dislikes || []).filter(x => x !== "Nada em especial").concat(extra).slice(0, 20); delete A.dislikesOther;
-    delete A._noBody; A.obj = goalName(A.goal); S.u = A; S.ob = 1; applyRef();
-    if (first || !S.plan.some(x => x.date >= mondayOf(today()))) buildWeekPlan(mondayOf(today()), false);
-    if (A.gym === "sim") { const pl = planFor(S.prof); S.wkHist = Object.assign(S.wkHist || {}, (S.wk && S.wk.done) || {}); S.wk = { prog:"custom", custom:pl, days:pl.days.slice(), start:today(), done:{}, ex:{} }; }
+    A.dislikes = (A.dislikes || []).filter(x => x !== "Nada em especial").concat(extra).filter((x, i, a) => a.indexOf(x) === i).slice(0, 20); delete A.dislikesOther;
+    A.tdays = Array.isArray(A.tdays) ? A.tdays : []; if (gymDaysOk(A.tdays)) A.gdaysSel = A.tdays.slice();
+    if (later) A.later = 1; else delete A.later;
+    const keyChanged = startKey;
+    delete A._noBody; delete A._b; delete A.ageN; A.obj = goalName(A.goal); S.u = A; S.ob = 1; applyRef();
+    // Plano da semana: refeito a partir de hoje (só o que foi sugerido); perto do fim de semana, prepara também a seguinte.
+    const mon = mondayOf(today()); buildWeekPlan(mon, true, today()); if (dow(today()) >= 4) buildWeekPlan(addDays(mon, 7), true);
+    if (A.gym === "sim" && (!single || keyChanged === "tdays" || keyChanged === "gym")) { const pl = planFor(); S.wkHist = Object.assign(S.wkHist || {}, (S.wk && S.wk.done) || {}); S.wk = { prog:"custom", custom:pl, days:pl.days.slice(), start:today(), done:{}, ex:{} }; }
     if (first) S.spins = 3; save(); ob.classList.add("hide"); refreshAll();
     if (first) setTimeout(() => celebrate({ who:"morango", title:"Presente de boas-vindas", name:"3 giros na roda de prémios", desc:`Gira a roda e ganha acessórios para o ${BRAND.mascot}. No fim das 3 tentativas, o prémio dourado é garantido.`, mood:"party", action:{ label:"Ir à roda", fn:() => go("roda") }, onClose:() => setTimeout(() => { if (!S.tourDone) startTour(); }, 300) }), 300);
-    else say(A.gym === "sim" ? "plan" : "hello", true);
+    else { toast(single ? "Guardado. O plano desta semana foi atualizado." : "Preferências guardadas e plano atualizado"); if (!single) say(A.gym === "sim" ? "plan" : "hello", true); }
   };
-  const draw = () => { const V = vis(); n = Math.min(n, V.length-1); const s = V[n];
-    let body = "", q = s.q ? s.q(A) : "", sub = s.s || "", head = faceOf(s);
+
+  const liveBar = pv => { const r = pv.r, L = [];
+    L.push(r ? `<span><b>${r.kcal}</b> kcal/dia</span><span><b>${r.p} g</b> proteína</span>` : `<span>Sem contar calorias</span>`);
+    L.push(`<span class="${pv.P.budget && pv.cost > pv.P.budget ? "over" : ""}"><b>≈ ${eur(pv.cost)}</b> por semana${pv.P.budget ? ` · orçamento ${pv.P.budget} €` : ""}</span>`);
+    return `<div class="ob-live" aria-live="polite">${L.join("")}</div>`; };
+  const chosen = () => { const L = withU(A, () => prefsSummary(S.u)); const al = (A.al || []).filter(x => x !== "Nenhuma"), dt = (A.diet || []).filter(x => x !== "Como de tudo");
+    if (A.goal) L.unshift(goalName(A.goal)); if (dt.length) L.push(dt.join(", ")); if (al.length) L.push("Sem " + al.join(", ").toLowerCase());
+    return `<details class="ob-chosen"><summary>As tuas escolhas (${L.length})</summary><div>${L.map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div></details>`; };
+  const optBtn = (s, [v, l, d]) => `<button class="opt ${sel(s, v) ? "on" : ""}" data-o="${esc(v)}" aria-pressed="${sel(s, v)}"><span class="tick">${icon("check","xs")}</span>${d ? `<span><b style="display:block;font-weight:600">${esc(l)}</b><small class="muted">${esc(d)}</small></span>` : esc(l)}</button>`;
+
+  const draw = () => { const V = vis(); n = Math.min(n, V.length - 1); const s = V[n], pv = preview();
+    let body = "", q = s.q ? s.q(A) : "", sub = typeof s.s === "function" ? s.s(A) : s.s || "", head = s.who ? face(s.who, { mood: mood || s.m, size: s.who === "morango" ? 96 : 84 }) : "";
     if (s.type === "text") body = `<input id="ob-n" maxlength="40" autocomplete="given-name" placeholder="O teu nome" value="${esc(A.name)}" aria-label="Nome">`;
+    else if (s.type === "age") body = `<label class="field"><span>Idade</span><input id="ob-age" type="number" inputmode="numeric" min="10" max="100" value="${A.ageN || ""}"></label><p class="small" id="ob-agen" style="margin-top:8px;color:var(--muted)"></p>`;
     else if (s.type === "body") body = `<div class="ob-form"><div class="seg" id="ob-sex"><button data-v="f" class="${B.sex === "f" ? "on" : ""}">Feminino</button><button data-v="m" class="${B.sex === "m" ? "on" : ""}">Masculino</button></div>
-      <div class="g2" style="grid-template-columns:repeat(3,1fr)"><label class="field"><span>Idade</span><input id="ob-age" type="number" inputmode="numeric" min="10" max="100" value="${B.skip ? "" : B.age}"></label><label class="field"><span>Altura (cm)</span><input id="ob-h" type="number" inputmode="numeric" min="120" max="230" value="${B.skip ? "" : B.h}"></label><label class="field"><span>Peso (kg)</span><input id="ob-w" type="number" inputmode="decimal" step="0.1" min="30" max="250" value="${B.skip ? "" : B.w}"></label></div>
-      <button class="skip" id="ob-skip">Prefiro não indicar</button></div>`;
-    else if (s.type === "result") {
-      const prof = { sex:B.sex, age:B.age, h:B.h, w:B.w, act:A.act || "1.375" };
-      const noKcal = B.skip || minor() || A.goal === "livre", r = noKcal ? null : computeRef(prof, A.goal || "manter", A.pace);
-      const pl = A.gym === "sim" ? planFor(B.skip ? {} : prof) : null;
-      head = `<div class="mascots">${abi({ mood:"party", size:86 })}${morango({ mood:"party", size:104 })}</div>`;
-      q = `Está tudo pronto${nm(A)}.`;
-      sub = { caos:"Vamos começar pelo mais simples: refeições a horas e água. O resto vem depois.", boa:"Já tens uma boa base. Vamos ajudar-te a manter o ritmo.", media:"Vamos tornar os dias bons mais frequentes, sem pressão." }[A.dietq] || "Vamos devagar, um hábito de cada vez.";
-      body = (r ? `<p class="small muted" style="margin-top:4px">A tua referência diária:</p>${refCard(r)}` + (A.tw && r.delta && (A.goal === "perder" || A.goal === "musculo") ? `<p class="small" style="margin-top:12px">Ao ritmo escolhido, chegas aos <b>${esc(A.tw)} kg</b> em cerca de <b>${Math.max(1, Math.round(Math.abs(B.w - A.tw) / (Math.abs(r.delta) * 7 / 7700)))} semanas</b>. Sem pressa: o importante é ir mantendo.</p>` : "") + (r.note ? `<div class="note warn" style="margin-top:12px">${icon("info","sm")}<span>${esc(r.note)}</span></div>` : "")
-               : `<div class="note" style="margin-top:4px">${icon("info","sm")}<span>Sem contar calorias: o anel do dia mostra as refeições que registas.</span></div>`)
-        + (pl ? `<div class="card" style="margin-top:14px"><div class="row"><span class="badge">${icon("dumbbell")}</span><div class="grow"><b>${esc(pl.n)}</b><p class="small muted">${pl.days.map(d => DOW[d]).join(" · ")} · ${pl.s.map(x => x.n).join(", ")}</p></div></div><p class="tiny muted" style="margin-top:10px">${esc(pl.d)}</p></div>` : "")
-        + `<p class="tiny muted" style="margin-top:12px">Estimativas gerais. Não substituem um nutricionista nem um treinador e não servem para gravidez ou condições de saúde.</p>`;
-    }
+      <div class="g2"><label class="field"><span>Altura (cm)</span><input id="ob-h" type="number" inputmode="numeric" min="120" max="230" value="${A._noBody ? "" : B.h || ""}"></label><label class="field"><span>Peso atual (kg)</span><input id="ob-w" type="number" inputmode="decimal" step="0.1" min="30" max="250" value="${A._noBody ? "" : B.w || ""}"></label></div></div>`;
     else if (s.type === "target") { const lose = A.goal === "perder", P = lose ? [["0.25","Devagar","cerca de 0,25 kg por semana"],["0.5","Equilibrado","cerca de 0,5 kg por semana"],["0.75","Mais rápido","cerca de 0,75 kg por semana"]] : [["0.25","Devagar","menos gordura ganha"],["0.5","Equilibrado","o ritmo mais comum"]];
       body = `<label class="field"><span>Peso desejado (kg)</span><input id="ob-tw" type="number" inputmode="decimal" step="0.5" min="35" max="250" value="${esc(A.tw || "")}" placeholder="Agora: ${B.w} kg"></label><p class="small" id="ob-twn" style="margin-top:8px;color:var(--accent)"></p>
         <div class="opts" id="ob-pace" style="margin-top:10px">${P.map(([v,l,d]) => `<button class="opt ${String(A.pace) === v ? "on" : ""}" data-v="${v}"><span class="tick">${icon("check","xs")}</span><span><b style="display:block;font-weight:600">${l}</b><small class="muted">${d}</small></span></button>`).join("")}</div>`; }
-    else if (s.type === "days") body = `<div class="row" id="ob-days" style="flex-wrap:wrap;gap:8px">${DOWL.map((d, i) => `<button class="chip ${(A.gdaysSel || []).includes(i) ? "on" : ""}" data-i="${i}" aria-pressed="${(A.gdaysSel || []).includes(i)}">${d}</button>`).join("")}</div><p class="small muted" style="margin-top:12px">${(A.gdaysSel || []).length} dia(s) escolhido(s).</p>`;
-    else body = `<div class="opts">${opts(s).map(([v,l]) => `<button class="opt ${sel(s,v) ? "on" : ""}" data-o="${esc(v)}" aria-pressed="${sel(s,v)}"><span class="tick">${icon("check","xs")}</span>${esc(l)}</button>`).join("")}</div>`
-      + (s.other ? `<input id="ob-o" maxlength="80" placeholder="Outros, separados por vírgulas" value="${esc(A.dislikesOther || "")}" style="margin-top:10px" aria-label="Outros alimentos">` : "");
-    inn.innerHTML = `<div class="row">${n ? `<button class="iconbtn" id="ob-b" aria-label="Voltar">${icon("left")}</button>` : `<span style="width:40px"></span>`}<div class="obbar" role="progressbar" aria-valuemin="1" aria-valuemax="${V.length}" aria-valuenow="${n+1}"><i style="width:${(n+1)/V.length*100}%"></i></div>${edit ? `<button class="iconbtn" id="ob-x" aria-label="Fechar">${icon("x")}</button>` : `<span style="width:40px"></span>`}</div>
-      <div class="ob-q">${head}<div class="speech bub-${s.who || "abi"}"><b>${esc(q)}</b><span>${esc(sub)}</span></div></div>
-      ${body}<div style="flex:1;min-height:24px"></div><button class="btn block" id="ob-n2" ${valid(s) ? "" : "disabled"} style="height:54px">${s.type === "result" ? "Começar" : "Continuar"}</button>`;
-    $$(".opt", inn).forEach(b => b.onclick = () => { save1(s); tog(s, b.dataset.o); mood = s.who === "morango" ? (s.k === "gym" && b.dataset.o === "nao" ? "think" : "party") : "happy"; draw(); });
-    $$("#ob-sex button", inn).forEach(x => x.onclick = () => { readBody(); B.sex = x.dataset.v; draw(); });
-    $$("#ob-age,#ob-h,#ob-w", inn).forEach(x => x.oninput = () => { readBody(); B.skip = false; $("#ob-n2", inn).disabled = !validBody(B); });
+    else if (s.type === "tdays" || s.type === "days") { const key = s.type === "tdays" ? "tdays" : "gdaysSel", D = A[key] || [];
+      body = `<div class="row" id="ob-days" style="flex-wrap:wrap;gap:8px">${DOWL.map((d, i) => `<button class="chip ${D.includes(i) ? "on" : ""}" data-i="${i}" aria-pressed="${D.includes(i)}">${d}</button>`).join("")}</div>
+        ${s.type === "tdays" ? `<button class="opt ${Array.isArray(A.tdays) && !A.tdays.length ? "on" : ""}" id="ob-notr" style="margin-top:12px;width:100%"><span class="tick">${icon("check","xs")}</span>Não treino, por agora</button>` : ""}
+        <p class="small muted" style="margin-top:12px">${D.length} dia(s) escolhido(s).</p>`; }
+    else if (s.type === "budget") body = `<label class="field"><span>Orçamento semanal (€), só para ti</span><input id="ob-bud" type="number" inputmode="numeric" min="10" max="500" step="5" value="${esc(A.budget || "")}" placeholder="Ex.: 50"></label>
+      <p class="small muted" style="margin-top:8px">Com as escolhas de agora, a semana fica em cerca de <b>${eur(pv.cost)}</b>.</p>`;
+    else if (s.type === "result") { const r = pv.r, pl = A.gym === "sim" ? planFor() : null, k0 = today(), E0 = pv.E.filter(x => x.date === k0).sort((a, b) => mealOrder(a.m) - mealOrder(b.m));
+      head = `<div class="mascots">${abi({ mood:"party", size:80 })}${morango({ mood:"party", size:96 })}</div>`; q = `O teu plano está pronto${nm(A)}.`;
+      sub = "Feito com as tuas respostas. Podes trocar qualquer prato e mudar as preferências quando quiseres.";
+      body = (r ? `<p class="small muted">A tua referência diária${pv.P.tdays.length ? " (nos dias de treino um pouco mais)" : ""}:</p>${refCard(r)}${r.note ? `<div class="note warn" style="margin-top:12px">${icon("info","sm")}<span>${esc(r.note)}</span></div>` : ""}`
+               : `<div class="note">${icon("info","sm")}<span>Sem contar calorias: o plano equilibra as refeições e as porções por ti.</span></div>`)
+        + `<div class="card" style="margin-top:14px"><div class="row between"><b>Hoje no teu plano</b><span class="small muted">≈ ${eur(pv.cost)} por semana</span></div>
+           ${E0.length ? E0.map(x => `<div class="pitem"><span class="mt">${esc(x.m)}</span><span class="nm">${esc(x.n)}${x.lo ? `<span class="ptag">Sobras</span>` : x.bt ? `<span class="ptag">Em quantidade</span>` : ""}</span></div>`).join("") : `<p class="small muted" style="margin-top:6px">Sem receitas compatíveis com estas escolhas. Experimenta tirar uma restrição.</p>`}</div>`
+        + (pl ? `<div class="card" style="margin-top:12px"><div class="row"><span class="badge">${icon("dumbbell")}</span><div class="grow"><b>${esc(pl.n)}</b><p class="small muted">${pl.days.map(d => DOW[d]).join(" · ")} · ${pl.s.map(x => x.n).join(", ")}</p></div></div></div>` : "")
+        + `<p class="tiny muted" style="margin-top:12px">Estimativas gerais: os valores das receitas e os preços são aproximados. Não substitui um nutricionista e não serve para gravidez ou condições de saúde.</p>`; }
+    else body = `<div class="opts">${optsOf(s).map(o => optBtn(s, o)).join("")}</div>` + (s.other ? `<input id="ob-o" maxlength="80" placeholder="Outros, separados por vírgulas" value="${esc(A.dislikesOther || "")}" style="margin-top:10px" aria-label="Outros alimentos">` : "");
+    const secI = s.sec, inSec = V.filter(x => x.sec === secI), posIn = inSec.indexOf(s) + 1;
+    const bars = OB_SECS.map((_, i) => { const L = V.filter(x => x.sec === i), done = i < secI ? L.length : i === secI ? posIn : 0; return `<i><b style="width:${L.length ? done / L.length * 100 : 0}%"></b></i>`; }).join("");
+    inn.innerHTML = `<div class="row">${n ? `<button class="iconbtn" id="ob-b" aria-label="Voltar">${icon("left")}</button>` : `<span style="width:40px"></span>`}
+        <div class="grow">${single ? "" : `<div class="obsecs" role="progressbar" aria-valuemin="1" aria-valuemax="${V.length}" aria-valuenow="${n + 1}" aria-label="Progresso">${bars}</div><p class="tiny muted ob-where">${OB_SECS[secI]} · ${posIn} de ${inSec.length}</p>`}</div>
+        ${edit ? `<button class="iconbtn" id="ob-x" aria-label="Fechar">${icon("x")}</button>` : s.type !== "result" && n > 0 ? `<button class="skip" id="ob-later" style="width:auto;padding:8px 0 8px 8px">Terminar depois</button>` : `<span style="width:40px"></span>`}</div>
+      ${s.type !== "result" && n > 0 ? liveBar(pv) + chosen() : ""}
+      <div class="ob-q ${s.who ? "" : "plain"}">${head}<div class="speech ${s.who ? "bub-" + s.who : ""}"><b>${esc(q)}</b><span>${esc(sub)}</span></div></div>
+      ${body}<div style="flex:1;min-height:20px"></div>
+      <button class="btn block" id="ob-n2" ${valid(s) ? "" : "disabled"} style="height:54px">${s.type === "result" ? "Ver o meu plano" : single ? "Guardar" : "Continuar"}</button>
+      ${s.type !== "result" && s.type !== "text" ? `<button class="skip" id="ob-skip">${single ? "Cancelar" : "Saltar esta pergunta"}</button>` : ""}`;
+    const nextBtn = $("#ob-n2", inn), recheck = () => { nextBtn.disabled = !valid(s); };
+    $$(".opts .opt", inn).forEach(b => b.onclick = () => { readIn(s); tog(s, b.dataset.o); mood = s.who === "morango" ? (b.dataset.o === "nao" ? "think" : "party") : "happy"; draw(); });
+    $$("#ob-sex button", inn).forEach(x => x.onclick = () => { readIn(s); B.sex = x.dataset.v; draw(); });
+    $$("#ob-h,#ob-w", inn).forEach(x => x.oninput = () => { readIn(s); A._noBody = false; recheck(); });
+    const ag = $("#ob-age", inn); if (ag) { const msg = () => { $("#ob-agen", inn).textContent = A.ageN && A.ageN < 18 && A.ageN >= 10 ? "Combinado: sem calorias nem metas de peso. Vamos focar-nos em refeições regulares e variadas." : ""; };
+      ag.oninput = () => { readIn(s); msg(); recheck(); }; msg(); ag.focus(); ag.onkeydown = e => { if (e.key === "Enter" && !nextBtn.disabled) nextBtn.click(); }; }
     $$("#ob-pace button", inn).forEach(x => x.onclick = () => { A.tw = $("#ob-tw", inn).value; A.pace = x.dataset.v; mood = "happy"; draw(); });
-    $$("#ob-days button", inn).forEach(x => x.onclick = () => { const i = +x.dataset.i, a = A.gdaysSel || []; A.gdaysSel = a.includes(i) ? a.filter(y => y !== i) : a.concat(i).sort((p, q) => p - q); mood = "happy"; draw(); });
-    const twi = $("#ob-tw", inn); if (twi) { twi.oninput = () => { A.tw = twi.value; twMsg(); $("#ob-n2", inn).disabled = !valid(s); }; twMsg(); }
-    const oo = $("#ob-o", inn); if (oo) oo.oninput = () => { A.dislikesOther = oo.value.slice(0,80); $("#ob-n2", inn).disabled = !valid(s); };
-    const sk = $("#ob-skip", inn); if (sk) sk.onclick = () => { B.skip = true; A._noBody = true; mood = null; n++; draw(); };
-    const bb = $("#ob-b", inn); if (bb) bb.onclick = () => { save1(s); mood = null; n--; draw(); };
+    $$("#ob-days button", inn).forEach(x => x.onclick = () => { const key = s.type === "tdays" ? "tdays" : "gdaysSel", i = +x.dataset.i, a = A[key] || []; A[key] = a.includes(i) ? a.filter(y => y !== i) : a.concat(i).sort((p, q2) => p - q2); draw(); });
+    const nt = $("#ob-notr", inn); if (nt) nt.onclick = () => { A.tdays = []; draw(); };
+    const twi = $("#ob-tw", inn); if (twi) { twi.oninput = () => { A.tw = twi.value; twMsg(); recheck(); }; twMsg(); }
+    const bud = $("#ob-bud", inn); if (bud) bud.oninput = () => { A.budget = bud.value; recheck(); };
+    const oo = $("#ob-o", inn); if (oo) oo.oninput = () => { A.dislikesOther = oo.value.slice(0, 80); recheck(); };
+    const sk = $("#ob-skip", inn); if (sk) sk.onclick = () => { if (single) { ob.classList.add("hide"); return; }
+      if (s.type === "body") A._noBody = true; if (s.type === "budget") A.budget = ""; if (s.type === "target") A.tw = "";
+      mood = null; if (n < vis().length - 1) { n++; draw(); } else finish(); };
+    const bb = $("#ob-b", inn); if (bb) bb.onclick = () => { readIn(s); mood = null; n--; draw(); };
     const bx = $("#ob-x", inn); if (bx) bx.onclick = () => ob.classList.add("hide");
-    const ni = $("#ob-n", inn); if (ni) { ni.focus(); ni.onkeydown = e => { if (e.key === "Enter") $("#ob-n2", inn).click(); }; }
-    $("#ob-n2", inn).onclick = () => { save1(s); if (s.type === "body" && validBody(B)) { B.skip = false; A._noBody = false; } mood = null; if (n < vis().length-1) { n++; draw(); return; } finish(); };
+    const lt = $("#ob-later", inn); if (lt) lt.onclick = () => { readIn(s); finish(true); };
+    const ni = $("#ob-n", inn); if (ni) { if (!edit) ni.focus(); ni.onkeydown = e => { if (e.key === "Enter") nextBtn.click(); }; }
+    nextBtn.onclick = () => { readIn(s); if (s.type === "body") A._noBody = false; if (s.type === "budget" && !valid(s)) A.budget = ""; mood = null;
+      if (single || n >= vis().length - 1) { finish(); return; } n++; draw(); };
   };
   draw();
+}
+
+// Perfil e Planos: todas as respostas que mudam o plano, cada uma editável sozinha.
+function openPlanPrefs(){
+  const u = S.u || {}, P = planPrefs(), p = S.prof, lab = (L, v) => (L.find(x => x[0] === String(v)) || [,"–"])[1];
+  const rows = [
+    ["Sobre ti", [["goal","Objetivo", goalName(u.goal)], ["agep","Idade", u.age === "18 ou mais" ? `${p.age} anos` : u.age || "–"],
+      ...(u.age === "18 ou mais" ? [["body","Altura e peso", validBody(p) ? `${p.h} cm · ${p.w} kg` : "Não indicados"]] : []), ["act","Atividade", lab(ACTS, p.act)]]],
+    ["Refeições", [["pmeals","Refeições a planear", P.meals.join(", ")], ["portion","Porções", lab(PORTIONS, P.portion)], ["diet","Alimentação", (u.diet || []).join(", ") || "Como de tudo"],
+      ["al","Alergias e intolerâncias", (u.al || []).join(", ") || "Nenhuma"], ["dislikes","Não gosto", (u.dislikes || []).join(", ") || "–"]]],
+    ["Cozinha", [["cstyle","Forma de cozinhar", lab(COOK_STYLES, P.style)], ["ctime","Tempo nos dias úteis", lab(CTIMES, P.time)], ["cuis","Cozinhas", P.cuis.map(c => lab(CUISINES, c)).join(", ") || "Gosto de tudo"],
+      ["home","Em casa", P.home.join(", ") || "–"]]],
+    ["Treino", [["tdays","Dias de treino", P.tdays.length ? P.tdays.map(d => DOWL[d]).join(", ") : "Não treino"]]],
+    ["Extras", [["budget","Orçamento semanal", P.budget ? P.budget + " €" : "Sem orçamento"], ["market","Supermercado", u.market || "–"]]]];
+  openSheet("Preferências do plano", `<p class="small muted">Cada resposta muda o plano. Ao guardar, as sugestões desta semana são refeitas a partir de hoje; o que planeaste à mão fica.</p>
+    ${rows.map(([t, L]) => `<p class="shop-cat">${t}</p><div class="list">${L.map(([k, a, v]) => `<button class="li" data-ek="${k}"><span class="lt"><small>${a}</small><b>${esc(v || "–")}</b></span>${icon("right","sm")}</button>`).join("")}</div>`).join("")}
+    <button class="btn ghost block" id="pp-all" style="margin-top:16px">Responder a tudo outra vez</button>
+    ${isMinor() ? `<p class="tiny muted" style="margin-top:10px">Para menores de 18 anos a app não mostra calorias nem metas de peso.</p>` : ""}`, b => {
+    $$("[data-ek]", b).forEach(x => x.onclick = () => { closeSheet(); openOnboarding(true, x.dataset.ek, true); });
+    $("#pp-all", b).onclick = () => { closeSheet(); openOnboarding(true); };
+  });
 }
 
 /* ========================== Tutorial rápido ========================== */

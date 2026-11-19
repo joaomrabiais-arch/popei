@@ -14,28 +14,43 @@ function calendar(month, sel, dotsFn){
 }
 const shiftMonth = (mo, n) => { const [y, m] = mo.split("-").map(Number); return dkey(new Date(y, m-1+n, 1)).slice(0,7); };
 const mealOrder = m => MEALS.findIndex(x => x.id === m);
+function planSummaryCard(mon){
+  const P = planPrefs(), ref = refNow(), sun = addDays(mon, 6), E = S.plan.filter(x => x.date >= mon && x.date <= sun), cost = planCost(E, P.home);
+  const days = new Set(E.filter(x => x.r).map(x => x.date)).size, kc = E.reduce((a, x) => a + planKcal(x), 0), pr = E.reduce((a, x) => a + planProt(x), 0);
+  const over = P.budget && cost > P.budget;
+  return `<div class="card plan-sum" style="margin-top:18px"><div class="row between"><div><p class="eyebrow">A tua semana</p><h3>${E.length ? `${E.length} refeições em ${days} dia${days === 1 ? "" : "s"}` : "Ainda sem plano"}</h3></div><button class="btn ghost sm" id="pl-prefs">Preferências</button></div>
+    ${E.length ? `<div class="stat3" style="margin-top:14px">${ref && days ? `<div><b>${Math.round(kc / days)}</b><small>kcal por dia (ref. ${ref.kcal})</small></div><div><b>${Math.round(pr / days)} g</b><small>proteína por dia (ref. ${ref.p} g)</small></div>` : `<div><b>${P.meals.length}</b><small>refeições por dia</small></div><div><b>${P.tdays.length}</b><small>dias de treino</small></div>`}
+      <div class="${over ? "over" : ""}"><b>≈ ${eur(cost)}</b><small>${P.budget ? `estimativa, orçamento ${P.budget} €` : "custo estimado"}</small></div></div>` : ""}
+    <div class="chips-sum">${prefsSummary().map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>
+    ${over ? `<p class="small" style="margin-top:6px;color:var(--accent)">Fica acima do orçamento mesmo com as opções mais baratas. Indica o que já tens em casa ou planeia menos refeições.</p>` : ""}
+    <p class="tiny muted" style="margin-top:8px">Custos com preços médios aproximados, sem contar o que já tens em casa. Variam com a loja e a época.</p></div>`;
+}
 function renderPlanRef(){
-  const el = $("#p-ref"), mon = mondayOf(planSel);
-  const dayList = k => { const it = S.plan.filter(x => x.date === k).sort((a,b) => mealOrder(a.m) - mealOrder(b.m));
-    return `<div class="daycol"><div class="dh"><b>${k === today() ? "Hoje · " : ""}${DOWL[dow(k)]} ${parseK(k).getDate()}</b>${kcalOn() && it.some(x => x.r) ? `<span class="tiny muted" style="margin-left:auto;margin-right:4px">${it.reduce((a, x) => a + planKcal(x), 0)} kcal · ${it.reduce((a, x) => a + planProt(x), 0)} g prot.</span>` : ""}<button class="iconbtn" data-padd="${k}" aria-label="Planear ${fmtDay(k)}">${icon("plus","sm")}</button></div>
-      ${it.map(x => `<div class="pitem"><span class="mt">${esc(x.m)}</span><span class="nm">${esc(x.n)}${x.x && x.x !== 1 ? ` <span class="muted">× ${String(x.x).replace(".", ",")}</span>` : ""}</span>${kcalOn() && planKcal(x) ? `<span class="small muted num">${planKcal(x)}</span>` : ""}<button class="iconbtn" data-pdel="${x.id}" aria-label="Remover ${esc(x.n)}">${icon("x","xs")}</button></div>`).join("") || `<p class="small muted" style="margin-top:2px">Nada planeado.</p>`}</div>`; };
+  const el = $("#p-ref"), mon = mondayOf(planSel), P = planPrefs(), ref = refNow();
+  const dayList = k => { const it = S.plan.filter(x => x.date === k).sort((a,b) => mealOrder(a.m) - mealOrder(b.m)), tg = dayTarget(P, k, ref), tr = P.tdays.includes(dow(k));
+    const kc = it.reduce((a, x) => a + planKcal(x), 0), pr = it.reduce((a, x) => a + planProt(x), 0);
+    return `<div class="daycol"><div class="dh"><b>${k === today() ? "Hoje · " : ""}${DOWL[dow(k)]} ${parseK(k).getDate()}</b>${tr ? `<span class="pill-tr">${icon("dumbbell","xs")} Treino</span>` : ""}${kcalOn() && it.some(x => x.r) ? `<span class="tiny muted" style="margin-left:auto;margin-right:4px">${kc}${tg ? ` / ${tg.kcal}` : ""} kcal · ${pr} g prot.</span>` : `<span style="margin-left:auto"></span>`}<button class="iconbtn" data-padd="${k}" aria-label="Planear ${fmtDay(k)}">${icon("plus","sm")}</button></div>
+      ${it.map(x => `<div class="pitem"><span class="mt">${esc(x.m)}</span><span class="nm">${x.r ? `<button class="lnk" data-prec="${x.r}">${esc(x.n)}</button>` : esc(x.n)}${x.x && x.x !== 1 ? ` <span class="muted">× ${String(x.x).replace(".", ",")}</span>` : ""}${x.lo ? `<span class="ptag">Sobras de ontem</span>` : x.bt ? `<span class="ptag">Cozinhado ${x.bt === "domingo" ? "ao domingo" : "à quarta"}</span>` : ""}</span>${kcalOn() && planKcal(x) ? `<span class="small muted num">${planKcal(x)}</span>` : ""}${x.r ? `<button class="iconbtn" data-psw="${x.id}" aria-label="Trocar ${esc(x.n)}" title="Trocar">${icon("copy","xs")}</button>` : ""}<button class="iconbtn" data-pdel="${x.id}" aria-label="Remover ${esc(x.n)}">${icon("x","xs")}</button></div>`).join("") || `<p class="small muted" style="margin-top:2px">${k < today() ? "Já passou." : "Nada planeado."}</p>`}</div>`; };
   const sun = addDays(mon, 6);
-  el.innerHTML = `<div class="seg" style="margin-top:18px"><button data-v="semana" class="${planView === "semana" ? "on" : ""}">Semana</button><button data-v="mes" class="${planView === "mes" ? "on" : ""}">Mês</button></div>
+  el.innerHTML = planSummaryCard(mon) + `<div class="seg" style="margin-top:16px"><button data-v="semana" class="${planView === "semana" ? "on" : ""}">Semana</button><button data-v="mes" class="${planView === "mes" ? "on" : ""}">Mês</button></div>
     ${planView === "semana"
       ? `<div class="row between" style="margin-top:16px"><button class="iconbtn" data-wk="-7" aria-label="Semana anterior">${icon("left","sm")}</button><b>${parseK(mon).getDate()} de ${MONTHS[parseK(mon).getMonth()]} – ${parseK(sun).getDate()} de ${MONTHS[parseK(sun).getMonth()]}</b><button class="iconbtn" data-wk="7" aria-label="Semana seguinte">${icon("right","sm")}</button></div>
          <div class="list" style="margin-top:10px">${DOW.map((_, i) => dayList(addDays(mon, i))).join("")}</div>`
       : `<div class="card" style="margin-top:16px">${calendar(planMonth, planSel, k => S.plan.filter(x => x.date === k).slice(0,3).map(() => "<i></i>").join(""))}</div><div class="list" style="margin-top:12px">${dayList(planSel)}</div>`}
-    <div class="stack" style="margin-top:16px"><button class="btn block" id="pl-auto">${icon("sparkle","sm")} Criar plano da semana à tua medida</button><button class="btn soft block" id="pl-shop">${icon("cart","sm")} Gerar lista de compras da semana</button></div>
-    <p class="tiny muted" style="margin:10px 4px 0">O plano usa a tua referência de calorias e proteína, as alergias, a dieta e o que não gostas. As porções são ajustadas a ti (× 1,5 = uma porção e meia).</p>`;
+    <div class="stack" style="margin-top:16px"><button class="btn block" id="pl-auto">${icon("sparkle","sm")} ${S.plan.some(x => x.date >= mon && x.date <= sun && x.a) ? "Refazer o plano da semana" : "Criar o plano da semana"}</button><button class="btn soft block" id="pl-shop">${icon("cart","sm")} Gerar lista de compras da semana</button></div>
+    <p class="tiny muted" style="margin:10px 4px 0">O plano segue as tuas preferências: refeições, forma de cozinhar, tempo, cozinhas, dias de treino, alergias, o que não gostas, o que tens em casa e o orçamento. Refazer só muda o que foi sugerido; o que planeaste à mão fica.</p>`;
   $$("[data-v]", el).forEach(b => b.onclick = () => { planView = b.dataset.v; planMonth = planSel.slice(0,7); renderPlanRef(); });
   $$("[data-wk]", el).forEach(b => b.onclick = () => { planSel = addDays(planSel, +b.dataset.wk); renderPlanRef(); });
   $$("[data-mo]", el).forEach(b => b.onclick = () => { planMonth = shiftMonth(planMonth, +b.dataset.mo); renderPlanRef(); });
   $$(".cal [data-k]", el).forEach(b => b.onclick = () => { planSel = b.dataset.k; renderPlanRef(); });
   $$("[data-padd]", el).forEach(b => b.onclick = () => openPlanAdd(b.dataset.padd));
+  $$("[data-prec]", el).forEach(b => b.onclick = () => openRecipe(+b.dataset.prec));
+  $$("[data-psw]", el).forEach(b => b.onclick = () => { if (swapPlanEntry(b.dataset.psw)) { save(); renderPlanRef(); toast("Trocado por outra opção"); } else toast("Não há outra opção compatível"); });
   $$("[data-pdel]", el).forEach(b => b.onclick = () => { S.plan = S.plan.filter(x => x.id !== b.dataset.pdel); save(); renderPlanRef(); });
-  $("#pl-auto").onclick = async () => { const has = S.plan.some(x => x.date >= mon && x.date <= sun);
-    const repl = has && await confirmDlg("Já tens refeições nesta semana. Substituir tudo pelo plano feito para ti? Se cancelares, só preencho o que falta.", "Substituir");
-    const n = buildWeekPlan(mon, repl); save(); renderPlanRef(); toast(n ? `${n} refeições planeadas à tua medida` : "A semana já estava preenchida"); if (n) { ach("plan"); say("plan", true); } syncChallenges(); };
+  $("#pl-prefs", el).onclick = openPlanPrefs;
+  $("#pl-auto").onclick = async () => { const from = mon < today() ? today() : mon; if (from > sun) { toast("Esta semana já passou"); return; }
+    if (S.plan.some(x => x.date >= from && x.date <= sun && x.a) && !await confirmDlg("Refazer as sugestões desta semana? O que planeaste à mão fica igual.", "Refazer")) return;
+    const n = buildWeekPlan(mon, true, from); save(); renderPlanRef(); toast(n ? `${n} refeições planeadas à tua medida` : "A semana já estava preenchida"); if (n) { ach("plan"); say("plan", true); } };
   $("#pl-shop").onclick = () => { const n = genShop(mon); save(); toast(n ? `${n} produtos na lista, com as quantidades somadas` : "Nada para adicionar. Planeia receitas primeiro."); if (n) { planSub = "compras"; renderPlanos(); } };
 }
 function openPlanAdd(k, recipe){
@@ -121,28 +136,6 @@ function renderCompras(){
   bindShopHead(el);
 }
 
-/* ========================== Plano de refeições à medida ========================== */
-// Usa a referência da pessoa (kcal e proteína), as alergias, a dieta e o que não gosta.
-// Divide o dia (25/35/10/30 %), escolhe receitas e ajusta as porções em meias porções (0,5 a 2,5).
-const SPLIT = { "Pequeno-almoço":.25, "Almoço":.35, "Lanche":.1, "Jantar":.3 };
-const mealTargets = () => Object.fromEntries(MEALS.map(m => [m.id, Math.round((S.goal || 2000) * SPLIT[m.id])]));
-function buildWeekPlan(mon, replace){
-  const R = RECIPES.filter(recipeAllowed), goal = (S.u || {}).goal || "manter", T = mealTargets(), end = addDays(mon, 6);
-  if (replace) S.plan = S.plan.filter(x => x.date < mon || x.date > end);
-  const used = []; let n = 0;
-  for (let i = 0; i < 7; i++) { const k = addDays(mon, i);
-    for (const M of MEALS) { const m = M.id; if (S.plan.some(x => x.date === k && x.m === m)) continue;
-      const pool = R.filter(r => m === "Lanche" ? r.c === "Lanche" : m === "Pequeno-almoço" ? r.c === "Pequeno-almoço" : (r.c === "Almoço" || r.c === "Jantar"));
-      if (!pool.length) continue;
-      const ranked = pool.map(r => { const x = clamp(Math.round(T[m] / r.k * 2) / 2, .5, 2.5), kc = r.k * x;
-        let sc = Math.abs(kc - T[m]) / T[m];
-        if (goal === "musculo" || goal === "perder") sc -= Math.min(.35, r.p * 4 / r.k);   // mais proteína por caloria
-        const last = used.lastIndexOf(r.id); if (last >= 0 && used.length - last < 10) sc += 1;  // variedade
-        return [r, sc + rnd() * .2, x]; }).sort((a, b) => a[1] - b[1]);
-      const [r, , x] = ranked[0]; used.push(r.id);
-      S.plan.push({ id:uid(), date:k, m, n:r.n, r:r.id, x }); n++; } }
-  return n;
-}
 const planKcal = x => { const r = x.r && RECIPES.find(q => q.id === x.r); return r ? Math.round(r.k * (x.x || 1)) : 0; };
 const planProt = x => { const r = x.r && RECIPES.find(q => q.id === x.r); return r ? Math.round(r.p * (x.x || 1)) : 0; };
 
@@ -161,8 +154,9 @@ function genShop(mon){
       if (pq) agg.set(key, { n, c, v:(cur ? cur.v : 0) + pq.v * f, u:pq.u, rest:pq.rest }); else if (!cur) agg.set(key, { n, c, txt:q }); }); });
   const keep = S.shop.filter(x => !x.auto), done = new Set(S.shop.filter(x => x.auto && x.k).map(x => x.n.toLowerCase()));
   S.shop = keep; let n = 0;
-  for (const it of agg.values()) { if (keep.some(x => x.n.toLowerCase() === it.n.toLowerCase())) continue;
-    S.shop.push({ n:it.n, q: it.txt || fmtQty(it.v, it.u, it.rest), c:CATS.includes(it.c) ? it.c : "Outros", k: done.has(it.n.toLowerCase()) ? 1 : 0, auto:1 }); n++; }
+  const home = planPrefs().home; // o que já há em casa entra marcado, para confirmar
+  for (const it of agg.values()) { if (keep.some(x => x.n.toLowerCase() === it.n.toLowerCase())) continue; const q = it.txt || fmtQty(it.v, it.u, it.rest), h = isHome(it.n, home);
+    S.shop.push({ n:it.n, q: h ? "já tens? " + q : q, c:CATS.includes(it.c) ? it.c : "Outros", k: done.has(it.n.toLowerCase()) || h ? 1 : 0, auto:1 }); n++; }
   return n;
 }
 // Básicos para o objetivo, filtrados pela dieta, alergias e o que a pessoa não gosta.

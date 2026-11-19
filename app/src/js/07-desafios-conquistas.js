@@ -7,7 +7,7 @@ const CHALLENGES = [
   { id:"legume", n:"Junta um legume a uma refeição", h:"Toca para marcar" },
   { id:"calma", n:"Faz uma refeição sem ecrãs", h:"Toca para marcar" },
   { id:"mexer", n:"Mexe-te 20 minutos", h:"Caminhar também conta. Toca para marcar" },
-  { id:"planear", n:"Planeia uma refeição de amanhã", h:"Marca-se sozinho", auto:k => S.plan.some(x => x.date === addDays(k,1)) },
+  { id:"planear", n:"Planeia uma refeição de amanhã", h:"Marca-se sozinho", auto:k => S.plan.some(x => x.date === addDays(k,1) && !x.a) },
   { id:"nova", n:"Experimenta uma receita nova", h:"Toca para marcar" }
 ];
 function todaysChallenges(k){ let h = 7; for (const ch of k) h = (h*31 + ch.charCodeAt(0)) >>> 0;

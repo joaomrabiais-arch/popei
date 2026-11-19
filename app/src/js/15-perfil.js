@@ -11,6 +11,7 @@ function renderPerfil(){
     ["trophy","gold","Conquistas",`${Object.keys(S.ach).length} de ${ACH.length}`, openAch],
     ["leaf","","Bem-estar","Sono, energia e humor", openWell],
     ["chat","acc",`Falar com o ${BRAND.mascot}`,"Perguntas sobre alimentação", openChat],
+    ["bowl","","Plano alimentar","Refeições, cozinha, treino, orçamento", openPlanPrefs],
     ["target","","Preferências","Alimentação, alergias, calorias", openPrefs],
     ["brush","","Aparência e som","Tema, cores, animações", openLook],
     ["info","","Como funciona a app","Visita guiada de 1 minuto", () => startTour()],
@@ -65,7 +66,7 @@ function openChat(){
 /* ===== Referência de energia e macros =====
    Mifflin-St Jeor × atividade. Perder peso: défice de 15%, no máximo 500 kcal. Ganhar músculo: +10%, no máximo 300 kcal.
    Nunca abaixo de 1200 (F) / 1500 (M) kcal. Com IMC < 18,5 não se propõe perder peso. Menores: sem calorias. */
-const GOALS = [["perder","Perder peso"],["manter","Manter o peso"],["musculo","Ganhar músculo"],["livre","Comer melhor, sem contar calorias"]];
+const GOALS = [["perder","Perder gordura"],["manter","Manter o peso"],["musculo","Ganhar músculo"],["rendimento","Render mais no desporto"],["livre","Comer melhor, sem contar calorias"]];
 const ACTS = [["1.2","Pouco: passo o dia sentado"],["1.375","Às vezes: 1 a 3 treinos por semana"],["1.55","Bastante: 3 a 5 treinos por semana"],["1.725","Muito: 6 ou 7 treinos por semana"]];
 const goalName = id => (GOALS.find(g => g[0] === id) || [,"–"])[1];
 const validBody = p => p.age >= 10 && p.age <= 100 && p.h >= 120 && p.h <= 230 && p.w >= 30 && p.w <= 250;
@@ -79,7 +80,7 @@ function computeRef(p, goal, pace){
   if (g === "perder") { k = tdee - Math.min(cap, want); if (want > cap) note = note || `Para a tua segurança, o défice fica limitado a ${Math.round(cap)} kcal por dia. O ritmo real pode ser um pouco mais lento.`; }
   if (g === "musculo") k = tdee + ((+pace || .5) >= .5 ? Math.min(300, tdee * .1) : Math.min(180, tdee * .07));
   k = clamp(Math.round(k / 50) * 50, p.sex === "m" ? 1500 : 1200, 5000);
-  const prot = Math.round(clamp(p.w * ({ perder:1.6, musculo:1.8 }[g] || 1.2), 50, 220)), fat = Math.round(k * .28 / 9);
+  const prot = Math.round(clamp(p.w * ({ perder:1.6, musculo:1.8, rendimento:1.6 }[g] || 1.2), 50, 220)), fat = Math.round(k * .28 / 9);
   return { delta:Math.round(k - tdee), kcal:k, p:prot, g:fat, c:Math.max(0, Math.round((k - prot*4 - fat*9) / 4)), goal:g, note, bmi:Math.round(bmi*10)/10 };
 }
 function applyRef(){ // aplica a referência ao estado, a partir de S.prof e S.u.goal
@@ -102,7 +103,7 @@ function openPrefs(){
     <p class="tiny muted">É uma referência, não uma regra. Passar dela num dia não é falhar.</p></div>`}
     <label class="field"><span>Copos de água por dia (250 ml)</span><input id="pr-w" type="number" min="4" max="16" value="${S.wg}"></label>
     <button class="btn block" id="pr-ok">Guardar</button></div>`, b => {
-    $("#pr-redo", b).onclick = () => { closeSheet(); openOnboarding(true, "diet"); };
+    $("#pr-redo", b).onclick = () => { closeSheet(); openPlanPrefs(); };
     $("#pr-calc", b).onclick = openCalc;
     $("#pr-ok", b).onclick = () => { if (!isMinor()) { S.showKcal = $("#pr-k", b).checked; const g = clamp(Math.round(+$("#pr-g", b).value || 2000), 1200, 5000);
         if (S.macro && g !== S.goal) { const f = g / S.goal; S.macro = { p:S.macro.p, g:Math.round(S.macro.g*f), c:Math.max(0, Math.round((g - S.macro.p*4 - Math.round(S.macro.g*f)*9)/4)) }; } S.goal = g; }
@@ -114,7 +115,7 @@ function openCalc(){
   openSheet("Dados e objetivo", `<div class="stack"><div class="seg" id="c-s"><button data-v="f" class="${sex === "f" ? "on" : ""}">Feminino</button><button data-v="m" class="${sex === "m" ? "on" : ""}">Masculino</button></div>
     <div class="g2" style="grid-template-columns:repeat(3,1fr)"><label class="field"><span>Idade</span><input id="c-a" type="number" inputmode="numeric" min="10" max="100" value="${p.age}"></label><label class="field"><span>Altura (cm)</span><input id="c-h" type="number" inputmode="numeric" min="120" max="230" value="${p.h}"></label><label class="field"><span>Peso (kg)</span><input id="c-w" type="number" inputmode="decimal" min="30" max="250" step="0.1" value="${p.w}"></label></div>
     <label class="field"><span>Atividade</span><select id="c-x">${ACTS.map(a => `<option value="${a[0]}" ${String(p.act) === a[0] ? "selected" : ""}>${a[1]}</option>`).join("")}</select></label>
-    <label class="field"><span>Objetivo</span><select id="c-g">${GOALS.map(g => `<option value="${g[0]}" ${(u.goal || "manter") === g[0] ? "selected" : ""}>${g[1]}</option>`).join("")}</select></label>
+    <label class="field"><span>Objetivo</span><select id="c-g">${GOALS.filter(g => g[0] !== "perder" || !isMinor()).map(g => `<option value="${g[0]}" ${(u.goal || "manter") === g[0] ? "selected" : ""}>${g[1]}</option>`).join("")}</select></label>
     <div id="c-r"></div><button class="btn block" id="c-ok">Guardar</button>
     <p class="tiny muted">Estimativa geral (fórmula de Mifflin-St Jeor). Não serve para gravidez, amamentação nem condições de saúde. Para perder peso, o défice nunca passa de 15% nem de 500 kcal. Em caso de dúvida, fala com um nutricionista.</p></div>`, b => {
     $$("#c-s button", b).forEach(x => x.onclick = () => { sex = x.dataset.v; $$("#c-s button", b).forEach(y => y.classList.toggle("on", y === x)); prev(); });

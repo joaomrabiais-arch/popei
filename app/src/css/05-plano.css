@@ -1,0 +1,36 @@
+/* ===== Personalização e plano semanal ===== */
+/* Progresso por secções no onboarding */
+.obsecs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:0 6px}
+.obsecs i{height:4px;border-radius:2px;background:var(--line);overflow:hidden}
+.obsecs b{display:block;height:100%;background:var(--brand);transition:width .35s var(--ease)}
+.ob-where{text-align:center;margin-top:6px;font-weight:600;letter-spacing:.02em}
+/* Estimativa ao vivo e resumo das escolhas */
+.ob-live{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:14px;padding:10px 14px;border-radius:var(--r-sm);background:var(--brand-soft);color:var(--ink);font-size:13px}
+.ob-live b{font-variant-numeric:tabular-nums;font-weight:700}
+.ob-live .over b,.stat3 .over b{color:var(--accent)}
+.ob-chosen{margin-top:8px;font-size:13px}
+.ob-chosen summary{cursor:pointer;color:var(--ink-2);font-weight:600;padding:4px 0;list-style:none}
+.ob-chosen summary::-webkit-details-marker{display:none}
+.ob-chosen summary::after{content:" ▾";color:var(--muted)}
+.ob-chosen[open] summary::after{content:" ▴"}
+.ob-chosen div{margin-top:6px}
+/* Perguntas sem mascote: título simples, mais compacto */
+.ob-q.plain{margin:22px 0 18px}
+.ob-q.plain .speech{padding:0;background:none}
+.ob-q.plain .speech b{font-size:22px}
+.ob-q .speech span{display:block}
+/* Plano semanal */
+.eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.plan-sum h3{margin-top:2px}
+.chips-sum{margin-top:12px}
+.pill-tr{display:inline-flex;align-items:center;gap:4px;margin-left:8px;height:22px;padding:0 8px;border-radius:7px;background:var(--coral-soft);color:var(--ink);font-size:11px;font-weight:700}
+.pill-tr .ic{color:var(--coral)}
+.ptag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:6px;background:var(--sun-soft);color:var(--ink);font-size:11px;font-weight:600;vertical-align:1px}
+.lnk{font:inherit;color:inherit;text-align:left;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.lnk:hover{text-decoration-color:var(--brand)}
+.daycol .dh{flex-wrap:wrap}
+.pitem{align-items:flex-start;padding:3px 0}
+.pitem .mt{padding-top:2px}
+.pitem .nm{white-space:normal;line-height:1.35;overflow:visible}
+.pitem .num{padding-top:2px}
+.pitem .iconbtn{margin-top:-6px}
