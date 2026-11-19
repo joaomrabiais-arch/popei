@@ -1,7 +1,7 @@
 # popei
 
 **Site (atual):** [`site/`](site/) — loja **Poupei**: página de produto do kit de escovagem com aspiração (fornecedor e dados por confirmar: ver [`PRODUTO-KIT.md`](PRODUTO-KIT.md)). Ver [`site/LEIA-ME.md`](site/LEIA-ME.md). Testes: `npm test`.
-**App Brota (ex-NutriVida, nome provisório):** [`app/index.html`](app/index.html) — app de nutrição e treino com as mascotes Abi e Pingo. Testes: `npm run test:app`.
+**App Brota (ex-NutriVida, nome provisório):** [`app/index.html`](app/index.html) — app de nutrição e treino com as mascotes Abi e Pingo. Testes: `npm run test:app`. IA grátis (Llama na Cloudflare): [`servidor/LEIA-ME.md`](servidor/LEIA-ME.md).
 
 **Auditoria da NutriVida:** [`munchi/AUDITORIA.md`](munchi/AUDITORIA.md) — auditoria da app de nutrição e plano por fases; original em [`munchi/nutrivida-original.html`](munchi/nutrivida-original.html).
 

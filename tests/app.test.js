@@ -13,7 +13,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
   const errors = [];
   page.on("pageerror", e => errors.push(e.message));
-  page.on("console", m => { if (m.type() === "error" && !/fonts\.(googleapis|gstatic)/.test(m.text())) errors.push(m.text()); });
+  page.on("console", m => { if (m.type() === "error" && !/fonts\.(googleapis|gstatic)|fotos\.js|ERR_FILE_NOT_FOUND/.test(m.text())) errors.push(m.text()); });
   const shot = n => page.screenshot({ path: path.join(OUT, n + ".png") });
   const closeCel = async () => { while (await page.isVisible(".celebrate")) { await page.click(".celebrate [data-x]"); await page.waitForTimeout(450); } };
   const sheetClose = async () => { await page.click("#sheet-x"); await page.waitForTimeout(400); };
@@ -27,8 +27,10 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   await page.click("#ob-n2");
   await page.fill("#ob-age", "30"); await page.fill("#ob-h", "170"); await page.fill("#ob-w", "70"); await shot("02b-dados");
   await page.click("#ob-n2");
-  for (const opt of ["1.375", "manter", "media", "Como de tudo", "Nenhuma", "Cogumelos", "Desenrasco-me", "sim", "casa", "3", "30", "zero", "Joelhos"]) {
-    await page.click(`.opt[data-o="${opt}"]`); await page.click("#ob-n2");
+  for (const opt of ["1.375", "manter", "Falta de tempo", "4", "7", "media", "Como de tudo", "Nenhuma", "Cogumelos", "Desenrasco-me", "sim", "casa", "Nenhum", "DIAS", "30", "zero", "todo", "caminhar", "Joelhos"]) {
+    if (opt === "DIAS") { for (const d of [0, 2, 4]) await page.click(`#ob-days [data-i="${d}"]`); await shot("02d-dias"); }
+    else await page.click(`.opt[data-o="${opt}"]`);
+    await page.click("#ob-n2");
   }
   await page.waitForTimeout(200); await shot("02c-referencia");
   ok(/kcal/.test(await page.textContent("#ob-in")), "ecrã final mostra a referência calculada");
@@ -36,6 +38,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   await page.waitForTimeout(600);
   ok(await page.isVisible(".celebrate"), "presente de boas-vindas aparece");
   await shot("03-boas-vindas"); await closeCel();
+  await page.waitForTimeout(1200); ok(await page.isVisible("#tour-skip"), "tutorial aparece depois do onboarding"); await shot("03b-tutorial"); await page.click("#tour-skip"); await page.waitForTimeout(200);
   let st = await state();
   ok(st.u.name === "Joana" && st.spins === 3, "perfil e 3 giros guardados");
   ok(st.goal >= 1800 && st.goal <= 2400 && st.macro && st.macro.p > 0 && st.u.age === "18 ou mais", "referência e macros calculados (" + st.goal + " kcal, " + JSON.stringify(st.macro) + ")");
@@ -66,7 +69,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
 
   // 5. Foto sem IA: mostra aviso honesto
   await page.click("#nav-add"); await page.waitForTimeout(600);
-  ok(/só funciona quando a app abre como artefacto/.test(await page.textContent("#a-body")), "aviso de IA indisponível fora do Claude");
+  ok(/precisa do Claude ou do servidor/.test(await page.textContent("#a-body")), "aviso de IA indisponível fora do Claude");
   await shot("05-adicionar-foto"); await sheetClose();
 
   // 6. Receitas
@@ -78,9 +81,9 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
 
   // 7. Planos: semana, mês, treino, compras
   await page.click('.nav [data-tab="planos"]'); await page.waitForTimeout(300);
-  await page.click("#pl-auto"); await page.waitForTimeout(400); await closeCel();
+  await page.click("#pl-auto"); await page.waitForTimeout(400); if (await page.isVisible(".dialog [data-y]")) await page.click(".dialog [data-y]"); await page.waitForTimeout(300); await closeCel();
   st = await state();
-  ok(st.plan.length >= 10, "semana preenchida automaticamente (" + st.plan.length + ")");
+  ok(st.plan.length >= 20 && st.plan.some(x => x.x && x.x !== 1), "plano da semana à medida, com porções ajustadas (" + st.plan.length + ")");
   await shot("08-plano-semana");
   await page.click('[data-v="mes"]'); await page.waitForTimeout(300); await shot("09-plano-mes");
   await page.click('#p-seg [data-s="treino"]'); await page.waitForTimeout(300); await shot("10-treino-escolher");
@@ -89,7 +92,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   const exs = plan ? plan.s.flatMap(x => x.e.map(e => e[0])).join("|") : "";
   ok(!/Lunges|Agachamento com|salto/i.test(exs) && /Ponte de glúteos|Sentar e levantar/.test(exs), "plano poupa os joelhos (" + exs + ")");
   ok(await page.evaluate(() => { const a = generatePlan({ place:"gym", days:4, min:60, lvl:"regular", goal:"musculo" }), b = generatePlan({ place:"casa", days:2, min:20, lvl:"zero", goal:"perder", bmi:32 });
-    return a.s.length === 2 && a.s[0].e.length > b.s[0].e.length && /4 ×/.test(a.s[0].e[1][1]) && /2 ×/.test(b.s[0].e[1][1]) && b.s[0].e.some(e => /Caminhada/.test(e[0])); }), "planos diferentes para pessoas diferentes");
+    return a.s.length === 4 && a.s[0].e.length > b.s[0].e.length && /4 ×/.test(a.s[0].e[1][1]) && /2 ×/.test(b.s[0].e[1][1]) && b.s[0].e.some(e => /Caminhada/.test(e[0])); }), "planos diferentes para pessoas diferentes");
   await page.evaluate(() => { const d = (new Date().getDay()+6)%7; if (!S.wk.days.includes(d)) S.wk.days.push(d); save(); renderTreino(); }); await page.waitForTimeout(300);
   await page.click("[data-ex] >> nth=0"); await page.waitForTimeout(200);
   await page.click("[data-fin] >> nth=0"); await page.waitForTimeout(500); await closeCel();

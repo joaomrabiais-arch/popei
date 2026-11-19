@@ -1,0 +1,10 @@
+name = "brota-ia"
+main = "worker.js"
+compatibility_date = "2025-06-01"
+
+[ai]
+binding = "AI"
+
+[vars]
+# Troca "*" pelo endereço onde a app vai estar (ex.: "https://brota.app") para outros sites não gastarem a tua quota.
+ALLOW_ORIGIN = "*"
