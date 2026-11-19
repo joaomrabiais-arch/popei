@@ -1,6 +1,7 @@
 /* ========================== PLANOS ========================== */
 let planSub = "ref", planView = "semana", planSel = today(), planMonth = today().slice(0,7);
 function renderPlanos(){
+  ensurePlans();
   $$("#p-seg button").forEach(b => { b.classList.toggle("on", b.dataset.s === planSub); b.onclick = () => { planSub = b.dataset.s; renderPlanos(); }; });
   ["ref","treino","compras"].forEach(s => $("#p-"+s).classList.toggle("hide", s !== planSub));
   ({ ref:renderPlanRef, treino:renderTreino, compras:renderCompras })[planSub]();
@@ -37,8 +38,8 @@ function renderPlanRef(){
       ? `<div class="row between" style="margin-top:16px"><button class="iconbtn" data-wk="-7" aria-label="Semana anterior">${icon("left","sm")}</button><b>${parseK(mon).getDate()} de ${MONTHS[parseK(mon).getMonth()]} – ${parseK(sun).getDate()} de ${MONTHS[parseK(sun).getMonth()]}</b><button class="iconbtn" data-wk="7" aria-label="Semana seguinte">${icon("right","sm")}</button></div>
          <div class="list" style="margin-top:10px">${DOW.map((_, i) => dayList(addDays(mon, i))).join("")}</div>`
       : `<div class="card" style="margin-top:16px">${calendar(planMonth, planSel, k => S.plan.filter(x => x.date === k).slice(0,3).map(() => "<i></i>").join(""))}</div><div class="list" style="margin-top:12px">${dayList(planSel)}</div>`}
-    <div class="stack" style="margin-top:16px"><button class="btn block" id="pl-auto">${icon("sparkle","sm")} ${S.plan.some(x => x.date >= mon && x.date <= sun && x.a) ? "Refazer o plano da semana" : "Criar o plano da semana"}</button><button class="btn soft block" id="pl-shop">${icon("cart","sm")} Gerar lista de compras da semana</button></div>
-    <p class="tiny muted" style="margin:10px 4px 0">O plano segue as tuas preferências: refeições, forma de cozinhar, tempo, cozinhas, dias de treino, alergias, o que não gostas, o que tens em casa e o orçamento. Refazer só muda o que foi sugerido; o que planeaste à mão fica.</p>`;
+    <button class="btn soft block" id="pl-shop" style="margin-top:16px">${icon("cart","sm")} Ver a lista de compras da semana</button>
+    <p class="tiny muted" style="margin:10px 4px 0">O plano faz-se sozinho com as tuas respostas iniciais e a semana seguinte aparece a partir de sexta. Não gostas de um prato? Toca em ${icon("copy","xs")} para o trocar. Mudanças de fundo fazem-se em Preferências.</p>`;
   $$("[data-v]", el).forEach(b => b.onclick = () => { planView = b.dataset.v; planMonth = planSel.slice(0,7); renderPlanRef(); });
   $$("[data-wk]", el).forEach(b => b.onclick = () => { planSel = addDays(planSel, +b.dataset.wk); renderPlanRef(); });
   $$("[data-mo]", el).forEach(b => b.onclick = () => { planMonth = shiftMonth(planMonth, +b.dataset.mo); renderPlanRef(); });
@@ -48,10 +49,7 @@ function renderPlanRef(){
   $$("[data-psw]", el).forEach(b => b.onclick = () => { if (swapPlanEntry(b.dataset.psw)) { save(); renderPlanRef(); toast("Trocado por outra opção"); } else toast("Não há outra opção compatível"); });
   $$("[data-pdel]", el).forEach(b => b.onclick = () => { S.plan = S.plan.filter(x => x.id !== b.dataset.pdel); save(); renderPlanRef(); });
   $("#pl-prefs", el).onclick = openPlanPrefs;
-  $("#pl-auto").onclick = async () => { const from = mon < today() ? today() : mon; if (from > sun) { toast("Esta semana já passou"); return; }
-    if (S.plan.some(x => x.date >= from && x.date <= sun && x.a) && !await confirmDlg("Refazer as sugestões desta semana? O que planeaste à mão fica igual.", "Refazer")) return;
-    const n = buildWeekPlan(mon, true, from); save(); renderPlanRef(); toast(n ? `${n} refeições planeadas à tua medida` : "A semana já estava preenchida"); if (n) { ach("plan"); say("plan", true); } };
-  $("#pl-shop").onclick = () => { const n = genShop(mon); save(); toast(n ? `${n} produtos na lista, com as quantidades somadas` : "Nada para adicionar. Planeia receitas primeiro."); if (n) { planSub = "compras"; renderPlanos(); } };
+  $("#pl-shop").onclick = () => { planSub = "compras"; renderPlanos(); };
 }
 function openPlanAdd(k, recipe){
   const R = RECIPES.filter(recipeAllowed);
@@ -69,15 +67,15 @@ function renderTreino(){
   const el = $("#p-treino"), p = progOf();
   const minorNote = isMinor() ? `<div class="note warn" style="margin-top:14px">${icon("info","sm")}<span>Se tens menos de 18 anos, mostra estes planos a um adulto ou treinador e começa sempre pela versão mais leve.</span></div>` : "";
   if (!p) { el.innerHTML = `<div class="card row" style="margin-top:18px;gap:14px">${morango({ mood:"happy", size:64 })}<div><h3>Escolhe um plano</h3><p class="small muted">Começa pelo que te parece fácil. Podes mudar quando quiseres.</p></div></div>${minorNote}
-    <div class="list" style="margin-top:14px"><button class="prog" data-p="custom"><div class="badge">${icon("sparkle")}</div><div class="lt"><b>Plano feito para ti</b><small>Respondes a 5 perguntas e o ${esc(BRAND.mascot)} monta o plano com o teu sítio, tempo, experiência e objetivo.</small></div>${icon("right","sm")}</button>${PROGRAMS.map(x => `<button class="prog" data-p="${x.id}"><div class="badge acc">${icon("dumbbell")}</div><div class="lt"><b>${esc(x.n)}</b><small>${esc(x.d)}</small><small>${x.days.length}× por semana · ${x.min} min</small><span class="lvl" aria-label="Nível ${x.lvl} de 3">${[1,2,3].map(i => `<i class="${i <= x.lvl ? "on" : ""}"></i>`).join("")}</span></div>${icon("right","sm")}</button>`).join("")}</div>
+    <div class="list" style="margin-top:14px"><button class="prog" data-p="custom"><div class="badge">${icon("sparkle")}</div><div class="lt"><b>Plano feito para ti</b><small>Feito com as tuas respostas: dias de treino, objetivo, sítio, tempo e experiência.</small></div>${icon("right","sm")}</button>${PROGRAMS.map(x => `<button class="prog" data-p="${x.id}"><div class="badge acc">${icon("dumbbell")}</div><div class="lt"><b>${esc(x.n)}</b><small>${esc(x.d)}</small><small>${x.days.length}× por semana · ${x.min} min</small><span class="lvl" aria-label="Nível ${x.lvl} de 3">${[1,2,3].map(i => `<i class="${i <= x.lvl ? "on" : ""}"></i>`).join("")}</span></div>${icon("right","sm")}</button>`).join("")}</div>
     <p class="tiny muted" style="margin:12px 4px">Se tens lesões, dores ou alguma condição de saúde, fala com um profissional antes de começar. Para de imediato se sentires dor.</p>`;
-    $$("[data-p]", el).forEach(b => b.onclick = () => b.dataset.p === "custom" ? openOnboarding(true, "gym") : openProgram(b.dataset.p)); return; }
+    $$("[data-p]", el).forEach(b => b.onclick = () => b.dataset.p === "custom" ? customFromAnswers() : openProgram(b.dataset.p)); return; }
   const k = today(), mon = mondayOf(k), se = sessionFor(k);
   const weekDone = DOW.filter((_, i) => workoutDone(addDays(mon, i))).length;
   el.innerHTML = `<div class="card" style="margin-top:18px"><div class="row between"><div><p class="tiny muted" style="font-weight:700;text-transform:uppercase;letter-spacing:.06em">O teu plano</p><h3>${esc(p.n)}</h3></div><button class="btn ghost sm" id="t-chg">Mudar</button></div>
       <div class="wstrip" style="margin-top:14px">${DOW.map((d, i) => { const dk = addDays(mon, i); return `<div class="${S.wk.days.includes(i) ? (workoutDone(dk) ? "dn" : "pl") : ""} ${dk === k ? "td" : ""}">${d}<b></b></div>`; }).join("")}</div>
       <p class="small muted" style="margin-top:10px">${weekDone} de ${S.wk.days.length} treinos esta semana. Falhaste um? Não faz mal, continua no seguinte.</p></div>
-    <div class="sec"><div class="sec-h"><h2>${se ? "Treino de hoje" : "Hoje é dia de descanso"}</h2></div>${se ? sessionCard(k, se) : `<div class="card row">${abi({ mood:"sleepy", size:64 })}<p class="muted">Recupera bem. O próximo treino é ${esc(nextSessionTxt())}.</p></div>`}</div>
+    <div class="sec"><div class="sec-h"><h2>${se ? "Treino de hoje" : "Hoje é dia de descanso"}</h2></div>${se ? wkHero(k, se) + sessionCard(k, se) : `<div class="card row">${abi({ mood:"sleepy", size:64 })}<p class="muted">Recupera bem. O próximo treino é ${esc(nextSessionTxt())}.</p></div>`}</div>
     <div class="sec"><div class="sec-h"><h2>Mês</h2><span class="tiny muted">○ planeado · ● feito</span></div><div class="card">${calendar(planMonth, planSel, k2 => sessionFor(k2) ? `<i class="${workoutDone(k2) ? "wd" : "wo"}"></i>` : (workoutDone(k2) ? `<i class="wd"></i>` : ""))}</div>
     ${planSel !== k && sessionFor(planSel) ? `<div style="margin-top:12px">${sessionCard(planSel, sessionFor(planSel))}</div>` : ""}</div>${minorNote}`;
   $("#t-chg", el).onclick = async () => { if (!await confirmDlg("Mudar de plano? Os treinos já feitos ficam no histórico.", "Mudar")) return; S.wkHist = Object.assign(S.wkHist || {}, S.wk.done || {}); S.wk = null; save(); renderTreino(); };
@@ -85,9 +83,16 @@ function renderTreino(){
   $$(".cal [data-k]", el).forEach(b => b.onclick = () => { planSel = b.dataset.k; renderTreino(); });
   $$("[data-ex]", el).forEach(b => b.onclick = () => { const [kk, i] = b.dataset.ex.split("|"); S.wk.ex = S.wk.ex || {}; const a = S.wk.ex[kk] = S.wk.ex[kk] || []; const j = a.indexOf(+i); if (j >= 0) a.splice(j,1); else a.push(+i); save(); renderTreino(); });
   $$("[data-exi]", el).forEach(b => b.onclick = () => { const [kk, i] = b.dataset.exi.split("|"); openExercise(kk, +i); });
+  $$("[data-start]", el).forEach(b => b.onclick = () => startWorkout(b.dataset.start));
   $$("[data-fin]", el).forEach(b => b.onclick = () => { const kk = b.dataset.fin; S.wk.done = S.wk.done || {}; if (S.wk.done[kk]) delete S.wk.done[kk]; else { S.wk.done[kk] = 1; ach("wk1"); snd("win"); confetti(); toast("Treino concluído. Muito bem!"); say("workout", true); } save(); renderTreino(); });
 }
 function nextSessionTxt(){ for (let i = 1; i <= 7; i++) { const k = addDays(today(), i), s = sessionFor(k); if (s) return `${DOWL[dow(k)].toLowerCase()} (${s.sess.n})`; } return "em breve"; }
+// Cartão de destaque do treino de hoje: progresso e botão para o treino guiado.
+function wkHero(k, se){ const st = (S.wk.ex && S.wk.ex[k]) || [], dn = workoutDone(k), n = se.sess.e.length, f = dn ? 1 : st.length / n, R = 30, C = 2 * Math.PI * R;
+  const sets = se.sess.e.reduce((a, e) => a + setsOf(e[1]), 0);
+  return `<div class="wk-hero"><div class="row" style="gap:14px"><div class="ring sm"><svg viewBox="0 0 72 72" aria-hidden="true"><circle class="tr" cx="36" cy="36" r="${R}"/><circle class="fg" cx="36" cy="36" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - f)).toFixed(1)}"/></svg><div class="rv"><b class="num">${dn ? n : st.length}/${n}</b></div></div>
+    <div class="grow"><b class="wk-hero-t">${esc(se.sess.n)}</b><p class="small">${se.prog.min} min · ${n} exercícios · ${sets} séries</p></div>${morango({ mood: dn ? "party" : "wink", size:62 })}</div>
+    ${dn ? `<p class="small" style="margin-top:12px">Feito. Bom trabalho!</p>` : `<button class="btn block wk-start" data-start="${k}" style="margin-top:14px;height:52px">${st.length ? "Continuar treino" : "Começar treino guiado"}</button>`}</div>`; }
 function sessionCard(k, se){ const st = (S.wk.ex && S.wk.ex[k]) || [], dn = workoutDone(k);
   return `<div class="card"><div class="row between"><div><b>${esc(se.sess.n)}</b><p class="small muted">${k === today() ? "Hoje" : esc(fmtDay(k))} · ${se.prog.min} min</p></div>${dn ? `<span class="conf alta">${icon("check","xs")} Feito</span>` : ""}</div>
     ${(() => { const ph = S.wk.prog === "custom" ? weekPhase(k) : null; return ph ? `<div class="note" style="margin-top:12px">${icon("chart","sm")}<span><b>${esc(ph.n)}.</b> ${esc(ph.t)}</span></div>` : ""; })()}
@@ -111,13 +116,13 @@ const CATS = ["Frutas e legumes","Carne e peixe","Laticínios e ovos","Mercearia
 const guessCat = n => /frango|peru|vaca|atum|salmão|pescada|carne/i.test(n) ? "Carne e peixe" : /ovo|iogurte|leite|queijo|requeijão/i.test(n) ? "Laticínios e ovos" : /legume|fruta|salada|banana|batata/i.test(n) ? "Frutas e legumes" : "Mercearia";
 function shopHead(){ const st = staples(), mon = mondayOf(today()), n = S.plan.filter(x => x.date >= mon && x.date <= addDays(mon, 6) && x.r).length;
   return `<div class="card" style="margin-top:18px"><div class="row">${abi({ mood:"think", size:44 })}<div class="grow"><b>Lista feita a partir do teu plano</b><p class="small muted">${n ? `${n} refeições planeadas esta semana. As quantidades já vêm somadas.` : "Ainda não tens refeições planeadas esta semana."}</p></div></div>
-    <button class="btn block" id="sh-gen" style="margin-top:12px">${icon("cart","sm")} ${n ? "Atualizar a lista com o plano" : "Criar plano e lista da semana"}</button></div>`
+    <p class="tiny muted" style="margin-top:10px">Atualiza-se sozinha sempre que o plano muda. O que juntares à mão fica.</p></div>`
     + (st && st.L.length ? `<div class="card" style="margin-top:12px"><h3>${esc(st.t)}</h3><p class="small muted" style="margin-top:2px">${esc(st.why)}</p><div class="row" style="flex-wrap:wrap;gap:8px;margin-top:12px">${st.L.map(x => `<button class="chip" data-st="${esc(x)}">${icon("plus","xs")}${esc(x)}</button>`).join("")}</div></div>` : ""); }
 function bindShopHead(el){ const g = $("#sh-gen", el); if (g) g.onclick = () => { const mon = mondayOf(today()); let made = 0; if (!S.plan.some(x => x.date >= mon && x.date <= addDays(mon, 6) && x.r)) made = buildWeekPlan(mon, false); const n = genShop(mon); save(); renderCompras(); toast(made ? `Plano criado e ${n} produtos na lista` : `${n} produtos na lista, com as quantidades da semana`); };
   $$("[data-st]", el).forEach(b => b.onclick = () => { if (addShop(b.dataset.st, "", guessCat(b.dataset.st))) { save(); renderCompras(); toast("Adicionado à lista"); } else toast("Já está na lista"); }); }
 function addShop(n, q, c){ if (S.shop.some(x => x.n.toLowerCase() === n.toLowerCase())) return 0; S.shop.push({ n, q, c:CATS.includes(c) ? c : "Outros", k:0 }); return 1; }
 function renderCompras(){
-  const el = $("#p-compras");
+  const el = $("#p-compras"); syncShop();
   el.innerHTML = shopHead() + `<div class="card stack" style="margin-top:14px"><div class="g2"><input id="sh-n" maxlength="60" placeholder="Produto" aria-label="Produto"><input id="sh-q" maxlength="20" placeholder="Quantidade" aria-label="Quantidade"></div>
     <div class="row"><select id="sh-c" class="grow" aria-label="Categoria">${CATS.map(c => `<option>${c}</option>`).join("")}</select><button class="btn" id="sh-a">Adicionar</button></div></div>
     <div id="sh-l"></div>

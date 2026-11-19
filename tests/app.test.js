@@ -90,7 +90,29 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   // 5. Foto sem IA: mostra aviso honesto
   await page.click("#nav-add"); await page.waitForTimeout(600);
   ok(/precisa do Claude ou do servidor/.test(await page.textContent("#a-body")), "aviso de IA indisponível fora do Claude");
+  // 5b. Foto com IA simulada: números em texto, porções, estado de espera e tempo limite
   await shot("05-adicionar-foto"); await sheetClose();
+  const foto = async impl => page.evaluate(async impl => { sample = eval(impl); document.querySelectorAll(".dialog,.celebrate").forEach(x => x.remove()); openAdd("Almoço"); await new Promise(r => setTimeout(r, 150));
+    const c = document.createElement("canvas"); c.width = c.height = 20; const b = await new Promise(r => c.toBlob(r, "image/jpeg")); const dt = new DataTransfer(); dt.items.add(new File([b], "x.jpg", { type:"image/jpeg" }));
+    const f = document.getElementById("f-gal"); f.files = dt.files; f.dispatchEvent(new Event("change")); await new Promise(r => setTimeout(r, 300)); document.getElementById("a-go").click(); }, impl);
+  await foto(`(() => { const f = async () => ({ text:"" }); f.json = async () => ({ refeicao:"Arroz com frango", clara:true, itens:[{ nome:"Arroz", porcao:"150 g", kcal:"195 kcal", proteina_g:"4 g", carbo_g:"42", gordura_g:"0,5", confianca:"alta" }, { nome:"Frango", porcao:"120 g", kcal:198, proteina_g:37, carbo_g:0, gordura_g:4, confianca:"media" }] }); return f; })()`);
+  await page.waitForTimeout(500); await shot("05b-foto-resultado");
+  ok(/393 kcal/.test(await page.textContent("#a-tot")), "números em texto da IA viram números (195 kcal + 198)");
+  await page.click('[data-dx="1"][data-i="0"]'); await page.waitForTimeout(150);
+  ok(/491 kcal/.test(await page.textContent("#a-tot")), "mais meia porção recalcula o total");
+  await sheetClose();
+  await foto(`(() => { const f = async () => ({ text:"" }); f.json = () => new Promise(() => {}); return f; })()`);
+  await page.waitForTimeout(400); await shot("05c-foto-a-analisar");
+  ok(await page.isVisible("#a-cancel"), "análise mostra estado e botão de cancelar");
+  await page.click("#a-cancel"); await sheetClose();
+  ok(await page.evaluate(async () => { try { await withTimeout(new Promise(() => {}), 50); return false; } catch(e) { return e.code === "timeout"; } }), "a análise tem tempo limite");
+  await page.evaluate(() => { sample = null; });
+  // 5c. Pesquisa sem acentos e com receitas
+  await page.click('[data-add="Lanche"]'); await page.waitForTimeout(400); await page.click('#a-tabs [data-t="pesq"]'); await page.fill("#a-q", "maca");
+  ok(/Maçã/.test(await page.textContent("#a-fl")), "pesquisa sem acentos encontra maçã");
+  await page.fill("#a-q", "sopa"); await page.waitForTimeout(100); ok((await page.$$("#a-fl [data-r]")).length >= 3, "pesquisa mostra receitas");
+  await shot("05d-pesquisa"); await sheetClose();
+  // (captura 05 tirada antes do bloco 5b)
 
   // 6. Receitas
   await page.click('.nav [data-tab="receitas"]'); await page.waitForTimeout(400); await shot("06-receitas");
@@ -101,7 +123,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
 
   // 7. Planos: semana, mês, treino, compras
   await page.click('.nav [data-tab="planos"]'); await page.waitForTimeout(300);
-  await page.click("#pl-auto"); await page.waitForTimeout(400); if (await page.isVisible(".dialog [data-y]")) await page.click(".dialog [data-y]"); await page.waitForTimeout(300); await closeCel();
+  await page.waitForTimeout(300); ok(!(await page.isVisible("#pl-auto")), "sem botão de criar plano: o plano faz-se sozinho");
   st = await state();
   const left = await page.evaluate(() => 7 - dow(today())); // o plano é feito de hoje até domingo
   ok(st.plan.length >= left * 3 && st.plan.some(x => x.x && x.x !== 1), "plano da semana à medida, com porções ajustadas (" + st.plan.length + " refeições, " + left + " dias)");
@@ -119,10 +141,24 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   await page.click("[data-fin] >> nth=0"); await page.waitForTimeout(500); await closeCel();
   st = await state();
   ok(st.wk && Object.keys(st.wk.done).length === 1, "treino concluído guardado");
+  // 7b. Treino guiado: séries, descanso e fim
+  await page.evaluate(() => { delete S.wk.done[today()]; S.wk.ex = {}; save(); renderTreino(); }); await page.waitForTimeout(200);
+  await shot("11b-treino-hoje");
+  await page.click("[data-start]"); await page.waitForTimeout(300); await shot("11c-treino-guiado");
+  await page.click("#wk-go"); await page.waitForTimeout(200);
+  if (await page.isVisible("#wk-skip")) { await shot("11d-descanso"); await page.click("#wk-skip"); }
+  for (let i = 0; i < 80 && await page.isVisible("#wk-go"); i++) { if (await page.isVisible("#wk-skip")) await page.click("#wk-skip"); else await page.click("#wk-go"); await page.waitForTimeout(40); }
+  await page.waitForTimeout(400); await shot("11e-treino-fim");
+  ok(await page.evaluate(() => !!S.wk.done[today()]), "treino guiado termina e fica concluído");
+  await page.click("#wk-ok"); await page.waitForTimeout(300); await closeCel();
   await shot("11-treino");
   await page.click('#p-seg [data-s="compras"]'); await page.waitForTimeout(300); await shot("12-compras");
   ok((await page.$$(".shop-item")).length >= 3, "lista de compras com ingredientes da receita");
 
+  // 7c. O dia em detalhe
+  await page.click('.nav [data-tab="hoje"]'); await page.waitForTimeout(300); await page.click("#h-detail"); await page.waitForTimeout(400); await shot("04b-dia-detalhe");
+  ok(await page.isVisible(".dtable") && (await page.$$(".split")).length === 2, "detalhe do dia com divisão da energia e tabela");
+  await sheetClose();
   // 8. Roda: 3 tentativas e prémio dourado garantido
   await page.evaluate(() => { S.mot = true; save(); applyPrefs(); });
   await page.click('.nav [data-tab="hoje"]'); await page.click("#h-gift"); await page.waitForTimeout(400);

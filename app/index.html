@@ -494,6 +494,116 @@ ul.ing li span:last-child{color:var(--muted);text-align:right}
 .pitem .nm{white-space:normal;line-height:1.35;overflow:visible}
 .pitem .num{padding-top:2px}
 .pitem .iconbtn{margin-top:-6px}
+/* ===== Macros (cores validadas para daltonismo, claro e escuro) ===== */
+:root{--prot:#D9546E;--carb:#D9A23B;--fat:#4F8FD6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prot:#D65C74;--carb:#BB8A34;--fat:#5290D6}}
+:root[data-theme="dark"]{--prot:#D65C74;--carb:#BB8A34;--fat:#5290D6}
+
+/* Hoje: três anéis de macros, com o valor e o que falta escritos ao lado */
+.mrings{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.mr{display:flex;align-items:center;gap:8px;min-width:0}
+.mr svg{width:42px;height:42px;flex:none}
+.mr .tr{fill:none;stroke:var(--surface-2);stroke-width:5}
+.mr-t{min-width:0;display:flex;flex-direction:column;line-height:1.2}
+.mr-n{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--ink-2)}
+.mr-n i,.legend i,.ai-mac i{width:8px;height:8px;border-radius:2px;flex:none;display:inline-block}
+.mr-t b{font:600 16px var(--fd);margin-top:2px}
+.mr-t b small{font:500 11px var(--f);color:var(--muted)}
+.mr-t>small{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sum-more{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;margin-top:14px;padding:10px;border-radius:var(--r-sm);background:var(--surface-2);font-size:13px;font-weight:600;color:var(--ink-2)}
+
+/* O dia em detalhe */
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.split{margin-top:14px}
+.split-l{font-size:12px;color:var(--muted);font-weight:600}
+.sbar{display:flex;gap:2px;height:14px;margin-top:6px;border-radius:4px;overflow:hidden}
+.sbar i{display:block;min-width:2px}
+.sbar.thin{height:10px}
+.split-v{display:flex;justify-content:space-between;margin-top:4px;font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.mealbar{margin-top:12px}
+.dtable{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+.dtable th{text-align:right;font-size:11px;color:var(--muted);font-weight:600;padding:6px 4px;border-bottom:1px solid var(--line)}
+.dtable th:first-child,.dtable td:first-child{text-align:left}
+.dtable td{text-align:right;padding:8px 4px;border-bottom:1px solid var(--line);vertical-align:top}
+.dtable td small{display:block;color:var(--muted);font-size:11px}
+.dtable .tot td{font-weight:700;border-bottom:0}
+
+/* Registar: refeição em chips e o ecrã da foto */
+.mealchips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mealchips button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:var(--r-sm);border:1px solid var(--line);background:var(--surface);font-size:12px;font-weight:600;color:var(--ink-2)}
+.mealchips button.on{border-color:var(--brand);background:var(--brand-soft);color:var(--ink)}
+.mealchips button.on .ic{color:var(--brand)}
+.cam-hero{display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--r-md);background:var(--abi-tint);margin-bottom:14px}
+.cam-hero b{font:600 17px var(--fd)}
+.pick.big label{height:132px;font-weight:600;background:var(--surface);border:1.5px dashed var(--brand-3)}
+.pick.big label .ic{width:30px;height:30px}
+.pick.off{opacity:.45;pointer-events:none}
+.cam-tips{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:8px;font-size:13px;color:var(--ink-2)}
+.cam-tips li{display:flex;align-items:center;gap:8px}
+.cam-tips .ic{color:var(--brand)}
+.shot{position:relative;border-radius:var(--r-md);overflow:hidden;background:var(--surface-2)}
+.shot img{width:100%;max-height:300px;object-fit:cover;display:block}
+.scan{position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(47,107,58,.12));pointer-events:none}
+.scan i{position:absolute;left:0;right:0;height:3px;background:var(--brand);box-shadow:0 0 18px 4px rgba(127,166,127,.8);animation:scan 1.8s ease-in-out infinite alternate}
+@keyframes scan{from{top:4%}to{top:94%}}
+.ai-wait{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--r-sm);background:var(--brand-soft);font-size:14px}
+.ai-wait .dots{display:inline-flex;gap:4px;color:var(--brand)}
+.ai-wait .dots i{width:7px;height:7px;border-radius:50%;background:currentColor;animation:dot 1s ease-in-out infinite}
+.ai-wait .dots i:nth-child(2){animation-delay:.15s}.ai-wait .dots i:nth-child(3){animation-delay:.3s}
+.ai-total{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;border-radius:var(--r-md);background:var(--surface-2);flex-wrap:wrap}
+.ai-total b{display:block;font:600 26px var(--fd)}
+.ai-mac{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink-2)}
+.ai-mac span{display:flex;align-items:center;gap:6px}
+.stepper{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:10px;padding:2px}
+.stepper button{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--ink-2)}
+.stepper b{min-width:44px;text-align:center;font-size:14px}
+.ai-edit{margin-top:10px;font-size:13px}
+.ai-edit summary{cursor:pointer;color:var(--muted);font-weight:600}
+.rfood img,.rf-ph{width:48px;height:48px;border-radius:10px;object-fit:cover;flex:none;margin-right:12px}
+.rf-ph{display:grid;place-items:center;background:var(--surface-2);color:var(--muted)}
+.food.rfood{align-items:center}
+.rp-head{display:flex;gap:12px;align-items:center;margin-top:14px}
+.rp-head img{width:72px;height:72px;border-radius:12px;object-fit:cover}
+
+/* Treino: destaque do treino de hoje e treino guiado */
+.wk-hero{padding:16px;border-radius:var(--r-md);background:var(--morango-tint);margin-bottom:12px}
+.wk-hero-t{font:600 18px var(--fd)}
+.ring.sm{width:64px;height:64px;flex:none}
+.ring.sm circle{stroke-width:7}
+.ring.sm .rv b{font-size:15px}
+.wk-hero .ring .fg,.wk-rest .ring .fg{stroke:var(--coral)}
+.wk-play{z-index:80}
+.wk-steps{display:flex;gap:3px;margin:0 10px}
+.wk-steps i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.wk-steps i.on{background:var(--coral)}
+.wk-steps i.dn{background:var(--brand)}
+.wk-name{font:600 30px/1.1 var(--fd);letter-spacing:-.02em;margin-top:6px}
+.wk-reps{font-size:17px;margin-top:8px;font-weight:600}
+.wk-sets{display:flex;gap:10px;margin-top:22px}
+.wk-sets span{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--line);font-weight:700;color:var(--muted)}
+.wk-sets span.on{border-color:var(--coral);color:var(--ink)}
+.wk-sets span.dn{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.wk-tips{margin-top:18px}
+.wk-rest{display:grid;place-items:center;margin-top:26px}
+.wk-rest .ring{width:180px;height:180px}
+.wk-rest .ring .rv b{font-size:44px}
+.wk-next{padding:12px 14px;border-radius:var(--r-sm);background:var(--surface-2)}
+.wk-end{text-align:center}
+.wk-end h1{font:600 32px var(--fd);margin-top:16px}
+@media (prefers-reduced-motion:reduce){.scan i{animation:none;top:50%}}
+.split-v{justify-content:flex-start;gap:14px;flex-wrap:wrap}
+.split-v span{display:inline-flex;align-items:center;gap:5px}
+.split-v i{width:8px;height:8px;border-radius:2px}
+/* anéis dos macros: valor dentro, nome e o que falta por baixo */
+.mr{flex-direction:column;align-items:center;text-align:center;gap:6px}
+.mr-ring{position:relative;width:64px;height:64px}
+.mr-ring svg{width:64px;height:64px}
+.mr-ring b{position:absolute;inset:0;display:grid;place-content:center;font:600 17px var(--fd)}
+.mr-ring b small{font:500 10px var(--f);color:var(--muted);margin-top:-2px}
+.mr .mr-n{font-size:12px}
+.mr-s{font-size:12px;color:var(--ink-2);font-weight:600}
+.mr-of{font-size:11px;color:var(--muted);margin-top:-4px}
 </style>
 </head>
 <body>
@@ -890,6 +1000,69 @@ const photoCredit = r => r.cr || ((window.BROTA_FOTOS || {})[r.id] || {}).cr || 
 function recipeCover(r){ const src = photoOf(r); return src
   ? `<img class="cover" src="${esc(src)}" alt="${esc(r.n)}" loading="lazy" decoding="async">`
   : `<span class="cover-ph" aria-hidden="true">${icon(CAT_IC[r.c] || "bowl")}</span>`; }
+/* ========================== Mais receitas ==========================
+   Pequenos-almoços, sopas, pratos (muitos portugueses) e lanches.
+   Nutrição por porção = estimativa aproximada a partir dos ingredientes, como nas restantes; pk:1 = leva porco. */
+RECIPES.push(
+  // Pequenos-almoços
+  {id:104,n:"Torradas com queijo fresco e mel",c:"Pequeno-almoço",d:1,al:["Glúten","Lactose"],t:5,f:"Fácil",srv:1,ds:"Simples, fresco e com um toque doce.",i:[["Pão de mistura","2 fatias",ME],["Queijo fresco","60 g",LO],["Mel (opcional)","1 c. chá",ME],["Nozes","10 g",ME]],s:["Tosta o pão.","Espalha o queijo fresco às fatias.","Junta as nozes partidas e um fio de mel."],k:320,p:15,h:42,g:10},
+  {id:105,n:"Papas de aveia com cacau e pera",c:"Pequeno-almoço",d:1,al:["Glúten","Lactose"],t:10,f:"Fácil",srv:1,ds:"Sabem a sobremesa e aguentam a manhã toda.",i:[["Flocos de aveia","50 g",ME],["Leite","250 ml",LO],["Cacau puro","1 c. chá",ME],["Pera","1",FL]],s:["Aquece o leite com a aveia e o cacau.","Mexe 4 a 5 minutos até engrossar.","Serve com a pera às fatias."],k:360,p:14,h:58,g:8},
+  {id:106,n:"Wrap de ovo e espinafres",c:"Pequeno-almoço",d:1,al:["Glúten","Ovos"],t:10,f:"Fácil",srv:1,ds:"Pequeno-almoço salgado para levar na mão.",i:[["Tortilha de trigo","1 grande",ME],["Ovos","2",LO],["Espinafres","1 mão-cheia",FL],["Tomate","1/2",FL]],s:["Bate os ovos com sal e pimenta.","Salteia os espinafres 1 minuto e junta os ovos.","Mexe até cozer e enrola na tortilha com o tomate."],k:370,p:20,h:32,g:17},
+  {id:107,n:"Granola caseira com iogurte",c:"Pequeno-almoço",d:1,al:["Glúten","Lactose","Frutos secos"],t:25,f:"Fácil",srv:6,ds:"Faz um frasco ao domingo e tens para a semana.",i:[["Flocos de aveia","200 g",ME],["Amêndoas","50 g",ME],["Mel","3 c. sopa",ME],["Azeite","2 c. sopa",ME],["Iogurte natural","6",LO],["Fruta da época","q.b.",FL]],s:["Mistura a aveia, as amêndoas partidas, o mel e o azeite.","Espalha num tabuleiro e leva ao forno a 170 °C 15 a 20 minutos, mexendo a meio.","Deixa arrefecer e guarda num frasco.","Serve 40 g com um iogurte e fruta."],k:340,p:11,h:44,g:13},
+  {id:108,n:"Tosta de húmus e tomate",c:"Pequeno-almoço",d:0,al:["Glúten","Sésamo"],t:5,f:"Fácil",srv:1,ds:"Vegan, cremosa e cheia de fibra.",i:[["Pão integral","2 fatias",ME],["Húmus","60 g",ME],["Tomate","1",FL],["Azeite","1 c. chá",ME]],s:["Tosta o pão.","Barra com húmus.","Junta o tomate às rodelas, sal, pimenta e um fio de azeite."],k:330,p:12,h:42,g:12},
+  {id:109,n:"Batido verde de espinafres e banana",c:"Pequeno-almoço",d:0,al:[],t:5,f:"Fácil",srv:1,ds:"Verde por fora, doce por dentro.",i:[["Espinafres","1 mão-cheia",FL],["Banana","1",FL],["Bebida de aveia","250 ml",ME],["Sementes de chia","1 c. sopa",ME]],s:["Junta tudo no liquidificador.","Tritura até ficar liso.","Bebe logo."],k:280,p:7,h:48,g:7},
+  {id:110,n:"Ovos mexidos com cogumelos e pão",c:"Pequeno-almoço",d:1,al:["Glúten","Ovos"],t:10,f:"Fácil",srv:1,ds:"Um pequeno-almoço de fim de semana em 10 minutos.",i:[["Ovos","2",LO],["Cogumelos","80 g",FL],["Pão de mistura","1 fatia grande",ME],["Azeite","1 c. chá",ME],["Cebolinho","q.b.",FL]],s:["Salteia os cogumelos laminados no azeite.","Junta os ovos batidos e mexe em lume brando.","Serve sobre o pão torrado com cebolinho."],k:360,p:20,h:28,g:18},
+  {id:111,n:"Muesli com leite e maçã",c:"Pequeno-almoço",d:1,al:["Glúten","Lactose","Frutos secos"],t:3,f:"Fácil",srv:1,ds:"Rápido e crocante.",i:[["Flocos de aveia","40 g",ME],["Passas","15 g",ME],["Amêndoas","10 g",ME],["Leite","200 ml",LO],["Maçã","1/2",FL]],s:["Junta a aveia, as passas e as amêndoas numa taça.","Rega com o leite.","Junta a maçã ralada."],k:330,p:13,h:50,g:9},
+  {id:112,n:"Tofu mexido com pimentos",c:"Pequeno-almoço",d:0,al:["Soja","Glúten"],t:12,f:"Fácil",srv:1,ds:"A versão vegan dos ovos mexidos, com cúrcuma.",i:[["Tofu firme","150 g",LO],["Pimento","1/2",FL],["Cebola","1/4",FL],["Cúrcuma","q.b.",ME],["Pão integral","1 fatia",ME]],s:["Salteia a cebola e o pimento.","Esmaga o tofu com um garfo e junta com a cúrcuma, sal e pimenta.","Cozinha 5 minutos e serve com o pão."],k:310,p:21,h:24,g:14},
+  {id:113,n:"Iogurte com kiwi e sementes",c:"Pequeno-almoço",d:1,al:["Lactose"],t:3,f:"Fácil",srv:1,ds:"Fresco, ácido e com vitamina C.",i:[["Iogurte grego natural","170 g",LO],["Kiwi","2",FL],["Sementes de chia","1 c. sopa",ME],["Mel (opcional)","1 c. chá",ME]],s:["Põe o iogurte numa taça.","Junta os kiwis às rodelas e as sementes.","Adoça com mel, se quiseres."],k:290,p:17,h:32,g:11},
+  {id:114,n:"Requeijão com pêssego e canela",c:"Pequeno-almoço",d:1,al:["Lactose","Glúten"],t:3,f:"Fácil",srv:1,ds:"Leve, com muita proteína e pouco trabalho.",i:[["Requeijão","150 g",LO],["Pêssego","1",FL],["Canela","q.b.",ME],["Flocos de aveia","20 g",ME]],s:["Põe o requeijão numa taça.","Junta o pêssego às fatias e a aveia.","Polvilha com canela."],k:280,p:19,h:30,g:9},
+  {id:115,n:"Ovos cozidos com pão de centeio",c:"Pequeno-almoço",d:1,al:["Glúten","Ovos"],t:10,f:"Fácil",srv:1,ds:"Clássico, saciante e fácil de levar.",i:[["Ovos","2",LO],["Pão de centeio","2 fatias",ME],["Tomate","1",FL],["Azeite","1 c. chá",ME]],s:["Coze os ovos 9 minutos e arrefece em água fria.","Tosta o pão e barra com tomate esmagado e azeite.","Serve com os ovos às rodelas."],k:350,p:19,h:32,g:15},
+  // Sopas
+  {id:116,n:"Sopa de abóbora e cenoura",c:"Jantar",d:0,al:[],t:35,f:"Fácil",srv:4,ds:"Aveludada e doce, sem natas.",i:[["Abóbora","500 g",FL],["Cenoura","2",FL],["Cebola","1",FL],["Batata","1",FL],["Azeite","2 c. sopa",ME]],s:["Descasca e corta os legumes.","Coze em 1,2 L de água com sal 25 minutos.","Tritura e junta o azeite no fim."],k:150,p:3,h:24,g:5},
+  {id:117,n:"Sopa de feijão com couve",c:"Jantar",d:0,al:[],t:35,f:"Fácil",srv:4,ds:"A sopa da avó, reconfortante e com proteína vegetal.",i:[["Feijão vermelho cozido","400 g",ME],["Couve","200 g",FL],["Cenoura","2",FL],["Cebola","1",FL],["Batata","2",FL],["Azeite","2 c. sopa",ME]],s:["Coze a batata, a cebola, a cenoura e metade do feijão em 1,2 L de água 20 minutos.","Tritura.","Junta a couve cortada e o resto do feijão e coze mais 10 minutos.","Termina com azeite."],k:230,p:10,h:34,g:6},
+  {id:118,n:"Canja de galinha",c:"Jantar",d:3,al:["Glúten"],t:40,f:"Fácil",srv:4,ds:"Leve, quente e boa para todos os dias.",i:[["Peito de frango","300 g",CP],["Massa pevide","100 g",ME],["Cenoura","1",FL],["Cebola","1",FL],["Hortelã","q.b.",FL],["Limão","1/2",FL]],s:["Coze o frango com a cebola e a cenoura em 1,5 L de água 20 minutos.","Retira o frango e desfia-o.","Coze a massa no caldo 8 minutos.","Junta o frango, a hortelã e umas gotas de limão."],k:220,p:22,h:24,g:3},
+  {id:119,n:"Sopa de grão com espinafres",c:"Jantar",d:0,al:[],t:30,f:"Fácil",srv:4,ds:"Espessa, nutritiva e muito barata.",i:[["Grão-de-bico cozido","400 g",ME],["Espinafres","200 g",FL],["Cebola","1",FL],["Cenoura","2",FL],["Alho","2 dentes",FL],["Azeite","2 c. sopa",ME]],s:["Coze a cebola, a cenoura, o alho e metade do grão em 1,2 L de água 20 minutos.","Tritura.","Junta o resto do grão e os espinafres e coze 5 minutos."],k:210,p:9,h:28,g:7},
+  {id:120,n:"Creme de brócolos",c:"Jantar",d:0,al:[],t:25,f:"Fácil",srv:4,ds:"Verde, cremoso e pronto em 25 minutos.",i:[["Brócolos","400 g",FL],["Batata","1",FL],["Cebola","1",FL],["Alho","1 dente",FL],["Azeite","2 c. sopa",ME]],s:["Coze a batata, a cebola e o alho 10 minutos.","Junta os brócolos e coze mais 8 minutos.","Tritura e termina com azeite."],k:130,p:5,h:16,g:5},
+  {id:121,n:"Sopa de peixe",c:"Jantar",d:2,al:["Peixe","Glúten"],t:35,f:"Média",srv:4,ds:"Rica em proteína, com o sabor do mar.",i:[["Pescada","400 g",CP],["Tomate pelado","400 g",ME],["Cebola","1",FL],["Pimento","1",FL],["Massa cotovelinhos","80 g",ME],["Coentros (opcional)","q.b.",FL]],s:["Refoga a cebola e o pimento.","Junta o tomate e 1,2 L de água e coze 15 minutos.","Junta a massa e coze 8 minutos.","Junta o peixe aos pedaços e coze 5 minutos."],k:240,p:24,h:24,g:5},
+  {id:122,n:"Sopa de tomate com ovo",c:"Jantar",d:1,al:["Ovos","Glúten"],t:30,f:"Fácil",srv:2,ds:"Sopa alentejana simples, com ovo escalfado.",i:[["Tomate maduro","4",FL],["Cebola","1",FL],["Pimento","1/2",FL],["Ovos","2",LO],["Pão de mistura","2 fatias",ME],["Azeite","1 c. sopa",ME]],s:["Refoga a cebola e o pimento no azeite.","Junta o tomate e 600 ml de água e coze 15 minutos.","Escalfa os ovos na sopa 4 minutos.","Serve sobre o pão."],k:330,p:15,h:34,g:14},
+  {id:123,n:"Sopa de ervilhas",c:"Jantar",d:0,al:[],t:25,f:"Fácil",srv:4,ds:"Doce, verde e com mais proteína do que parece.",i:[["Ervilhas congeladas","400 g",FL],["Batata","1",FL],["Cebola","1",FL],["Hortelã","q.b.",FL],["Azeite","2 c. sopa",ME]],s:["Coze a batata e a cebola 10 minutos.","Junta as ervilhas e coze mais 8 minutos.","Tritura com a hortelã e termina com azeite."],k:170,p:7,h:22,g:5},
+  // Pratos
+  {id:124,n:"Arroz de frango",c:"Almoço",d:3,al:[],t:40,f:"Fácil",srv:4,ds:"Um clássico de domingo que dá para a semana.",i:[["Peito de frango","500 g",CP],["Arroz","250 g (cru)",ME],["Cebola","1",FL],["Cenoura","1",FL],["Ervilhas congeladas","150 g",FL],["Polpa de tomate","100 g",ME],["Azeite","2 c. sopa",ME]],s:["Refoga a cebola e a cenoura no azeite.","Junta o frango aos cubos e aloura.","Junta a polpa, o arroz e 600 ml de água.","Coze 15 minutos em lume brando e junta as ervilhas no fim."],k:520,p:38,h:62,g:11},
+  {id:125,n:"Frango assado com batatas",c:"Jantar",d:3,al:[],t:60,f:"Fácil",srv:4,ds:"Forno a fazer o trabalho todo.",i:[["Pernas de frango","4",CP],["Batata","800 g",FL],["Alho","4 dentes",FL],["Limão","1",FL],["Alecrim","2 raminhos",FL],["Azeite","2 c. sopa",ME]],s:["Tempera o frango com alho, limão, sal e alecrim.","Corta as batatas em gomos.","Assa tudo a 200 °C cerca de 50 minutos, virando a meio.","Serve com salada."],k:560,p:36,h:42,g:26},
+  {id:126,n:"Bife de peru com arroz e ovo",c:"Almoço",d:3,al:["Ovos"],t:25,f:"Fácil",srv:1,ds:"Um bitoque mais leve, com o mesmo conforto.",i:[["Bife de peru","150 g",CP],["Arroz","60 g (cru)",ME],["Ovo","1",LO],["Alface","1 mão-cheia",FL],["Alho","1 dente",FL],["Azeite","1 c. chá",ME]],s:["Coze o arroz.","Tempera o peru com alho e grelha 3 minutos de cada lado.","Estrela o ovo com pouco azeite.","Serve com arroz e alface."],k:560,p:46,h:50,g:17},
+  {id:127,n:"Febras grelhadas com feijão-preto",c:"Almoço",d:3,pk:1,al:[],t:25,f:"Fácil",srv:2,ds:"Sabor de churrasqueira, feito em casa.",i:[["Febras de porco","300 g",CP],["Feijão-preto cozido","400 g",ME],["Arroz","100 g (cru)",ME],["Alho","2 dentes",FL],["Laranja","1",FL]],s:["Tempera as febras com alho, sal e sumo de laranja.","Coze o arroz.","Grelha as febras 3 a 4 minutos de cada lado.","Aquece o feijão e serve tudo junto."],k:620,p:46,h:64,g:18},
+  {id:128,n:"Bacalhau com grão",c:"Almoço",d:2,al:["Peixe","Ovos"],t:30,f:"Fácil",srv:2,ds:"Prato português de sempre, rico em proteína.",i:[["Bacalhau demolhado","300 g",CP],["Grão-de-bico cozido","400 g",ME],["Batata","2",FL],["Ovos","2",LO],["Cebola roxa","1/2",FL],["Azeite","2 c. sopa",ME]],s:["Coze o bacalhau e as batatas.","Coze os ovos 9 minutos.","Aquece o grão.","Serve tudo com cebola picada, azeite e salsa."],k:600,p:48,h:52,g:20},
+  {id:129,n:"Pescada cozida com legumes",c:"Jantar",d:2,al:["Peixe","Ovos"],t:25,f:"Fácil",srv:2,ds:"Leve, simples e muito português.",i:[["Pescada","350 g",CP],["Batata","3",FL],["Cenoura","2",FL],["Brócolos","200 g",FL],["Ovo","1",LO],["Azeite","2 c. sopa",ME]],s:["Coze as batatas e as cenouras 15 minutos.","Junta os brócolos e a pescada e coze mais 8 minutos.","Coze o ovo à parte.","Serve com azeite e um pouco de vinagre."],k:430,p:36,h:38,g:14},
+  {id:130,n:"Sardinhas assadas com pimentos",c:"Almoço",d:2,al:["Peixe"],t:30,f:"Fácil",srv:2,ds:"O verão português num prato, cheio de ómega-3.",i:[["Sardinhas","8",CP],["Pimento vermelho","2",FL],["Batata","4 pequenas",FL],["Azeite","1 c. sopa",ME],["Flor de sal","q.b.",ME]],s:["Assa os pimentos no forno ou na grelha e tira-lhes a pele.","Coze as batatas com casca.","Grelha as sardinhas 4 minutos de cada lado.","Serve com os pimentos e um fio de azeite."],k:560,p:38,h:34,g:30},
+  {id:131,n:"Massa com salmão e espinafres",c:"Jantar",d:2,al:["Peixe","Glúten"],t:20,f:"Fácil",srv:2,ds:"Cremosa sem natas, pronta em 20 minutos.",i:[["Massa","160 g (crua)",ME],["Salmão fresco","240 g",CP],["Espinafres","150 g",FL],["Alho","2 dentes",FL],["Limão","1/2",FL],["Azeite","1 c. sopa",ME]],s:["Coze a massa e guarda um pouco da água.","Aloura o salmão aos cubos no azeite com alho.","Junta os espinafres e um pouco da água da massa.","Mistura a massa e termina com limão."],k:600,p:36,h:62,g:22},
+  {id:132,n:"Carne estufada com legumes",c:"Jantar",d:3,al:[],t:75,f:"Média",srv:4,ds:"Estufado lento que melhora no dia seguinte.",i:[["Carne de vaca para estufar","600 g",CP],["Batata","4",FL],["Cenoura","3",FL],["Ervilhas congeladas","150 g",FL],["Cebola","1",FL],["Polpa de tomate","150 g",ME],["Azeite","2 c. sopa",ME]],s:["Aloura a carne aos cubos no azeite.","Junta a cebola e a polpa e refoga.","Cobre com água e estufa 45 minutos.","Junta a batata e a cenoura e coze mais 20 minutos; as ervilhas no fim."],k:520,p:38,h:38,g:22},
+  {id:133,n:"Almôndegas de peru com arroz",c:"Jantar",d:3,al:["Glúten","Ovos"],t:40,f:"Média",srv:4,ds:"Almôndegas leves em molho de tomate caseiro.",i:[["Carne picada de peru","500 g",CP],["Ovo","1",LO],["Pão ralado","40 g",ME],["Tomate pelado","400 g",ME],["Cebola","1",FL],["Arroz","200 g (cru)",ME]],s:["Mistura a carne com o ovo, o pão ralado, sal e salsa e faz bolinhas.","Aloura-as numa frigideira.","Junta a cebola, o tomate e cozinha 20 minutos.","Serve com arroz."],k:500,p:36,h:58,g:12},
+  {id:134,n:"Feijoada de legumes",c:"Almoço",d:0,al:[],t:40,f:"Fácil",srv:4,ds:"Feijoada sem carne, com o mesmo conforto.",i:[["Feijão vermelho cozido","800 g",ME],["Cenoura","2",FL],["Couve","200 g",FL],["Cebola","1",FL],["Polpa de tomate","200 g",ME],["Arroz","200 g (cru)",ME],["Azeite","2 c. sopa",ME]],s:["Refoga a cebola e a cenoura no azeite.","Junta a polpa, o feijão e 300 ml de água e coze 15 minutos.","Junta a couve e coze 10 minutos.","Serve com arroz branco."],k:500,p:20,h:86,g:8},
+  {id:135,n:"Empadão de lentilhas",c:"Jantar",d:0,al:[],t:55,f:"Média",srv:4,ds:"Puré de batata por cima, lentilhas por baixo.",i:[["Lentilhas castanhas","250 g",ME],["Batata","1 kg",FL],["Cenoura","2",FL],["Cebola","1",FL],["Polpa de tomate","200 g",ME],["Bebida de aveia","150 ml",ME],["Azeite","2 c. sopa",ME]],s:["Coze as lentilhas 20 minutos.","Refoga a cebola e a cenoura, junta a polpa e as lentilhas.","Faz um puré com a batata cozida, a bebida de aveia e o azeite.","Põe as lentilhas num tabuleiro, cobre com o puré e leva ao forno 20 minutos."],k:470,p:20,h:76,g:8},
+  {id:136,n:"Risotto de cogumelos",c:"Jantar",d:1,al:["Lactose"],t:35,f:"Média",srv:2,ds:"Cremoso e reconfortante.",i:[["Arroz arbóreo","160 g",ME],["Cogumelos","250 g",FL],["Cebola","1/2",FL],["Caldo de legumes","800 ml",ME],["Queijo parmesão","30 g",LO],["Azeite","1 c. sopa",ME]],s:["Refoga a cebola e os cogumelos no azeite.","Junta o arroz e envolve 1 minuto.","Vai juntando o caldo quente, uma concha de cada vez, durante 18 minutos.","Termina com o parmesão."],k:520,p:16,h:80,g:14},
+  {id:137,n:"Massa integral com pesto e tomate",c:"Almoço",d:1,al:["Glúten","Lactose","Frutos secos"],t:15,f:"Fácil",srv:2,ds:"Verão italiano em 15 minutos.",i:[["Massa integral","160 g (crua)",ME],["Pesto","4 c. sopa",ME],["Tomate cherry","200 g",FL],["Queijo parmesão","20 g",LO],["Rúcula","1 mão-cheia",FL]],s:["Coze a massa.","Corta os tomates ao meio.","Mistura a massa com o pesto e os tomates.","Serve com rúcula e parmesão."],k:560,p:18,h:68,g:22},
+  {id:138,n:"Fajitas de frango",c:"Jantar",d:3,al:["Glúten","Lactose"],t:25,f:"Fácil",srv:2,ds:"Cada um monta a sua, com legumes coloridos.",i:[["Peito de frango","300 g",CP],["Tortilha de trigo","4",ME],["Pimento","2",FL],["Cebola roxa","1",FL],["Cominhos e pimentão","q.b.",ME],["Iogurte natural","1",LO]],s:["Corta o frango e os legumes em tiras.","Salteia o frango com as especiarias.","Junta os legumes e salteia mais 5 minutos.","Serve nas tortilhas com iogurte."],k:560,p:44,h:56,g:16},
+  {id:139,n:"Caril de frango com arroz",c:"Jantar",d:3,al:[],t:35,f:"Fácil",srv:4,ds:"Aromático e suave, com leite de coco leve.",i:[["Peito de frango","500 g",CP],["Leite de coco","200 ml",ME],["Caril em pó","1 c. sopa",ME],["Cebola","1",FL],["Espinafres","150 g",FL],["Arroz","250 g (cru)",ME]],s:["Refoga a cebola e o caril.","Junta o frango aos cubos e aloura.","Junta o leite de coco e coze 15 minutos.","Junta os espinafres no fim e serve com arroz."],k:560,p:38,h:58,g:18},
+  {id:140,n:"Salteado de camarão com legumes",c:"Jantar",d:2,al:["Marisco","Soja"],t:20,f:"Fácil",srv:2,ds:"Rápido, colorido e leve.",i:[["Camarão descascado","300 g",CP],["Brócolos","200 g",FL],["Pimento","1",FL],["Molho de soja","2 c. sopa",ME],["Gengibre e alho","q.b.",FL],["Arroz","120 g (cru)",ME]],s:["Coze o arroz.","Salteia o alho e o gengibre.","Junta os legumes e salteia 4 minutos.","Junta o camarão e o molho de soja e cozinha 3 minutos."],k:440,p:34,h:58,g:7},
+  {id:141,n:"Peru grelhado com puré de batata-doce",c:"Jantar",d:3,al:["Lactose"],t:30,f:"Fácil",srv:2,ds:"Proteína magra com um puré doce e cremoso.",i:[["Bife de peru","300 g",CP],["Batata-doce","2",FL],["Leite","100 ml",LO],["Feijão-verde","200 g",FL],["Azeite","1 c. sopa",ME]],s:["Coze a batata-doce e esmaga com o leite.","Coze o feijão-verde 8 minutos.","Grelha o peru 3 minutos de cada lado.","Serve tudo com um fio de azeite."],k:480,p:42,h:50,g:10},
+  {id:142,n:"Hambúrguer de frango no forno",c:"Jantar",d:3,al:["Glúten","Ovos"],t:30,f:"Fácil",srv:4,ds:"Caseiro, sem fritar, com salada.",i:[["Carne picada de frango","500 g",CP],["Ovo","1",LO],["Pão ralado","40 g",ME],["Pão de hambúrguer","4",ME],["Alface e tomate","q.b.",FL]],s:["Mistura a carne com o ovo, o pão ralado e temperos.","Molda 4 hambúrgueres.","Assa a 200 °C 18 minutos, virando a meio.","Monta no pão com alface e tomate."],k:470,p:36,h:42,g:16},
+  {id:143,n:"Lombo de porco assado com laranja",c:"Almoço",d:3,pk:1,al:[],t:70,f:"Média",srv:4,ds:"Assado de domingo, suculento e perfumado.",i:[["Lombo de porco","800 g",CP],["Laranja","2",FL],["Batata","800 g",FL],["Alho","4 dentes",FL],["Louro","2 folhas",ME],["Azeite","2 c. sopa",ME]],s:["Tempera o lombo com alho, louro, sal e sumo de laranja.","Junta as batatas aos gomos.","Assa a 190 °C cerca de 60 minutos, regando com o molho.","Deixa repousar 10 minutos antes de fatiar."],k:540,p:46,h:40,g:20},
+  {id:144,n:"Tortilha de batata",c:"Jantar",d:1,al:["Ovos"],t:35,f:"Média",srv:4,ds:"Tortilha espanhola, boa quente ou fria.",i:[["Batata","600 g",FL],["Ovos","6",LO],["Cebola","1",FL],["Azeite","3 c. sopa",ME]],s:["Corta a batata e a cebola em fatias finas.","Cozinha-as em lume brando no azeite 15 minutos, sem fritar.","Junta aos ovos batidos.","Cozinha na frigideira 5 minutos de cada lado."],k:360,p:15,h:30,g:20},
+  {id:145,n:"Salada niçoise",c:"Almoço",d:2,al:["Peixe","Ovos"],t:20,f:"Fácil",srv:2,ds:"Salada completa: atum, ovo, batata e feijão-verde.",i:[["Atum ao natural","2 latas",CP],["Ovos","2",LO],["Batata","2",FL],["Feijão-verde","150 g",FL],["Tomate","2",FL],["Azeitonas e salsa","q.b.",ME],["Azeite","2 c. sopa",ME]],s:["Coze as batatas, o feijão-verde e os ovos.","Corta tudo e junta numa taça com o tomate.","Junta o atum e as azeitonas.","Tempera com azeite e vinagre."],k:450,p:34,h:32,g:20},
+  {id:146,n:"Arroz salteado com legumes e ovo",c:"Jantar",d:1,al:["Ovos","Soja"],t:20,f:"Fácil",srv:2,ds:"Ótimo para usar arroz que sobrou.",i:[["Arroz","150 g (cru)",ME],["Ovos","2",LO],["Ervilhas congeladas","100 g",FL],["Cenoura","1",FL],["Molho de soja","2 c. sopa",ME],["Azeite","1 c. sopa",ME]],s:["Coze o arroz (ou usa o de ontem).","Salteia a cenoura e as ervilhas.","Junta o arroz e o molho de soja.","Abre espaço, mexe os ovos e envolve tudo."],k:480,p:17,h:72,g:13},
+  {id:147,n:"Wok de vaca com brócolos",c:"Jantar",d:3,al:["Soja","Glúten"],t:20,f:"Fácil",srv:2,ds:"Estilo take-away, mais leve e feito em casa.",i:[["Bife de vaca","250 g",CP],["Brócolos","250 g",FL],["Noodles","120 g",ME],["Molho de soja","2 c. sopa",ME],["Gengibre e alho","q.b.",FL],["Sésamo","1 c. chá",ME]],s:["Coze os noodles.","Salteia a carne em tiras em lume forte 2 minutos.","Junta os brócolos, o alho e o gengibre e salteia 4 minutos.","Junta os noodles e o molho de soja."],k:560,p:38,h:62,g:16},
+  // Lanches
+  {id:148,n:"Palitos de cenoura com iogurte de ervas",c:"Lanche",d:1,al:["Lactose"],t:5,f:"Fácil",srv:1,ds:"Crocante e fresco.",i:[["Cenoura","2",FL],["Iogurte grego natural","100 g",LO],["Cebolinho","q.b.",FL],["Limão","1/2",FL]],s:["Corta a cenoura em palitos.","Mistura o iogurte com cebolinho, limão e sal.","Serve como molho."],k:150,p:10,h:16,g:5},
+  {id:149,n:"Tosta mista integral",c:"Lanche",d:3,pk:1,al:["Glúten","Lactose"],t:6,f:"Fácil",srv:1,ds:"O lanche de café, numa versão mais equilibrada.",i:[["Pão integral","2 fatias",ME],["Fiambre","2 fatias",CP],["Queijo flamengo","1 fatia",LO]],s:["Monta o pão com o fiambre e o queijo.","Tosta até o queijo derreter."],k:290,p:19,h:30,g:10},
+  {id:150,n:"Banana com iogurte e canela",c:"Lanche",d:1,al:["Lactose"],t:2,f:"Fácil",srv:1,ds:"Doce sem açúcar adicionado.",i:[["Banana","1",FL],["Iogurte natural","1",LO],["Canela","q.b.",ME]],s:["Corta a banana às rodelas.","Junta o iogurte e a canela."],k:180,p:6,h:32,g:3},
+  {id:151,n:"Ovo cozido com tomate cherry",c:"Lanche",d:1,al:["Ovos"],t:10,f:"Fácil",srv:1,ds:"Proteína simples para meio da tarde.",i:[["Ovos","2",LO],["Tomate cherry","100 g",FL],["Flor de sal","q.b.",ME]],s:["Coze os ovos 9 minutos.","Serve com os tomates e uma pitada de sal."],k:170,p:13,h:4,g:11},
+  {id:152,n:"Pipocas caseiras",c:"Lanche",d:0,al:[],t:6,f:"Fácil",srv:1,ds:"Integrais, crocantes e com pouca gordura.",i:[["Milho para pipocas","30 g",ME],["Azeite","1 c. chá",ME],["Sal","q.b.",ME]],s:["Aquece o azeite num tacho com tampa.","Junta o milho, tapa e agita até parar de estalar.","Tempera com sal."],k:150,p:4,h:24,g:5},
+  {id:153,n:"Barrinhas de aveia e banana",c:"Lanche",d:0,al:["Glúten"],t:25,f:"Fácil",srv:8,ds:"Só dois ingredientes base, ótimas para levar.",i:[["Banana madura","3",FL],["Flocos de aveia","160 g",ME],["Passas","40 g",ME],["Canela","q.b.",ME]],s:["Esmaga as bananas e mistura com a aveia, as passas e a canela.","Espalha num tabuleiro forrado.","Assa a 180 °C 20 minutos.","Corta em 8 barras depois de arrefecer."],k:140,p:4,h:28,g:2},
+  {id:154,n:"Queijo fresco com tomate e orégãos",c:"Lanche",d:1,al:["Lactose"],t:3,f:"Fácil",srv:1,ds:"Lanche salgado, leve e com proteína.",i:[["Queijo fresco","80 g",LO],["Tomate","1",FL],["Orégãos","q.b.",ME],["Azeite","1 c. chá",ME]],s:["Corta o queijo e o tomate às fatias.","Tempera com orégãos, sal e um fio de azeite."],k:170,p:10,h:5,g:12},
+  {id:155,n:"Grão-de-bico tostado",c:"Lanche",d:0,al:[],t:30,f:"Fácil",srv:3,ds:"Crocante como snack, com proteína vegetal.",i:[["Grão-de-bico cozido","400 g",ME],["Azeite","1 c. sopa",ME],["Cominhos e pimentão","q.b.",ME]],s:["Escorre e seca bem o grão.","Envolve no azeite e nas especiarias.","Assa a 200 °C 25 minutos, mexendo a meio."],k:180,p:8,h:24,g:6},
+  {id:156,n:"Pera com amêndoas",c:"Lanche",d:0,al:["Frutos secos"],t:2,f:"Fácil",srv:1,ds:"Fruta e gordura boa, sem preparação.",i:[["Pera","1",FL],["Amêndoas","15 g",ME]],s:["Lava a pera.","Acompanha com as amêndoas."],k:180,p:4,h:24,g:8},
+  {id:157,n:"Smoothie de morango e aveia",c:"Lanche",d:1,al:["Lactose","Glúten"],t:5,f:"Fácil",srv:1,ds:"O Morango aprova.",i:[["Morangos","150 g",FL],["Iogurte natural","1",LO],["Flocos de aveia","20 g",ME],["Leite","100 ml",LO]],s:["Junta tudo no liquidificador.","Tritura até ficar cremoso."],k:230,p:10,h:36,g:5}
+);
 /* ========================== Treino ========================== */
 const PROGRAMS = [
   { id:"zero", n:"Começar do zero", d:"Corpo inteiro, 3 dias por semana, 30 minutos. Ideal para quem está a começar.", lvl:1, days:[0,2,4], min:30,
@@ -1191,7 +1364,10 @@ const MARKETS = ["Continente","Pingo Doce","Lidl","Mercadona","Aldi","Intermarch
 // Cozinha de cada prato principal (id da receita → cozinha). Pequenos-almoços e lanches não contam.
 const CUISINE_OF = { 12:"portuguesa",13:"portuguesa",18:"portuguesa",23:"portuguesa",27:"portuguesa",28:"portuguesa",31:"portuguesa",33:"portuguesa",
   11:"mediterranica",15:"mediterranica",24:"mediterranica",32:"mediterranica",101:"mediterranica",25:"mediterranica",
-  14:"italiana",20:"italiana",29:"italiana",34:"italiana", 19:"asiatica",21:"asiatica",26:"asiatica",30:"asiatica",103:"asiatica", 16:"mexicana",17:"mexicana",22:"mexicana" };
+  14:"italiana",20:"italiana",29:"italiana",34:"italiana", 19:"asiatica",21:"asiatica",26:"asiatica",30:"asiatica",103:"asiatica", 16:"mexicana",17:"mexicana",22:"mexicana",
+  116:"portuguesa",117:"portuguesa",118:"portuguesa",119:"portuguesa",121:"portuguesa",122:"portuguesa",123:"portuguesa",124:"portuguesa",125:"portuguesa",126:"portuguesa",127:"portuguesa",
+  128:"portuguesa",129:"portuguesa",130:"portuguesa",132:"portuguesa",134:"portuguesa",135:"portuguesa",141:"portuguesa",143:"portuguesa",
+  120:"mediterranica",131:"mediterranica",144:"mediterranica",145:"mediterranica", 133:"italiana",136:"italiana",137:"italiana", 138:"mexicana", 139:"asiatica",140:"asiatica",146:"asiatica",147:"asiatica" };
 // O que pode já haver em casa: [rótulo, expressão que apanha o ingrediente nas receitas]
 const PANTRY = [["Arroz",/^arroz/i],["Massa",/^massa(?! de pizza)|esparguete|lasanha/i],["Flocos de aveia",/aveia(?! \S*bebida)|^flocos de aveia/i],["Ovos",/^ovos?\b|ovos cozidos/i],
   ["Leite ou bebida vegetal",/^leite(?! de coco)|^bebida/i],["Iogurte",/iogurte/i],["Atum em lata",/atum/i],["Grão-de-bico",/grão/i],["Feijão",/feijão(?!-verde)/i],["Lentilhas",/lentilhas/i],
@@ -1201,7 +1377,9 @@ const PANTRY = [["Arroz",/^arroz/i],["Massa",/^massa(?! de pizza)|esparguete|las
 /* ===== Preços de referência =====
    shortcut: preços médios aproximados de supermercado em Portugal, escritos à mão e não verificados; mudam com a loja e a época.
    Trocar por uma tabela com fonte (ou preços do supermercado escolhido) antes de prometer valores. [expressão, €/kg ou €/L, € por unidade] */
-const PRICES = [[/manteiga de amendoim/i,9],[/leite de coco/i,4],[/^leite|^bebida/i,1.1],[/aveia/i,2.2,.1],[/banana/i,1.4,.2],[/pão ralado/i,3],[/pão de hambúrguer/i,0,.4],[/^pão|tortilha/i,3.5,.2],
+const PRICES = [[/manteiga de amendoim/i,9],[/pera\b/i,1.8,.3],[/kiwi/i,3,.3],[/pêssego/i,2.5,.35],[/sardinhas/i,0,.4],[/camarão/i,14],[/febras|lombo de porco/i,6.5],[/peru/i,8.5],
+  [/fiambre/i,0,.3],[/carne de vaca|bife de vaca/i,11],[/carne picada de (peru|frango)/i,7],[/ervilhas/i,2.5],[/parmesão/i,20],[/pesto/i,14],[/noodles/i,4],[/arroz arbóreo/i,3.5],
+  [/caldo de legumes/i,1.5],[/milho para pipocas/i,3],[/massa (pevide|cotovelinhos)/i,1.6],[/pão de centeio/i,4,.25],[/tomate cherry/i,4],[/louro|^sal$/i,0,0],[/leite de coco/i,4],[/^leite|^bebida/i,1.1],[/aveia/i,2.2,.1],[/banana/i,1.4,.2],[/pão ralado/i,3],[/pão de hambúrguer/i,0,.4],[/^pão|tortilha/i,3.5,.2],
   [/abacate/i,6,1],[/ovo/i,0,.25],[/lim(ão|a)/i,2,.3],[/frutos vermelhos/i,8],[/iogurte grego/i,5],[/iogurte/i,2.5,.35],[/granola/i,7],[/^mel/i,8],[/manteiga/i,9],[/chia/i,12],[/requeijão/i,7],
   [/polpa de tomate|tomate pelado/i,1.6],[/tomate/i,2.2,.3],[/^azeite/i,9],[/cogumelos/i,5],[/manga/i,3,1.4],[/grão/i,2.5],[/pepino/i,1.5,.5],[/cebola/i,1.2,.2],[/peito de frango/i,7.5],
   [/pernas de frango/i,0,1.1],[/^arroz/i,1.6],[/alface|rúcula/i,0,.5],[/bacalhau/i,14],[/batata palha/i,8],[/massa de pizza/i,0,1.5],[/^massa|esparguete/i,1.6],[/folhas de lasanha/i,0,.12],
@@ -1323,6 +1501,18 @@ function prefsSummary(u = S.u || {}){
   if (u.market) L.push(u.market);
   return L;
 }
+
+// O plano faz-se sozinho: a semana atual (a partir de hoje) e, a partir de sexta, a seguinte. Cada semana só é preenchida uma vez,
+// para não voltar a pôr o que a pessoa apagou; mudar as preferências refaz as sugestões (ver o onboarding).
+function ensurePlans(){
+  if (!S.ob) return false; S.planWk = S.planWk || {}; const mon = mondayOf(today()); let ch = false;
+  for (const w of [mon].concat(dow(today()) >= 4 ? [addDays(mon, 7)] : [])) if (!S.planWk[w]) { buildWeekPlan(w, false, w === mon ? today() : w); S.planWk[w] = 1; ch = true; }
+  if (ch) { Object.keys(S.planWk).sort().slice(0, -8).forEach(k => delete S.planWk[k]); save(); }
+  return ch;
+}
+// A lista de compras segue o plano da semana: quando o plano muda, os produtos sugeridos são recalculados.
+function syncShop(){ const mon = mondayOf(today()), sig = S.plan.filter(x => x.date >= mon && x.date <= addDays(mon, 6) && x.r).map(x => x.r + ":" + (x.x || 1)).sort().join(",");
+  if (sig !== S.shopSig) { genShop(mon); S.shopSig = sig; save(); } }
 /* ========================== HOJE ========================== */
 let curDay = today();
 const dayTotals = k => (S.days[k] || []).reduce((a, m) => ({ k:a.k+(+m.k||0), p:a.p+(+m.p||0), c:a.c+(+m.c||0), g:a.g+(+m.g||0) }), { k:0, p:0, c:0, g:0 });
@@ -1345,8 +1535,12 @@ function renderHoje(){
       <div class="ring big"><svg viewBox="0 0 156 156" aria-hidden="true"><circle class="tr" cx="78" cy="78" r="${R}"/><circle class="fg" cx="78" cy="78" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${C.toFixed(1)}" id="ringfg"/></svg>
         <div class="rv"><b class="num">${on ? (over ? over : left) : md}</b><small>${on ? (over ? "kcal acima" : "kcal restam") : "de 4 refeições"}</small></div></div>
       <div class="sum-side"><b>${on ? S.goal : 4}</b><small>${on ? "objetivo" : "refeições"}</small></div></div>
-    <div class="macros3">${[["Hidratos","c","var(--carb)"],["Proteína","p","var(--prot)"],["Gordura","g","var(--fat)"]].map(([n,x,col]) => { const tg = on && S.macro ? S.macro[x] : 0;
-      return `<div class="mac"><div class="mh"><span>${n}</span><b>${Math.round(T[x])}${tg ? ` / ${tg} g` : " g"}</b></div><div class="bar"><i style="width:${Math.min(100, Math.round(T[x]/(tg || mTot)*100))}%;background:${col}"></i></div></div>`; }).join("")}</div>`;
+    <div class="mrings">${MACROS.map(([n, x, col]) => { const tg = on && S.macro ? S.macro[x] : 0, v = Math.round(T[x]), f = tg ? Math.min(1, v / tg) : v / mTot, r = 19, c = 2 * Math.PI * r;
+      const st = !tg ? `${Math.round(v / mTot * 100)}% do dia` : v < tg ? `faltam ${tg - v} g` : v > tg * 1.15 ? `+${v - tg} g` : "na meta";
+      return `<div class="mr" aria-label="${n}: ${v} g${tg ? ` de ${tg} g` : ""}"><div class="mr-ring"><svg viewBox="0 0 48 48" aria-hidden="true"><circle class="tr" cx="24" cy="24" r="${r}"/><circle cx="24" cy="24" r="${r}" fill="none" stroke="${col}" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c * (1 - f)).toFixed(1)}" transform="rotate(-90 24 24)"/></svg><b class="num">${v}<small>g</small></b></div>
+        <span class="mr-n"><i style="background:${col}"></i>${n}</span><small class="mr-s">${st}</small>${tg ? `<small class="mr-of">de ${tg} g</small>` : ""}</div>`; }).join("")}</div>
+    ${L.length ? `<button class="sum-more" id="h-detail">Ver o dia em detalhe ${icon("right","xs")}</button>` : ""}`;
+  const hd = $("#h-detail"); if (hd) hd.onclick = () => openDayDetail(k);
   requestAnimationFrame(() => requestAnimationFrame(() => { const f = $("#ringfg"); if (f) f.style.strokeDashoffset = (C*(1-frac)).toFixed(1); }));
   renderCoach();
 
@@ -1395,7 +1589,8 @@ function coach(){
   if ((u.hard || []).includes("Petiscar entre refeições") && hr >= 15 && hr < 18 && !has("Lanche")) return { t:"Um lanche a horas ajuda a não petiscar ao fim da tarde. Já tens um?", b:"Registar lanche", fn:() => openAdd("Lanche"), m:"think" };
   if (se && !workoutDone(k)) return { who:"morango", t:`Hoje há treino: ${se.sess.n}, ${se.prog.min} minutos. Vamos?`, b:"Ver treino", fn:() => { planSub = "treino"; go("planos"); }, m:"wave" };
   if (!has("Jantar") && hr >= 19 && hr < 23) return { t:"E o jantar? Regista para fechares o dia.", b:"Registar jantar", fn:() => openAdd("Jantar"), m:"happy" };
-  if (!S.plan.some(x => x.date === addDays(k, 1))) return { t:"Amanhã ainda não tem refeições planeadas. Faço-te um plano à medida?", b:"Criar plano", fn:() => { planSub = "ref"; go("planos"); }, m:"think" };
+  const pj = S.plan.find(x => x.date === k && x.m === "Jantar" && x.r); // o plano já está feito: o Abi lembra o que há para o jantar
+  if (pj && !has("Jantar") && hr >= 16 && hr < 20) return { t:`Ao jantar tens ${pj.n} no plano. Queres ver a receita?`, b:"Ver receita", fn:() => openRecipe(pj.r), m:"happy" };
   const lw = Object.keys(S.weights || {}).sort().pop();
   if (kcalOn() && (!lw || lw < addDays(k, -7))) return { t:"Já não registas o peso há algum tempo. Queres atualizar?", b:"Registar peso", fn:openSummary, m:"think" };
   if (S.spins) return { who:"morango", t:`Tens ${S.spins} giro${S.spins > 1 ? "s" : ""} na roda à tua espera!`, b:"Girar a roda", fn:() => go("roda"), m:"party" };
@@ -1410,6 +1605,37 @@ function renderCoach(){
   if (lastCoach === c.t) $(".bub-t", el).textContent = c.t; else { speak(el, c.t); lastCoach = c.t; }
   const b = $(".bub-act", el); if (b) b.onclick = () => { burst($(".mwrap", el), who === "morango" ? "spark" : "heart"); c.fn(); };
 }
+
+
+/* ========================== O dia em detalhe ========================== */
+// Cores validadas para daltonismo (proteína, hidratos e gordura); o texto usa sempre as cores de texto, nunca a do macro.
+const MACROS = [["Hidratos","c","var(--carb)"],["Proteína","p","var(--prot)"],["Gordura","g","var(--fat)"]];
+const KCAL_G = { p:4, c:4, g:9 };
+function openDayDetail(k){
+  const L = S.days[k] || [], T = dayTotals(k), on = kcalOn(), en = T.p * 4 + T.c * 4 + T.g * 9 || 1;
+  const ref = S.macro ? (() => { const e = S.macro.p * 4 + S.macro.c * 4 + S.macro.g * 9; return { p:S.macro.p * 4 / e, c:S.macro.c * 4 / e, g:S.macro.g * 9 / e }; })() : { p:.2, c:.5, g:.3 };
+  const pct = x => Math.round(x * 100);
+  const seg = (x, frac, grams, label) => `<i style="flex:${Math.max(frac, .001)};background:${MACROS.find(m => m[1] === x)[2]}" title="${label}"></i>`;
+  const split = (P, label) => `<div class="split"><span class="split-l">${label}</span><div class="sbar">${MACROS.map(([n, x]) => seg(x, P[x], 0, `${n}: ${pct(P[x])}% da energia`)).join("")}</div>
+    <div class="split-v">${MACROS.map(([n, x, col]) => `<span><i style="background:${col}"></i>${n} <b>${pct(P[x])}%</b></span>`).join("")}</div></div>`;
+  const per = MACROS.reduce((o, [, x]) => (o[x] = T[x] * KCAL_G[x] / en, o), {});
+  const byMeal = MEALS.map(M => { const it = L.filter(m => m.m === M.id), t = it.reduce((a, m) => ({ k:a.k + (+m.k || 0), p:a.p + (+m.p || 0), c:a.c + (+m.c || 0), g:a.g + (+m.g || 0) }), { k:0, p:0, c:0, g:0 }); return { M, it, t }; });
+  const maxE = Math.max(1, ...byMeal.map(b => b.t.p * 4 + b.t.c * 4 + b.t.g * 9));
+  openSheet(k === today() ? "O teu dia" : fmtDay(k), `
+    <div class="legend">${MACROS.map(([n, , col]) => `<span><i style="background:${col}"></i>${n}</span>`).join("")}</div>
+    <div class="card" style="margin-top:12px"><h3>De onde vem a energia</h3><p class="small muted" style="margin-top:2px">Percentagem da energia do dia que vem de cada macro.</p>
+      ${split(per, "Hoje")}${split(ref, S.macro ? "A tua referência" : "Referência geral")}
+      <p class="tiny muted" style="margin-top:10px">Proteína e hidratos dão 4 kcal por grama; gordura dá 9. ${S.macro ? "" : "Sem dados teus, compara com uma divisão equilibrada comum."}</p></div>
+    <div class="card" style="margin-top:12px"><h3>Por refeição</h3>
+      ${byMeal.map(({ M, it, t }) => { const e = t.p * 4 + t.c * 4 + t.g * 9;
+        return `<div class="mealbar"><div class="row between"><span class="small"><b>${M.id}</b></span><span class="small muted num">${it.length ? (on ? `${t.k} kcal · ` : "") + `P ${Math.round(t.p)} · H ${Math.round(t.c)} · G ${Math.round(t.g)} g` : "Por registar"}</span></div>
+          <div class="sbar thin" style="width:${Math.max(e ? 6 : 0, e / maxE * 100)}%">${e ? MACROS.map(([n, x]) => seg(x, t[x] * KCAL_G[x] / e, 0, `${n} ao ${M.id.toLowerCase()}: ${Math.round(t[x])} g`)).join("") : ""}</div></div>`; }).join("")}</div>
+    <div class="card" style="margin-top:12px"><h3>O que comeste</h3>
+      <table class="dtable"><thead><tr><th>Alimento</th>${on ? "<th>kcal</th>" : ""}<th>P</th><th>H</th><th>G</th></tr></thead><tbody>
+      ${L.slice().sort((a, b) => (+b.k || 0) - (+a.k || 0)).map(m => `<tr><td>${esc(m.n)}<small>${esc(m.m)}${m.src === "foto" ? " · estimativa por foto" : ""}</small></td>${on ? `<td class="num">${m.k | 0}</td>` : ""}<td class="num">${Math.round(+m.p || 0)}</td><td class="num">${Math.round(+m.c || 0)}</td><td class="num">${Math.round(+m.g || 0)}</td></tr>`).join("")}
+      <tr class="tot"><td>Total</td>${on ? `<td class="num">${T.k}</td>` : ""}<td class="num">${Math.round(T.p)}</td><td class="num">${Math.round(T.c)}</td><td class="num">${Math.round(T.g)}</td></tr></tbody></table>
+      <p class="tiny muted" style="margin-top:8px">Gramas de proteína (P), hidratos (H) e gordura (G). Valores aproximados.</p></div>`);
+}
 /* ========================== Adicionar refeição ========================== */
 let sample = null;
 const aiReady = (async () => { try { sample = (window.claude && await window.claude.use("sample")) || (BRAND.aiEndpoint ? remoteAI(BRAND.aiEndpoint) : null); } catch(e) { sample = null; } })();
@@ -1418,90 +1644,151 @@ async function shrink(file){ const img = await createImageBitmap(file); const s 
   return new Promise(r => c.toBlob(r, "image/jpeg", .82)); }
 function addEntry(k, e){ setTimeout(() => say("meal"), 400); (S.days[k] = S.days[k] || []).push(Object.assign({ id:uid(), t:new Date().toLocaleTimeString("pt-PT", { hour:"2-digit", minute:"2-digit" }), q:"" }, e)); save(); ach("meal"); syncChallenges(); }
 function openAdd(meal, tab="foto"){
-  openSheet("Adicionar", `<label class="field"><span>${esc(fmtDay(curDay))}</span><select id="a-meal" aria-label="Refeição">${MEALS.map(m => `<option ${m.id === meal ? "selected" : ""}>${m.id}</option>`).join("")}</select></label>
-    <div class="seg" id="a-tabs" style="margin-top:14px" role="tablist"><button data-t="foto" role="tab">Foto</button><button data-t="pesq" role="tab">Pesquisar</button><button data-t="manual" role="tab">Manual</button><button data-t="rec" role="tab">Repetir</button></div>
+  let cur = MEALS.some(m => m.id === meal) ? meal : defMeal();
+  openSheet("Registar", `<div class="mealchips" id="a-meals" role="radiogroup" aria-label="Refeição">${MEALS.map(m => `<button role="radio" data-m="${m.id}" aria-checked="${m.id === cur}" class="${m.id === cur ? "on" : ""}">${icon(m.ic,"sm")}<span>${m.id === "Pequeno-almoço" ? "Peq.-almoço" : m.id}</span></button>`).join("")}</div>
+    <select id="a-meal" class="hide" aria-hidden="true" tabindex="-1">${MEALS.map(m => `<option ${m.id === cur ? "selected" : ""}>${m.id}</option>`).join("")}</select>
+    <p class="tiny muted" style="margin-top:8px">${esc(fmtDay(curDay))}</p>
+    <div class="seg" id="a-tabs" style="margin-top:12px" role="tablist"><button data-t="foto" role="tab">${icon("camera","xs")} Foto</button><button data-t="pesq" role="tab">${icon("search","xs")} Pesquisar</button><button data-t="manual" role="tab">Manual</button><button data-t="rec" role="tab">Repetir</button></div>
     <div id="a-body" style="margin-top:16px"></div>`, body => {
-    const show = t => { $$("#a-tabs button", body).forEach(b => { b.classList.toggle("on", b.dataset.t === t); b.setAttribute("aria-selected", b.dataset.t === t); }); const el = $("#a-body", body); el.onclick = null; el.oninput = null; ADD[t](el); };
+    $$("#a-meals button", body).forEach(b => b.onclick = () => { cur = b.dataset.m; $("#a-meal", body).value = cur; $$("#a-meals button", body).forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); }); });
+    const show = (t, arg) => { $$("#a-tabs button", body).forEach(b => { b.classList.toggle("on", b.dataset.t === t); b.setAttribute("aria-selected", b.dataset.t === t); }); const el = $("#a-body", body); el.onclick = null; el.oninput = null; ADD[t](el, arg); };
+    addTab = show;
     $$("#a-tabs button", body).forEach(b => b.onclick = () => show(b.dataset.t)); show(tab);
   });
 }
+let addTab = () => {};
 const mealSel = () => $("#a-meal").value;
-const AIERR = { offline:"Sem ligação ao servidor de IA.", error:"O servidor de IA falhou. Tenta outra vez.", not_granted:"Permissão negada para usar a IA.", rate_limited:"Muitas tentativas. Aguarda um instante.", images_unavailable:"Envio de imagens indisponível aqui." };
+const AIERR = { offline:"Sem ligação à internet. Liga-te e tenta outra vez, ou regista à mão.", timeout:"A análise demorou demasiado. Tenta outra vez ou regista à mão.", error:"O servidor de IA falhou. Tenta outra vez.",
+  not_granted:"Permissão negada para usar a IA.", rate_limited:"Atingiste o limite de análises por agora. Tenta mais tarde ou regista à mão.", images_unavailable:"Envio de imagens indisponível aqui.", bad:"A resposta da IA veio incompleta. Tenta outra foto ou regista à mão." };
+// Números que a IA devolve como texto ("195 kcal", "0,5") passam a número; o resto fica 0.
+const toN = (v, max = 5000) => { const m = String(v ?? "").replace(",", ".").match(/\d+(\.\d+)?/); return m ? clamp(Math.round(+m[0]), 0, max) : 0; };
+const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej({ code:"timeout" }), ms))]);
+const norm = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+function cleanAI(r){ // só aceita o formato pedido; nunca inventa itens
+  if (!r || typeof r !== "object") throw { code:"bad" };
+  const itens = (Array.isArray(r.itens) ? r.itens : []).filter(x => x && typeof x === "object" && String(x.nome || "").trim()).slice(0, 12).map(x => ({
+    nome:String(x.nome).trim().slice(0, 60), porcao:String(x.porcao || "").slice(0, 30), confianca:["alta","media","baixa"].includes(x.confianca) ? x.confianca : "media", x:1,
+    b:{ kcal:toN(x.kcal), proteina_g:toN(x.proteina_g, 500), carbo_g:toN(x.carbo_g, 1000), gordura_g:toN(x.gordura_g, 500) } }));
+  return { refeicao:String(r.refeicao || "Refeição").slice(0, 60), clara:r.clara !== false && itens.length > 0, pergunta:String(r.pergunta || "").slice(0, 200), observacao:String(r.observacao || "").slice(0, 200), itens };
+}
 const ADD = {
   foto(el){
-    let blob = null, cur = null;
-    el.innerHTML = `<div class="pick"><label for="f-cam">${icon("camera")}Tirar foto</label><label for="f-gal">${icon("image")}Galeria</label></div>
-      <img id="a-prev" class="preview hide" alt="Fotografia da refeição" style="margin-top:12px">
-      <input id="a-hint" maxlength="120" placeholder="Pormenor opcional (ex.: arroz integral, sem óleo)" style="margin-top:12px" aria-label="Pormenor opcional">
-      <button class="btn block" id="a-go" style="margin-top:12px" disabled>Analisar com IA</button>
-      <div id="a-st" style="margin-top:12px"></div><div id="a-res"></div>
-      <div class="note" style="margin-top:14px">${icon("info","sm")}<span>A análise por foto é uma <b>estimativa</b>, não uma medição. Podes corrigir tudo antes de guardar.</span></div>`;
-    const st = $("#a-st", el), go = $("#a-go", el);
-    aiReady.then(() => { if (!sample && el.isConnected) st.innerHTML = `<div class="note warn">${icon("info","sm")}<span>A análise por IA precisa do Claude ou do servidor grátis da Brota (servidor/LEIA-ME.md). Por agora, usa Pesquisar ou Manual.</span></div>`; });
+    let blob = null, cur = null, ctl = null;
+    const TIPS = [["sparkle","Boa luz, de preferência natural"],["camera","De cima, com o prato inteiro"],["info","Diz o que não se vê (molhos, óleo)"]];
+    const idle = () => { el.innerHTML = `<div class="cam-hero">${abi({ mood:"wave", size:64 })}<div class="grow"><b>Fotografa o teu prato</b><p class="small muted">O ${esc(BRAND.mascot)} identifica os alimentos e estima as porções. Revês tudo antes de guardar.</p></div></div>
+      <div id="a-st"></div>
+      <div class="pick big" id="a-pick"><label for="f-cam">${icon("camera")}<span>Tirar foto</span></label><label for="f-gal">${icon("image")}<span>Da galeria</span></label></div>
+      <ul class="cam-tips">${TIPS.map(([i, t]) => `<li>${icon(i,"xs")}${t}</li>`).join("")}</ul>
+      <p class="tiny muted" style="margin-top:12px">A análise por foto é uma <b>estimativa</b>, não uma medição.</p>`;
+      aiReady.then(() => { if (sample || !el.isConnected) return; const st = $("#a-st", el); if (!st) return;
+        st.innerHTML = `<div class="note warn" style="margin-bottom:12px">${icon("info","sm")}<span>A análise por IA precisa do Claude ou do servidor grátis da Brota (servidor/LEIA-ME.md). Aqui ainda não está ligada, por isso não analisamos fotos. Usa a pesquisa ou regista à mão.</span></div>
+          <div class="row" style="gap:8px;margin-bottom:14px"><button class="btn soft grow sm" id="a-gopq">${icon("search","sm")} Pesquisar</button><button class="btn soft grow sm" id="a-goman">Registar à mão</button></div>`;
+        const pk = $("#a-pick", el); if (pk) pk.classList.add("off");
+        $("#a-gopq", el).onclick = () => addTab("pesq"); $("#a-goman", el).onclick = () => addTab("manual"); }); };
+    const picked = () => { el.innerHTML = `<div class="shot"><img id="a-prev" alt="Fotografia da refeição" src="${URL.createObjectURL(blob)}"><div class="scan hide" id="a-scan"><i></i></div></div>
+      <input id="a-hint" maxlength="120" placeholder="Algo que não se vê? (ex.: arroz integral, sem óleo)" style="margin-top:12px" aria-label="Pormenor opcional">
+      <div class="row" style="gap:8px;margin-top:12px"><label class="btn ghost" for="f-gal" style="flex:none" aria-label="Escolher outra foto">${icon("image","sm")}</label><button class="btn block grow" id="a-go" ${sample ? "" : "disabled"}>${icon("sparkle","sm")} Analisar a foto</button></div>
+      <div id="a-st" style="margin-top:12px"></div><div id="a-res"></div>`;
+      $("#a-go", el).onclick = () => run(); };
     const pick = async e => { const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+      if (!/^image\//.test(f.type)) { toast("Escolhe uma imagem"); return; }
       try { blob = await shrink(f); } catch(err) { toast("Não consegui ler essa imagem."); return; }
-      const p = $("#a-prev", el); p.src = URL.createObjectURL(blob); p.classList.remove("hide"); $("#a-res", el).innerHTML = ""; go.disabled = !sample; };
+      cur = null; picked(); };
     $("#f-cam").onchange = pick; $("#f-gal").onchange = pick;
+    const STEPS = ["A identificar os alimentos…","A estimar as porções…","A calcular os valores…"];
     const run = async extra => {
-      go.disabled = true; st.innerHTML = `<div class="row" style="justify-content:center">${abi({ mood:"think", size:56 })}<span class="muted">O ${esc(BRAND.mascot)} está a olhar para o teu prato…</span></div>`;
+      if (!sample) return; if (navigator.onLine === false) { fail("offline"); return; }
+      const hint = ($("#a-hint", el) || {}).value || "", st = $("#a-st", el), go = $("#a-go", el), sc = $("#a-scan", el), my = ctl = {};
+      go.disabled = true; sc.classList.remove("hide"); $("#a-res", el).innerHTML = "";
+      let si = 0; st.innerHTML = `<div class="ai-wait"><span class="dots"><i></i><i></i><i></i></span><span id="a-step" class="grow">${STEPS[0]}</span><button class="btn ghost sm" id="a-cancel">Cancelar</button></div>`;
+      const tick = setInterval(() => { si++; const s = $("#a-step", el); if (s) s.textContent = si < STEPS.length ? STEPS[si] : si >= 6 ? "Está a demorar mais do que o normal…" : STEPS[STEPS.length - 1]; }, 2200);
+      $("#a-cancel", el).onclick = () => { ctl = null; clearInterval(tick); sc.classList.add("hide"); st.innerHTML = ""; go.disabled = false; };
       const al = (S.u && S.u.al || []).filter(x => x !== "Nenhuma");
       const prompt = "Analisa a fotografia de uma refeição e identifica só os alimentos VISÍVEIS. Estima porção, kcal e macronutrientes de cada um. Sê honesto sobre a incerteza: usa confianca 'alta', 'media' ou 'baixa' em cada item. "
         + "Se a imagem estiver pouco clara, não mostrar comida, ou se um alimento for impossível de identificar, NÃO inventes: põe clara=false e escreve uma pergunta curta ao utilizador em 'pergunta'. "
         + (al.length ? "O utilizador evita: " + al.join(", ") + ". Se algum alimento visível puder conter isso, refere em 'observacao'. " : "")
-        + ($("#a-hint", el).value.trim() ? "Informação do utilizador: " + $("#a-hint", el).value.trim().slice(0,120) + ". " : "") + (extra ? "Resposta do utilizador à tua pergunta: " + extra + ". " : "")
-        + 'Responde APENAS com JSON: {"refeicao":"nome curto","clara":true,"pergunta":"","itens":[{"nome":"","porcao":"ex.: 150 g","kcal":0,"proteina_g":0,"carbo_g":0,"gordura_g":0,"confianca":"alta"}],"observacao":"1 frase sobre a incerteza"}. Usa português europeu.';
-      try { cur = await sample.json(prompt, { images:[blob], modelTier:"default" }); st.innerHTML = ""; renderRes(); ach("photo"); }
-      catch(e) { st.innerHTML = `<div class="note warn">${icon("info","sm")}<span>${esc(AIERR[e && e.code] || "Não foi possível analisar. Tenta outra foto ou regista à mão.")}</span></div>`; }
-      finally { go.disabled = !(blob && sample); }
-    };
-    go.onclick = () => run();
-    const itemRow = (it, i) => { const cf = ["alta","media","baixa"].includes(it.confianca) ? it.confianca : "media";
-      return `<div class="ai-item"><div class="row"><input data-i="${i}" data-f="nome" maxlength="60" value="${esc(it.nome)}" aria-label="Alimento" style="font-weight:600"><span class="conf ${cf}">${{ alta:"Confiança alta", media:"Confiança média", baixa:"Confiança baixa" }[cf]}</span><button class="iconbtn" data-del="${i}" aria-label="Remover alimento">${icon("trash","sm")}</button></div>
-        <input data-i="${i}" data-f="porcao" maxlength="30" value="${esc(it.porcao || "")}" placeholder="Porção" aria-label="Porção" style="margin-top:8px">
-        <div class="g4" style="margin-top:8px">${[["kcal","kcal"],["proteina_g","Prot. g"],["carbo_g","Hidr. g"],["gordura_g","Gord. g"]].map(([f,l]) => `<label class="field"><span>${l}</span><input type="number" inputmode="numeric" min="0" data-i="${i}" data-f="${f}" value="${num(it[f])}"></label>`).join("")}</div></div>`; };
+        + (hint.trim() ? "Informação do utilizador: " + hint.trim().slice(0,120) + ". " : "") + (extra ? "Resposta do utilizador à tua pergunta: " + extra + ". " : "")
+        + 'Responde APENAS com JSON: {"refeicao":"nome curto","clara":true,"pergunta":"","itens":[{"nome":"","porcao":"ex.: 150 g","kcal":0,"proteina_g":0,"carbo_g":0,"gordura_g":0,"confianca":"alta"}],"observacao":"1 frase sobre a incerteza"}. Números sem unidades. Usa português europeu.';
+      try { const raw = await withTimeout(sample.json(prompt, { images:[blob], modelTier:"default" }), 35000); if (ctl !== my) return; cur = cleanAI(raw); st.innerHTML = ""; renderRes(); ach("photo"); }
+      catch(e) { if (ctl !== my) return; fail(e && e.code); }
+      finally { clearInterval(tick); if (ctl === my) { sc.classList.add("hide"); go.disabled = !(blob && sample); } } };
+    const fail = code => { const st = $("#a-st", el); if (!st) return;
+      st.innerHTML = `<div class="note warn">${icon("info","sm")}<span>${esc(AIERR[code] || "Não foi possível analisar. Tenta outra foto ou regista à mão.")}</span></div>
+        <div class="row" style="gap:8px;margin-top:10px"><button class="btn soft grow sm" id="a-retry">Tentar outra vez</button><button class="btn ghost grow sm" id="a-man">Registar à mão</button></div>`;
+      $("#a-retry", el).onclick = () => run(); $("#a-man", el).onclick = () => addTab("manual", { n: ($("#a-hint", el) || {}).value || "" }); };
+    const val = (it, f) => Math.round(it.b[f] * it.x);
     function renderRes(){
-      const r = cur && typeof cur === "object" ? cur : { itens:[] }; cur = r; r.itens = Array.isArray(r.itens) ? r.itens : [];
-      const res = $("#a-res", el);
-      const ask = (r.clara === false || !r.itens.length) ? `<div class="card stack" style="margin-bottom:12px"><div class="row">${abi({ mood:"think", size:48 })}<p><b>Não tenho a certeza.</b> ${esc(r.pergunta || "Consegues dizer-me o que está no prato?")}</p></div>
+      const r = cur, res = $("#a-res", el);
+      const ask = !r.clara ? `<div class="card stack" style="margin-bottom:12px"><div class="row">${abi({ mood:"think", size:48 })}<p><b>Não tenho a certeza.</b> ${esc(r.pergunta || "Consegues dizer-me o que está no prato?")}</p></div>
         <input id="a-ans" maxlength="160" placeholder="Ex.: é arroz de pato com salada" aria-label="Resposta"><button class="btn soft block" id="a-ansb">Responder e analisar de novo</button></div>` : "";
-      res.innerHTML = ask + (r.itens.length ? `<input id="a-name" maxlength="60" value="${esc(r.refeicao || "Refeição")}" aria-label="Nome da refeição" style="font-weight:700">
-        <div style="margin-top:12px" id="a-items">${r.itens.map(itemRow).join("")}</div>
-        <button class="btn ghost block sm" id="a-more" style="margin-top:10px">${icon("plus","sm")} Alimento em falta</button>
-        <div class="card row between" style="margin-top:12px"><b>Total estimado</b><b class="num" id="a-tot"></b></div>
+      const sum = f => r.itens.reduce((a, x) => a + val(x, f), 0);
+      res.innerHTML = ask + (r.itens.length ? `<div class="ai-total"><div><small class="muted">Total estimado</small><b class="num" id="a-tot">${sum("kcal")} kcal</b></div>
+          <div class="ai-mac">${[["proteina_g","Proteína","var(--prot)"],["carbo_g","Hidratos","var(--carb)"],["gordura_g","Gordura","var(--fat)"]].map(([f, n, c]) => `<span><i style="background:${c}"></i>${n} <b class="num">${sum(f)} g</b></span>`).join("")}</div></div>
+        <input id="a-name" maxlength="60" value="${esc(r.refeicao)}" aria-label="Nome da refeição" style="font-weight:700;margin-top:12px">
+        <div id="a-items" style="margin-top:10px">${r.itens.map((it, i) => { const cf = it.confianca;
+          return `<div class="ai-item"><div class="row"><input data-i="${i}" data-f="nome" maxlength="60" value="${esc(it.nome)}" aria-label="Alimento" style="font-weight:600"><button class="iconbtn" data-del="${i}" aria-label="Remover ${esc(it.nome)}">${icon("trash","sm")}</button></div>
+            <div class="row between" style="margin-top:8px"><span class="conf ${cf}">${{ alta:"Confiança alta", media:"Confiança média", baixa:"Confiança baixa" }[cf]}</span><span class="small muted">${esc(it.porcao)}</span></div>
+            <div class="row between" style="margin-top:10px"><div class="stepper"><button data-dx="-1" data-i="${i}" aria-label="Menos">${icon("minus","xs")}</button><b class="num">× ${String(it.x).replace(".", ",")}</b><button data-dx="1" data-i="${i}" aria-label="Mais">${icon("plus","xs")}</button></div>
+              <span class="small num">${val(it, "kcal")} kcal · P ${val(it, "proteina_g")} · H ${val(it, "carbo_g")} · G ${val(it, "gordura_g")}</span></div>
+            <details class="ai-edit"><summary>Corrigir valores</summary><div class="g4" style="margin-top:8px">${[["kcal","kcal"],["proteina_g","Prot. g"],["carbo_g","Hidr. g"],["gordura_g","Gord. g"]].map(([f,l]) => `<label class="field"><span>${l}</span><input type="number" inputmode="numeric" min="0" data-i="${i}" data-v="${f}" value="${val(it, f)}"></label>`).join("")}</div></details></div>`; }).join("")}</div>
+        <button class="btn ghost block sm" id="a-more" style="margin-top:10px">${icon("plus","sm")} Falta um alimento</button>
         ${r.observacao ? `<p class="small muted" style="margin-top:10px">${esc(r.observacao)}</p>` : ""}
-        <button class="btn block" id="a-save" style="margin-top:12px">Guardar no diário</button>` : "");
+        <button class="btn block" id="a-save" style="margin-top:12px;height:52px">Guardar no diário</button>` : "");
       const ab = $("#a-ansb", res); if (ab) ab.onclick = () => { const v = $("#a-ans", res).value.trim(); if (!v) { toast("Escreve o que está no prato"); return; } run(v.slice(0,160)); };
       if (!r.itens.length) return;
-      const tot = () => { $("#a-tot", res).textContent = r.itens.reduce((a, x) => a + num(x.kcal), 0) + " kcal"; }; tot();
-      $("#a-items", res).oninput = e => { const f = e.target.dataset.f, i = +e.target.dataset.i; if (!f || !r.itens[i]) return; r.itens[i][f] = (f === "nome" || f === "porcao") ? e.target.value : num(e.target.value); tot(); };
-      $("#a-items", res).onclick = e => { const b = e.target.closest("[data-del]"); if (!b) return; r.itens.splice(+b.dataset.del, 1); renderRes(); };
-      $("#a-more", res).onclick = () => { r.itens.push({ nome:"", porcao:"", kcal:0, proteina_g:0, carbo_g:0, gordura_g:0, confianca:"alta" }); renderRes(); };
-      $("#a-save", res).onclick = () => { const items = r.itens.filter(x => String(x.nome||"").trim());
-        if (!items.length) { toast("Junta pelo menos um alimento"); return; }
-        const sum = f => items.reduce((a, x) => a + num(x[f]), 0);
-        addEntry(curDay, { n:($("#a-name", res).value.trim() || "Refeição").slice(0,60), k:sum("kcal"), p:sum("proteina_g"), c:sum("carbo_g"), g:sum("gordura_g"), m:mealSel(), q:items.map(x => String(x.nome).trim()).join(", ").slice(0,80), src:"foto" });
+      const items = $("#a-items", res);
+      items.oninput = e => { const i = +e.target.dataset.i, it = r.itens[i]; if (!it) return;
+        if (e.target.dataset.f === "nome") it.nome = e.target.value;
+        const f = e.target.dataset.v; if (f) { it.b[f] = toN(e.target.value) / it.x; $("#a-tot", res).textContent = sum("kcal") + " kcal"; } };
+      items.onchange = e => { if (e.target.dataset.v) renderRes(); };
+      items.onclick = e => { const d = e.target.closest("[data-del]"); if (d) { r.itens.splice(+d.dataset.del, 1); renderRes(); return; }
+        const s = e.target.closest("[data-dx]"); if (s) { const it = r.itens[+s.dataset.i]; it.x = clamp(Math.round((it.x + .5 * +s.dataset.dx) * 2) / 2, .5, 3); renderRes(); } };
+      $("#a-more", res).onclick = () => { r.itens.push({ nome:"", porcao:"", confianca:"alta", x:1, b:{ kcal:0, proteina_g:0, carbo_g:0, gordura_g:0 } }); renderRes(); };
+      $("#a-save", res).onclick = () => { const L = r.itens.filter(x => String(x.nome || "").trim());
+        if (!L.length) { toast("Junta pelo menos um alimento"); return; }
+        const s2 = f => L.reduce((a, x) => a + val(x, f), 0);
+        addEntry(curDay, { n:($("#a-name", res).value.trim() || "Refeição").slice(0,60), k:s2("kcal"), p:s2("proteina_g"), c:s2("carbo_g"), g:s2("gordura_g"), m:mealSel(), q:L.map(x => String(x.nome).trim()).join(", ").slice(0,80), src:"foto" });
         closeSheet(); renderHoje(); toast("Refeição guardada"); };
     }
+    idle();
   },
   pesq(el){
-    el.innerHTML = `<div class="row" style="position:relative"><svg class="ic sm" style="position:absolute;left:14px;color:var(--muted)"><use href="#i-search"/></svg><input id="a-q" type="search" maxlength="40" placeholder="Pesquisar alimento" style="padding-left:42px" aria-label="Pesquisar alimento"></div>
-      <div id="a-fl" style="margin-top:8px"></div><p class="tiny muted" style="margin-top:10px">Valores médios aproximados por 100 g, de tabelas de composição de alimentos. Confirma sempre no rótulo.</p>`;
-    const list = () => { const q = $("#a-q", el).value.trim().toLowerCase(), L = FOODS.filter(f => !q || f.n.toLowerCase().includes(q)).slice(0, 40);
-      $("#a-fl", el).innerHTML = L.map(f => `<button class="food" data-f="${esc(f.n)}"><span class="lt"><b>${esc(f.n)}</b><small>${f.k} kcal · P ${f.p} · H ${f.c} · G ${f.g} por 100 g</small></span>${icon("plus","sm")}</button>`).join("")
-        || `<div class="empty">Sem resultados. Usa o separador Manual.</div>`; };
+    el.innerHTML = `<div class="row" style="position:relative"><svg class="ic sm" style="position:absolute;left:14px;color:var(--muted)"><use href="#i-search"/></svg><input id="a-q" type="search" maxlength="40" placeholder="Pesquisar alimento ou receita" style="padding-left:42px" aria-label="Pesquisar alimento ou receita"></div>
+      <div id="a-fl" style="margin-top:8px"></div><p class="tiny muted" style="margin-top:10px">Valores médios aproximados. Confirma sempre no rótulo.</p>`;
+    const m = mealSel();
+    const list = () => { const raw = $("#a-q", el).value.trim(), q = norm(raw), words = q.split(/\s+/).filter(Boolean), hit = n => words.every(w => norm(n).includes(w));
+      const R = RECIPES.filter(r => recipeAllowed(r) && (!q ? r.c === m || (isMain(m) && isMain(r.c)) : hit(r.n))).slice(0, q ? 8 : 6);
+      const F = FOODS.filter(f => !q || hit(f.n)).slice(0, 30);
+      $("#a-fl", el).innerHTML = (R.length ? `<p class="shop-cat">${q ? "Receitas" : "Receitas para " + m.toLowerCase()}</p>${R.map(r => `<button class="food rfood" data-r="${r.id}">${photoOf(r) ? `<img src="${esc(photoOf(r))}" alt="" loading="lazy">` : `<span class="rf-ph">${icon(CAT_IC[r.c] || "bowl","sm")}</span>`}<span class="lt"><b>${esc(r.n)}</b><small>${kcalOn() ? r.k + " kcal · " : ""}P ${r.p} · H ${r.h} · G ${r.g} por porção</small></span>${icon("plus","sm")}</button>`).join("")}` : "")
+        + (F.length ? `<p class="shop-cat">Alimentos</p>${F.map(f => `<button class="food" data-f="${esc(f.n)}"><span class="lt"><b>${esc(f.n)}</b><small>${kcalOn() ? f.k + " kcal · " : ""}P ${f.p} · H ${f.c} · G ${f.g} por 100 g</small></span>${icon("plus","sm")}</button>`).join("")}` : "")
+        || `<div class="empty">Sem resultados para "${esc(raw)}". <button class="lnk" id="a-toman">Regista à mão</button>.</div>`;
+      const tm = $("#a-toman", el); if (tm) tm.onclick = () => addTab("manual", { n:raw }); };
     $("#a-q", el).oninput = list; list();
-    $("#a-fl", el).onclick = e => { const b = e.target.closest("[data-f]"); if (b) portion(FOODS.find(f => f.n === b.dataset.f)); };
-    const portion = f => { el.innerHTML = `<button class="btn ghost sm" id="a-bk">${icon("left","sm")} Voltar</button>
-      <h3 style="margin-top:14px">${esc(f.n)}</h3><label class="field" style="margin-top:12px"><span>Quantidade (g ou ml)</span><input id="a-g" type="number" inputmode="numeric" min="1" max="2000" value="${f.q}"></label>
+    const facts = v => `<div><b>${v.k}</b><small>kcal</small></div><div><b>${v.p}</b><small>prot. g</small></div><div><b>${v.c}</b><small>hidr. g</small></div><div><b>${v.g}</b><small>gord. g</small></div>`;
+    const back = () => { el.onclick = null; ADD.pesq(el); };
+    const recPortion = r => { let x = 1; el.onclick = null; const draw = () => { const v = { k:Math.round(r.k * x), p:Math.round(r.p * x), c:Math.round(r.h * x), g:Math.round(r.g * x) };
+      el.innerHTML = `<button class="btn ghost sm" id="a-bk">${icon("left","sm")} Voltar</button>
+        <div class="rp-head">${photoOf(r) ? `<img src="${esc(photoOf(r))}" alt="">` : ""}<div><h3>${esc(r.n)}</h3><p class="small muted">${r.t} min · porção da receita</p></div></div>
+        <p class="small" style="margin-top:14px"><b>Quanto comeste?</b></p><div class="row" style="gap:8px;margin-top:8px;flex-wrap:wrap">${[.5, 1, 1.5, 2].map(q => `<button class="chip ${q === x ? "on" : ""}" data-x="${q}">${{ .5:"Meia porção", 1:"1 porção", 1.5:"1 e meia", 2:"2 porções" }[q]}</button>`).join("")}</div>
+        <div class="facts" style="margin-top:14px">${facts(v)}</div><button class="btn block" id="a-ok" style="margin-top:14px">Adicionar</button>`;
+      $("#a-bk", el).onclick = back; $$("[data-x]", el).forEach(b => b.onclick = () => { x = +b.dataset.x; draw(); });
+      $("#a-ok", el).onclick = () => { addEntry(curDay, Object.assign({ n:r.n, m:mealSel(), q:x === 1 ? "1 porção" : String(x).replace(".", ",") + " porções", src:"recipe" }, v)); closeSheet(); renderHoje(); toast("Adicionado"); }; };
+      draw(); };
+    const portion = f => { el.onclick = null; el.innerHTML = `<button class="btn ghost sm" id="a-bk">${icon("left","sm")} Voltar</button>
+      <h3 style="margin-top:14px">${esc(f.n)}</h3>
+      <div class="row" style="gap:8px;margin-top:12px;flex-wrap:wrap">${[[f.q, "1 porção (" + f.q + " g)"], [50, "50 g"], [100, "100 g"], [200, "200 g"]].filter((x, i, a) => a.findIndex(y => y[0] === x[0]) === i).map(([g, l]) => `<button class="chip" data-g="${g}">${l}</button>`).join("")}</div>
+      <label class="field" style="margin-top:12px"><span>Quantidade (g ou ml)</span><input id="a-g" type="number" inputmode="numeric" min="1" max="2000" value="${f.q}"></label>
       <div class="facts" style="margin-top:12px" id="a-fx"></div><button class="btn block" id="a-ok" style="margin-top:14px">Adicionar</button>`;
       const calc = () => { const g = clamp(+$("#a-g", el).value || 0, 0, 2000)/100; return { k:Math.round(f.k*g), p:Math.round(f.p*g), c:Math.round(f.c*g), g:Math.round(f.g*g) }; };
-      const upd = () => { const v = calc(); $("#a-fx", el).innerHTML = `<div><b>${v.k}</b><small>kcal</small></div><div><b>${v.p}</b><small>prot. g</small></div><div><b>${v.c}</b><small>hidr. g</small></div><div><b>${v.g}</b><small>gord. g</small></div>`; };
-      $("#a-g", el).oninput = upd; upd(); $("#a-bk", el).onclick = () => { el.onclick = null; ADD.pesq(el); };
+      const upd = () => { $("#a-fx", el).innerHTML = facts(calc()); $$("[data-g]", el).forEach(b => b.classList.toggle("on", +b.dataset.g === +$("#a-g", el).value)); };
+      $$("[data-g]", el).forEach(b => b.onclick = () => { $("#a-g", el).value = b.dataset.g; upd(); });
+      $("#a-g", el).oninput = upd; upd(); $("#a-bk", el).onclick = back;
       $("#a-ok", el).onclick = () => { const gr = +$("#a-g", el).value; if (!(gr > 0 && gr <= 2000)) { toast("Indica uma quantidade entre 1 e 2000"); return; }
         addEntry(curDay, Object.assign({ n:f.n, m:mealSel(), q:gr + " g", src:"db" }, calc())); closeSheet(); renderHoje(); toast("Adicionado"); }; };
+    $("#a-fl", el).onclick = e => { const b = e.target.closest("[data-f]"); if (b) { portion(FOODS.find(f => f.n === b.dataset.f)); return; } const r = e.target.closest("[data-r]"); if (r) recPortion(RECIPES.find(x => x.id === +r.dataset.r)); };
   },
-  manual(el){
-    el.innerHTML = `<div class="stack"><label class="field"><span>Nome</span><input id="m-n" maxlength="60" placeholder="Ex.: Sopa da avó"></label>
+  manual(el, arg){
+    el.innerHTML = `<div class="stack"><label class="field"><span>Nome</span><input id="m-n" maxlength="60" placeholder="Ex.: Sopa da avó" value="${esc((arg && arg.n) || "")}"></label>
       <label class="field"><span>Porção (opcional)</span><input id="m-q" maxlength="30" placeholder="Ex.: 1 prato"></label>
       <div class="g4">${[["k","kcal"],["p","Prot. g"],["c","Hidr. g"],["g","Gord. g"]].map(([f,l]) => `<label class="field"><span>${l}</span><input id="m-${f}" type="number" inputmode="numeric" min="0" max="5000"></label>`).join("")}</div>
       <p class="tiny muted">Não sabes os valores? Deixa em branco. Registar já conta.</p>
@@ -1558,6 +1845,7 @@ let rFilter = "Todas";
 function recipeAllowed(r){ const u = S.u || {}, al = (u.al||[]).filter(x => x !== "Nenhuma"), dt = u.diet || [];
   if (r.col_id && !S.owned.includes(r.col_id)) return false;
   if (r.al.some(a => al.includes(a))) return false;
+  if (r.pk && dt.includes("Não como carne de porco")) return false;
   const SYN = { "leguminosas":["grão","feijão","lentilha"], "peixe":["salmão","atum","peixe","bacalhau","pescada"], "picante":["caril","malagueta","piri"] };
   const dl = (u.dislikes || []).flatMap(x => SYN[String(x).toLowerCase()] || [String(x).toLowerCase()]).filter(Boolean);
   if (dl.length && r.i.some(i => dl.some(d => i[0].toLowerCase().includes(d)))) return false;
@@ -1600,6 +1888,7 @@ function openRecipe(id){
 /* ========================== PLANOS ========================== */
 let planSub = "ref", planView = "semana", planSel = today(), planMonth = today().slice(0,7);
 function renderPlanos(){
+  ensurePlans();
   $$("#p-seg button").forEach(b => { b.classList.toggle("on", b.dataset.s === planSub); b.onclick = () => { planSub = b.dataset.s; renderPlanos(); }; });
   ["ref","treino","compras"].forEach(s => $("#p-"+s).classList.toggle("hide", s !== planSub));
   ({ ref:renderPlanRef, treino:renderTreino, compras:renderCompras })[planSub]();
@@ -1636,8 +1925,8 @@ function renderPlanRef(){
       ? `<div class="row between" style="margin-top:16px"><button class="iconbtn" data-wk="-7" aria-label="Semana anterior">${icon("left","sm")}</button><b>${parseK(mon).getDate()} de ${MONTHS[parseK(mon).getMonth()]} – ${parseK(sun).getDate()} de ${MONTHS[parseK(sun).getMonth()]}</b><button class="iconbtn" data-wk="7" aria-label="Semana seguinte">${icon("right","sm")}</button></div>
          <div class="list" style="margin-top:10px">${DOW.map((_, i) => dayList(addDays(mon, i))).join("")}</div>`
       : `<div class="card" style="margin-top:16px">${calendar(planMonth, planSel, k => S.plan.filter(x => x.date === k).slice(0,3).map(() => "<i></i>").join(""))}</div><div class="list" style="margin-top:12px">${dayList(planSel)}</div>`}
-    <div class="stack" style="margin-top:16px"><button class="btn block" id="pl-auto">${icon("sparkle","sm")} ${S.plan.some(x => x.date >= mon && x.date <= sun && x.a) ? "Refazer o plano da semana" : "Criar o plano da semana"}</button><button class="btn soft block" id="pl-shop">${icon("cart","sm")} Gerar lista de compras da semana</button></div>
-    <p class="tiny muted" style="margin:10px 4px 0">O plano segue as tuas preferências: refeições, forma de cozinhar, tempo, cozinhas, dias de treino, alergias, o que não gostas, o que tens em casa e o orçamento. Refazer só muda o que foi sugerido; o que planeaste à mão fica.</p>`;
+    <button class="btn soft block" id="pl-shop" style="margin-top:16px">${icon("cart","sm")} Ver a lista de compras da semana</button>
+    <p class="tiny muted" style="margin:10px 4px 0">O plano faz-se sozinho com as tuas respostas iniciais e a semana seguinte aparece a partir de sexta. Não gostas de um prato? Toca em ${icon("copy","xs")} para o trocar. Mudanças de fundo fazem-se em Preferências.</p>`;
   $$("[data-v]", el).forEach(b => b.onclick = () => { planView = b.dataset.v; planMonth = planSel.slice(0,7); renderPlanRef(); });
   $$("[data-wk]", el).forEach(b => b.onclick = () => { planSel = addDays(planSel, +b.dataset.wk); renderPlanRef(); });
   $$("[data-mo]", el).forEach(b => b.onclick = () => { planMonth = shiftMonth(planMonth, +b.dataset.mo); renderPlanRef(); });
@@ -1647,10 +1936,7 @@ function renderPlanRef(){
   $$("[data-psw]", el).forEach(b => b.onclick = () => { if (swapPlanEntry(b.dataset.psw)) { save(); renderPlanRef(); toast("Trocado por outra opção"); } else toast("Não há outra opção compatível"); });
   $$("[data-pdel]", el).forEach(b => b.onclick = () => { S.plan = S.plan.filter(x => x.id !== b.dataset.pdel); save(); renderPlanRef(); });
   $("#pl-prefs", el).onclick = openPlanPrefs;
-  $("#pl-auto").onclick = async () => { const from = mon < today() ? today() : mon; if (from > sun) { toast("Esta semana já passou"); return; }
-    if (S.plan.some(x => x.date >= from && x.date <= sun && x.a) && !await confirmDlg("Refazer as sugestões desta semana? O que planeaste à mão fica igual.", "Refazer")) return;
-    const n = buildWeekPlan(mon, true, from); save(); renderPlanRef(); toast(n ? `${n} refeições planeadas à tua medida` : "A semana já estava preenchida"); if (n) { ach("plan"); say("plan", true); } };
-  $("#pl-shop").onclick = () => { const n = genShop(mon); save(); toast(n ? `${n} produtos na lista, com as quantidades somadas` : "Nada para adicionar. Planeia receitas primeiro."); if (n) { planSub = "compras"; renderPlanos(); } };
+  $("#pl-shop").onclick = () => { planSub = "compras"; renderPlanos(); };
 }
 function openPlanAdd(k, recipe){
   const R = RECIPES.filter(recipeAllowed);
@@ -1668,15 +1954,15 @@ function renderTreino(){
   const el = $("#p-treino"), p = progOf();
   const minorNote = isMinor() ? `<div class="note warn" style="margin-top:14px">${icon("info","sm")}<span>Se tens menos de 18 anos, mostra estes planos a um adulto ou treinador e começa sempre pela versão mais leve.</span></div>` : "";
   if (!p) { el.innerHTML = `<div class="card row" style="margin-top:18px;gap:14px">${morango({ mood:"happy", size:64 })}<div><h3>Escolhe um plano</h3><p class="small muted">Começa pelo que te parece fácil. Podes mudar quando quiseres.</p></div></div>${minorNote}
-    <div class="list" style="margin-top:14px"><button class="prog" data-p="custom"><div class="badge">${icon("sparkle")}</div><div class="lt"><b>Plano feito para ti</b><small>Respondes a 5 perguntas e o ${esc(BRAND.mascot)} monta o plano com o teu sítio, tempo, experiência e objetivo.</small></div>${icon("right","sm")}</button>${PROGRAMS.map(x => `<button class="prog" data-p="${x.id}"><div class="badge acc">${icon("dumbbell")}</div><div class="lt"><b>${esc(x.n)}</b><small>${esc(x.d)}</small><small>${x.days.length}× por semana · ${x.min} min</small><span class="lvl" aria-label="Nível ${x.lvl} de 3">${[1,2,3].map(i => `<i class="${i <= x.lvl ? "on" : ""}"></i>`).join("")}</span></div>${icon("right","sm")}</button>`).join("")}</div>
+    <div class="list" style="margin-top:14px"><button class="prog" data-p="custom"><div class="badge">${icon("sparkle")}</div><div class="lt"><b>Plano feito para ti</b><small>Feito com as tuas respostas: dias de treino, objetivo, sítio, tempo e experiência.</small></div>${icon("right","sm")}</button>${PROGRAMS.map(x => `<button class="prog" data-p="${x.id}"><div class="badge acc">${icon("dumbbell")}</div><div class="lt"><b>${esc(x.n)}</b><small>${esc(x.d)}</small><small>${x.days.length}× por semana · ${x.min} min</small><span class="lvl" aria-label="Nível ${x.lvl} de 3">${[1,2,3].map(i => `<i class="${i <= x.lvl ? "on" : ""}"></i>`).join("")}</span></div>${icon("right","sm")}</button>`).join("")}</div>
     <p class="tiny muted" style="margin:12px 4px">Se tens lesões, dores ou alguma condição de saúde, fala com um profissional antes de começar. Para de imediato se sentires dor.</p>`;
-    $$("[data-p]", el).forEach(b => b.onclick = () => b.dataset.p === "custom" ? openOnboarding(true, "gym") : openProgram(b.dataset.p)); return; }
+    $$("[data-p]", el).forEach(b => b.onclick = () => b.dataset.p === "custom" ? customFromAnswers() : openProgram(b.dataset.p)); return; }
   const k = today(), mon = mondayOf(k), se = sessionFor(k);
   const weekDone = DOW.filter((_, i) => workoutDone(addDays(mon, i))).length;
   el.innerHTML = `<div class="card" style="margin-top:18px"><div class="row between"><div><p class="tiny muted" style="font-weight:700;text-transform:uppercase;letter-spacing:.06em">O teu plano</p><h3>${esc(p.n)}</h3></div><button class="btn ghost sm" id="t-chg">Mudar</button></div>
       <div class="wstrip" style="margin-top:14px">${DOW.map((d, i) => { const dk = addDays(mon, i); return `<div class="${S.wk.days.includes(i) ? (workoutDone(dk) ? "dn" : "pl") : ""} ${dk === k ? "td" : ""}">${d}<b></b></div>`; }).join("")}</div>
       <p class="small muted" style="margin-top:10px">${weekDone} de ${S.wk.days.length} treinos esta semana. Falhaste um? Não faz mal, continua no seguinte.</p></div>
-    <div class="sec"><div class="sec-h"><h2>${se ? "Treino de hoje" : "Hoje é dia de descanso"}</h2></div>${se ? sessionCard(k, se) : `<div class="card row">${abi({ mood:"sleepy", size:64 })}<p class="muted">Recupera bem. O próximo treino é ${esc(nextSessionTxt())}.</p></div>`}</div>
+    <div class="sec"><div class="sec-h"><h2>${se ? "Treino de hoje" : "Hoje é dia de descanso"}</h2></div>${se ? wkHero(k, se) + sessionCard(k, se) : `<div class="card row">${abi({ mood:"sleepy", size:64 })}<p class="muted">Recupera bem. O próximo treino é ${esc(nextSessionTxt())}.</p></div>`}</div>
     <div class="sec"><div class="sec-h"><h2>Mês</h2><span class="tiny muted">○ planeado · ● feito</span></div><div class="card">${calendar(planMonth, planSel, k2 => sessionFor(k2) ? `<i class="${workoutDone(k2) ? "wd" : "wo"}"></i>` : (workoutDone(k2) ? `<i class="wd"></i>` : ""))}</div>
     ${planSel !== k && sessionFor(planSel) ? `<div style="margin-top:12px">${sessionCard(planSel, sessionFor(planSel))}</div>` : ""}</div>${minorNote}`;
   $("#t-chg", el).onclick = async () => { if (!await confirmDlg("Mudar de plano? Os treinos já feitos ficam no histórico.", "Mudar")) return; S.wkHist = Object.assign(S.wkHist || {}, S.wk.done || {}); S.wk = null; save(); renderTreino(); };
@@ -1684,9 +1970,16 @@ function renderTreino(){
   $$(".cal [data-k]", el).forEach(b => b.onclick = () => { planSel = b.dataset.k; renderTreino(); });
   $$("[data-ex]", el).forEach(b => b.onclick = () => { const [kk, i] = b.dataset.ex.split("|"); S.wk.ex = S.wk.ex || {}; const a = S.wk.ex[kk] = S.wk.ex[kk] || []; const j = a.indexOf(+i); if (j >= 0) a.splice(j,1); else a.push(+i); save(); renderTreino(); });
   $$("[data-exi]", el).forEach(b => b.onclick = () => { const [kk, i] = b.dataset.exi.split("|"); openExercise(kk, +i); });
+  $$("[data-start]", el).forEach(b => b.onclick = () => startWorkout(b.dataset.start));
   $$("[data-fin]", el).forEach(b => b.onclick = () => { const kk = b.dataset.fin; S.wk.done = S.wk.done || {}; if (S.wk.done[kk]) delete S.wk.done[kk]; else { S.wk.done[kk] = 1; ach("wk1"); snd("win"); confetti(); toast("Treino concluído. Muito bem!"); say("workout", true); } save(); renderTreino(); });
 }
 function nextSessionTxt(){ for (let i = 1; i <= 7; i++) { const k = addDays(today(), i), s = sessionFor(k); if (s) return `${DOWL[dow(k)].toLowerCase()} (${s.sess.n})`; } return "em breve"; }
+// Cartão de destaque do treino de hoje: progresso e botão para o treino guiado.
+function wkHero(k, se){ const st = (S.wk.ex && S.wk.ex[k]) || [], dn = workoutDone(k), n = se.sess.e.length, f = dn ? 1 : st.length / n, R = 30, C = 2 * Math.PI * R;
+  const sets = se.sess.e.reduce((a, e) => a + setsOf(e[1]), 0);
+  return `<div class="wk-hero"><div class="row" style="gap:14px"><div class="ring sm"><svg viewBox="0 0 72 72" aria-hidden="true"><circle class="tr" cx="36" cy="36" r="${R}"/><circle class="fg" cx="36" cy="36" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - f)).toFixed(1)}"/></svg><div class="rv"><b class="num">${dn ? n : st.length}/${n}</b></div></div>
+    <div class="grow"><b class="wk-hero-t">${esc(se.sess.n)}</b><p class="small">${se.prog.min} min · ${n} exercícios · ${sets} séries</p></div>${morango({ mood: dn ? "party" : "wink", size:62 })}</div>
+    ${dn ? `<p class="small" style="margin-top:12px">Feito. Bom trabalho!</p>` : `<button class="btn block wk-start" data-start="${k}" style="margin-top:14px;height:52px">${st.length ? "Continuar treino" : "Começar treino guiado"}</button>`}</div>`; }
 function sessionCard(k, se){ const st = (S.wk.ex && S.wk.ex[k]) || [], dn = workoutDone(k);
   return `<div class="card"><div class="row between"><div><b>${esc(se.sess.n)}</b><p class="small muted">${k === today() ? "Hoje" : esc(fmtDay(k))} · ${se.prog.min} min</p></div>${dn ? `<span class="conf alta">${icon("check","xs")} Feito</span>` : ""}</div>
     ${(() => { const ph = S.wk.prog === "custom" ? weekPhase(k) : null; return ph ? `<div class="note" style="margin-top:12px">${icon("chart","sm")}<span><b>${esc(ph.n)}.</b> ${esc(ph.t)}</span></div>` : ""; })()}
@@ -1710,13 +2003,13 @@ const CATS = ["Frutas e legumes","Carne e peixe","Laticínios e ovos","Mercearia
 const guessCat = n => /frango|peru|vaca|atum|salmão|pescada|carne/i.test(n) ? "Carne e peixe" : /ovo|iogurte|leite|queijo|requeijão/i.test(n) ? "Laticínios e ovos" : /legume|fruta|salada|banana|batata/i.test(n) ? "Frutas e legumes" : "Mercearia";
 function shopHead(){ const st = staples(), mon = mondayOf(today()), n = S.plan.filter(x => x.date >= mon && x.date <= addDays(mon, 6) && x.r).length;
   return `<div class="card" style="margin-top:18px"><div class="row">${abi({ mood:"think", size:44 })}<div class="grow"><b>Lista feita a partir do teu plano</b><p class="small muted">${n ? `${n} refeições planeadas esta semana. As quantidades já vêm somadas.` : "Ainda não tens refeições planeadas esta semana."}</p></div></div>
-    <button class="btn block" id="sh-gen" style="margin-top:12px">${icon("cart","sm")} ${n ? "Atualizar a lista com o plano" : "Criar plano e lista da semana"}</button></div>`
+    <p class="tiny muted" style="margin-top:10px">Atualiza-se sozinha sempre que o plano muda. O que juntares à mão fica.</p></div>`
     + (st && st.L.length ? `<div class="card" style="margin-top:12px"><h3>${esc(st.t)}</h3><p class="small muted" style="margin-top:2px">${esc(st.why)}</p><div class="row" style="flex-wrap:wrap;gap:8px;margin-top:12px">${st.L.map(x => `<button class="chip" data-st="${esc(x)}">${icon("plus","xs")}${esc(x)}</button>`).join("")}</div></div>` : ""); }
 function bindShopHead(el){ const g = $("#sh-gen", el); if (g) g.onclick = () => { const mon = mondayOf(today()); let made = 0; if (!S.plan.some(x => x.date >= mon && x.date <= addDays(mon, 6) && x.r)) made = buildWeekPlan(mon, false); const n = genShop(mon); save(); renderCompras(); toast(made ? `Plano criado e ${n} produtos na lista` : `${n} produtos na lista, com as quantidades da semana`); };
   $$("[data-st]", el).forEach(b => b.onclick = () => { if (addShop(b.dataset.st, "", guessCat(b.dataset.st))) { save(); renderCompras(); toast("Adicionado à lista"); } else toast("Já está na lista"); }); }
 function addShop(n, q, c){ if (S.shop.some(x => x.n.toLowerCase() === n.toLowerCase())) return 0; S.shop.push({ n, q, c:CATS.includes(c) ? c : "Outros", k:0 }); return 1; }
 function renderCompras(){
-  const el = $("#p-compras");
+  const el = $("#p-compras"); syncShop();
   el.innerHTML = shopHead() + `<div class="card stack" style="margin-top:14px"><div class="g2"><input id="sh-n" maxlength="60" placeholder="Produto" aria-label="Produto"><input id="sh-q" maxlength="20" placeholder="Quantidade" aria-label="Quantidade"></div>
     <div class="row"><select id="sh-c" class="grow" aria-label="Categoria">${CATS.map(c => `<option>${c}</option>`).join("")}</select><button class="btn" id="sh-a">Adicionar</button></div></div>
     <div id="sh-l"></div>
@@ -2087,7 +2380,7 @@ function openOnboarding(edit, startKey, single){
     const keyChanged = startKey;
     delete A._noBody; delete A._b; delete A.ageN; A.obj = goalName(A.goal); S.u = A; S.ob = 1; applyRef();
     // Plano da semana: refeito a partir de hoje (só o que foi sugerido); perto do fim de semana, prepara também a seguinte.
-    const mon = mondayOf(today()); buildWeekPlan(mon, true, today()); if (dow(today()) >= 4) buildWeekPlan(addDays(mon, 7), true);
+    S.plan = S.plan.filter(x => !(x.a && x.date >= today())); S.planWk = {}; ensurePlans();
     if (A.gym === "sim" && (!single || keyChanged === "tdays" || keyChanged === "gym")) { const pl = planFor(); S.wkHist = Object.assign(S.wkHist || {}, (S.wk && S.wk.done) || {}); S.wk = { prog:"custom", custom:pl, days:pl.days.slice(), start:today(), done:{}, ex:{} }; }
     if (first) S.spins = 3; save(); ob.classList.add("hide"); refreshAll();
     if (first) setTimeout(() => celebrate({ who:"morango", title:"Presente de boas-vindas", name:"3 giros na roda de prémios", desc:`Gira a roda e ganha acessórios para o ${BRAND.mascot}. No fim das 3 tentativas, o prémio dourado é garantido.`, mood:"party", action:{ label:"Ir à roda", fn:() => go("roda") }, onClose:() => setTimeout(() => { if (!S.tourDone) startTour(); }, 300) }), 300);
@@ -2211,6 +2504,72 @@ function startTour(i = 0){
   }, lowMotion() ? 30 : 380);
 }
 function endTour(){ const o = $("#tour"); if (o) o.remove(); S.tourDone = 1; save(); }
+/* ========================== Treino guiado ==========================
+   Ecrã inteiro, exercício a exercício: séries a marcar, cronómetro de descanso, dicas de execução e o seguinte.
+   Usa o plano já feito a partir das respostas iniciais; não pergunta nada. */
+const setsOf = s => { const m = /^(\d+)\s*×/.exec(String(s)); return m ? +m[1] : 1; };
+const restOf = s => { const m = /(\d+)\s*(s|min)/.exec(String(s || "")); return m ? +m[1] * (m[2] === "min" ? 60 : 1) : 0; };
+function startWorkout(k){
+  const se = sessionFor(k); if (!se) return;
+  const E = se.sess.e.map((e, i) => ({ i, n:exName(k, se, i), reps:e[1], rest:restOf(e[2]), sets:setsOf(e[1]), info:EXINFO[exName(k, se, i)] }));
+  S.wk.ex = S.wk.ex || {}; const doneEx = S.wk.ex[k] = S.wk.ex[k] || [];
+  let cur = Math.max(0, E.findIndex(e => !doneEx.includes(e.i))), set = 0, timer = null, restLeft = 0, t0 = Date.now();
+  if (cur < 0 || cur >= E.length) cur = 0;
+  const ov = document.createElement("div"); ov.className = "full wk-play"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-label", "Treino guiado"); document.body.appendChild(ov);
+  const close = () => { clearInterval(timer); ov.remove(); renderTreino(); };
+  const markEx = i => { if (!doneEx.includes(i)) doneEx.push(i); save(); };
+  const finish = () => { clearInterval(timer); S.wk.done = S.wk.done || {}; S.wk.done[k] = 1; save(); ach("wk1"); snd("win"); confetti();
+    const min = Math.max(1, Math.round((Date.now() - t0) / 60000));
+    ov.innerHTML = `<div class="in wk-end"><div class="mascots" style="justify-content:center">${morango({ mood:"party", size:120 })}</div>
+      <h1>Treino feito!</h1><p class="muted">${esc(se.sess.n)} · ${E.length} exercícios · ${min} min</p>
+      <div class="stat3" style="margin-top:22px"><div><b>${E.reduce((a, e) => a + e.sets, 0)}</b><small>séries</small></div><div><b>${min}</b><small>minutos</small></div><div><b>${DOW.filter((_, i) => workoutDone(addDays(mondayOf(k), i))).length}/${S.wk.days.length}</b><small>esta semana</small></div></div>
+      <p class="small muted" style="margin-top:18px">Agora come uma refeição com proteína e bebe água. O teu plano de hoje já conta com o treino.</p>
+      <div style="flex:1"></div><button class="btn block" id="wk-ok" style="height:54px">Fechar</button></div>`;
+    $("#wk-ok", ov).onclick = () => { close(); say("workout", true); }; };
+  const draw = () => { const e = E[cur], nx = E[cur + 1], resting = restLeft > 0;
+    const R = 54, C = 2 * Math.PI * R, frac = resting && e.rest ? restLeft / e.rest : 0;
+    ov.innerHTML = `<div class="in">
+      <div class="row"><button class="iconbtn" id="wk-x" aria-label="Sair do treino">${icon("x")}</button>
+        <div class="grow wk-steps" aria-label="Exercício ${cur + 1} de ${E.length}">${E.map((x, i) => `<i class="${doneEx.includes(x.i) ? "dn" : i === cur ? "on" : ""}"></i>`).join("")}</div>
+        <span class="tiny muted num" style="width:44px;text-align:right">${cur + 1}/${E.length}</span></div>
+      <p class="eyebrow" style="margin-top:26px">${esc(se.sess.n)}${e.info ? " · " + esc(e.info[0]) : ""}</p>
+      <h1 class="wk-name">${esc(e.n)}</h1>
+      <p class="wk-reps">${esc(e.reps)}${e.rest ? ` <span class="muted">· descanso ${e.rest} s</span>` : ""}</p>
+      ${resting ? `<div class="wk-rest"><div class="ring big"><svg viewBox="0 0 124 124" aria-hidden="true"><circle class="tr" cx="62" cy="62" r="${R}"/><circle class="fg" cx="62" cy="62" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - frac)).toFixed(1)}"/></svg>
+          <div class="rv"><b class="num" id="wk-t">${restLeft}</b><small>descanso</small></div></div>
+          <div class="row" style="justify-content:center;gap:10px;margin-top:14px"><button class="btn ghost sm" id="wk-p15">+15 s</button><button class="btn soft sm" id="wk-skip">Já descansei</button></div></div>`
+        : `<div class="wk-sets">${Array.from({ length:e.sets }, (_, i) => `<span class="${i < set ? "dn" : i === set ? "on" : ""}">${i < set ? icon("check","xs") : i + 1}</span>`).join("")}</div>
+          ${e.info ? `<ol class="steps wk-tips">${e.info[1].map(x => `<li>${esc(x)}</li>`).join("")}</ol>` : `<p class="small muted" style="margin-top:14px">Movimento devagar e com controlo, sem dor.</p>`}`}
+      <div style="flex:1;min-height:16px"></div>
+      ${nx ? `<p class="small muted wk-next">A seguir: <b>${esc(nx.n)}</b> · ${esc(nx.reps)}</p>` : `<p class="small muted wk-next">Último exercício. Força!</p>`}
+      <div class="row" style="gap:10px;margin-top:10px">${cur ? `<button class="btn ghost" id="wk-prev" aria-label="Exercício anterior">${icon("left","sm")}</button>` : ""}
+        <button class="btn block grow" id="wk-go" style="height:56px" ${resting ? "disabled" : ""}>${set + 1 < e.sets ? `Série ${set + 1} feita` : nx ? "Exercício feito" : "Terminar treino"}</button>
+        ${nx ? `<button class="btn ghost" id="wk-next" aria-label="Saltar exercício">${icon("right","sm")}</button>` : ""}</div>
+      <p class="tiny muted" style="text-align:center;margin-top:10px">Se sentires dor (e não só esforço), para e troca o exercício no plano.</p></div>`;
+    $("#wk-x", ov).onclick = async () => { if (await confirmDlg("Sair do treino? O que já fizeste fica guardado.", "Sair")) close(); };
+    const p = $("#wk-prev", ov); if (p) p.onclick = () => { clearInterval(timer); restLeft = 0; cur--; set = 0; draw(); };
+    const n = $("#wk-next", ov); if (n) n.onclick = () => { clearInterval(timer); restLeft = 0; cur++; set = 0; draw(); };
+    const sk = $("#wk-skip", ov); if (sk) sk.onclick = () => { clearInterval(timer); restLeft = 0; draw(); };
+    const p15 = $("#wk-p15", ov); if (p15) p15.onclick = () => { restLeft += 15; e.rest = Math.max(e.rest, restLeft); draw(); };
+    $("#wk-go", ov).onclick = () => { snd("ok");
+      if (set + 1 < e.sets) { set++; if (e.rest) rest(e.rest); else draw(); return; }
+      markEx(e.i); if (!nx) { finish(); return; } cur++; set = 0; if (e.rest) rest(e.rest); else draw(); };
+  };
+  const rest = s => { restLeft = s; draw(); clearInterval(timer);
+    timer = setInterval(() => { restLeft--; if (restLeft <= 0) { clearInterval(timer); restLeft = 0; snd("ok"); if (navigator.vibrate) try { navigator.vibrate(200); } catch(e) {} draw(); return; }
+      const t = $("#wk-t", ov); if (t) { t.textContent = restLeft; const fg = $(".wk-rest .fg", ov), C = 2 * Math.PI * 54; if (fg) fg.style.strokeDashoffset = (C * (1 - restLeft / Math.max(1, E[cur].rest))).toFixed(1); } }, 1000); };
+  draw();
+}
+
+// Plano de treino a partir das respostas iniciais. Só pergunta o que falta (sítio do treino).
+function customFromAnswers(){
+  const u = S.u || {};
+  if (!u.place) { openOnboarding(true, "gym"); return; }
+  const d = Array.isArray(u.tdays) && u.tdays.length >= 2 && u.tdays.length <= 6 ? u.tdays : (u.gdaysSel && u.gdaysSel.length ? u.gdaysSel : [0, 2, 4]), p = S.prof;
+  const pl = generatePlan({ place:u.place, days:d.length, dayIdx:d, equip:(u.equip || []).filter(x => x !== "Nenhum"), focus:u.focus || "todo", cardio:u.cardio || "caminhar", min:u.gmin || 30, lvl:u.lvl || "zero",
+    goal:u.goal || "manter", lim:(u.lim || []).filter(x => x !== "Nenhuma"), bmi: validBody(p) && u.age === "18 ou mais" ? p.w / ((p.h / 100) ** 2) : 22, age: p.age || 30 });
+  u.gym = "sim"; S.wk = { prog:"custom", custom:pl, days:pl.days.slice(), start:today(), done:{}, ex:{} }; save(); renderTreino(); toast("Plano de treino criado com as tuas respostas");
+}
 /* ========================== Arranque ========================== */
 function applyPrefs(){ const r = document.documentElement; if (S.theme) r.dataset.theme = S.theme; else r.removeAttribute("data-theme");
   if (S.accent) r.dataset.accent = S.accent; else r.removeAttribute("data-accent"); if (S.mot) r.dataset.motion = "low"; else r.removeAttribute("data-motion"); }
@@ -2220,7 +2579,7 @@ load(); applyPrefs();
 document.title = BRAND.name;
 $$("[data-brand]").forEach(e => e.textContent = BRAND.name); $$("[data-tagline]").forEach(e => e.textContent = BRAND.tagline);
 $("#sp-m").innerHTML = `<div class="mascots">${abi({ mood:"wave", size:120, acc:null })}${morango({ mood:"wink", size:130 })}</div>`;
-syncChallenges(); renderHoje();
+ensurePlans(); syncChallenges(); renderHoje();
 (() => { const sp = $("#splash");
   const end = () => { if (!sp.isConnected) return; sp.classList.add("out"); setTimeout(() => sp.remove(), 500); if (!S.ob) openOnboarding(false); else if (S.lastHello !== today()) { S.lastHello = today(); save(); setTimeout(() => say("hello", true), 900); } };
   const t = setTimeout(end, lowMotion() ? 200 : 1400); sp.onclick = () => { clearTimeout(t); end(); }; })();

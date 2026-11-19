@@ -20,8 +20,12 @@ function renderHoje(){
       <div class="ring big"><svg viewBox="0 0 156 156" aria-hidden="true"><circle class="tr" cx="78" cy="78" r="${R}"/><circle class="fg" cx="78" cy="78" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${C.toFixed(1)}" id="ringfg"/></svg>
         <div class="rv"><b class="num">${on ? (over ? over : left) : md}</b><small>${on ? (over ? "kcal acima" : "kcal restam") : "de 4 refeições"}</small></div></div>
       <div class="sum-side"><b>${on ? S.goal : 4}</b><small>${on ? "objetivo" : "refeições"}</small></div></div>
-    <div class="macros3">${[["Hidratos","c","var(--carb)"],["Proteína","p","var(--prot)"],["Gordura","g","var(--fat)"]].map(([n,x,col]) => { const tg = on && S.macro ? S.macro[x] : 0;
-      return `<div class="mac"><div class="mh"><span>${n}</span><b>${Math.round(T[x])}${tg ? ` / ${tg} g` : " g"}</b></div><div class="bar"><i style="width:${Math.min(100, Math.round(T[x]/(tg || mTot)*100))}%;background:${col}"></i></div></div>`; }).join("")}</div>`;
+    <div class="mrings">${MACROS.map(([n, x, col]) => { const tg = on && S.macro ? S.macro[x] : 0, v = Math.round(T[x]), f = tg ? Math.min(1, v / tg) : v / mTot, r = 19, c = 2 * Math.PI * r;
+      const st = !tg ? `${Math.round(v / mTot * 100)}% do dia` : v < tg ? `faltam ${tg - v} g` : v > tg * 1.15 ? `+${v - tg} g` : "na meta";
+      return `<div class="mr" aria-label="${n}: ${v} g${tg ? ` de ${tg} g` : ""}"><div class="mr-ring"><svg viewBox="0 0 48 48" aria-hidden="true"><circle class="tr" cx="24" cy="24" r="${r}"/><circle cx="24" cy="24" r="${r}" fill="none" stroke="${col}" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c * (1 - f)).toFixed(1)}" transform="rotate(-90 24 24)"/></svg><b class="num">${v}<small>g</small></b></div>
+        <span class="mr-n"><i style="background:${col}"></i>${n}</span><small class="mr-s">${st}</small>${tg ? `<small class="mr-of">de ${tg} g</small>` : ""}</div>`; }).join("")}</div>
+    ${L.length ? `<button class="sum-more" id="h-detail">Ver o dia em detalhe ${icon("right","xs")}</button>` : ""}`;
+  const hd = $("#h-detail"); if (hd) hd.onclick = () => openDayDetail(k);
   requestAnimationFrame(() => requestAnimationFrame(() => { const f = $("#ringfg"); if (f) f.style.strokeDashoffset = (C*(1-frac)).toFixed(1); }));
   renderCoach();
 
@@ -70,7 +74,8 @@ function coach(){
   if ((u.hard || []).includes("Petiscar entre refeições") && hr >= 15 && hr < 18 && !has("Lanche")) return { t:"Um lanche a horas ajuda a não petiscar ao fim da tarde. Já tens um?", b:"Registar lanche", fn:() => openAdd("Lanche"), m:"think" };
   if (se && !workoutDone(k)) return { who:"morango", t:`Hoje há treino: ${se.sess.n}, ${se.prog.min} minutos. Vamos?`, b:"Ver treino", fn:() => { planSub = "treino"; go("planos"); }, m:"wave" };
   if (!has("Jantar") && hr >= 19 && hr < 23) return { t:"E o jantar? Regista para fechares o dia.", b:"Registar jantar", fn:() => openAdd("Jantar"), m:"happy" };
-  if (!S.plan.some(x => x.date === addDays(k, 1))) return { t:"Amanhã ainda não tem refeições planeadas. Faço-te um plano à medida?", b:"Criar plano", fn:() => { planSub = "ref"; go("planos"); }, m:"think" };
+  const pj = S.plan.find(x => x.date === k && x.m === "Jantar" && x.r); // o plano já está feito: o Abi lembra o que há para o jantar
+  if (pj && !has("Jantar") && hr >= 16 && hr < 20) return { t:`Ao jantar tens ${pj.n} no plano. Queres ver a receita?`, b:"Ver receita", fn:() => openRecipe(pj.r), m:"happy" };
   const lw = Object.keys(S.weights || {}).sort().pop();
   if (kcalOn() && (!lw || lw < addDays(k, -7))) return { t:"Já não registas o peso há algum tempo. Queres atualizar?", b:"Registar peso", fn:openSummary, m:"think" };
   if (S.spins) return { who:"morango", t:`Tens ${S.spins} giro${S.spins > 1 ? "s" : ""} na roda à tua espera!`, b:"Girar a roda", fn:() => go("roda"), m:"party" };
@@ -86,3 +91,33 @@ function renderCoach(){
   const b = $(".bub-act", el); if (b) b.onclick = () => { burst($(".mwrap", el), who === "morango" ? "spark" : "heart"); c.fn(); };
 }
 
+
+/* ========================== O dia em detalhe ========================== */
+// Cores validadas para daltonismo (proteína, hidratos e gordura); o texto usa sempre as cores de texto, nunca a do macro.
+const MACROS = [["Hidratos","c","var(--carb)"],["Proteína","p","var(--prot)"],["Gordura","g","var(--fat)"]];
+const KCAL_G = { p:4, c:4, g:9 };
+function openDayDetail(k){
+  const L = S.days[k] || [], T = dayTotals(k), on = kcalOn(), en = T.p * 4 + T.c * 4 + T.g * 9 || 1;
+  const ref = S.macro ? (() => { const e = S.macro.p * 4 + S.macro.c * 4 + S.macro.g * 9; return { p:S.macro.p * 4 / e, c:S.macro.c * 4 / e, g:S.macro.g * 9 / e }; })() : { p:.2, c:.5, g:.3 };
+  const pct = x => Math.round(x * 100);
+  const seg = (x, frac, grams, label) => `<i style="flex:${Math.max(frac, .001)};background:${MACROS.find(m => m[1] === x)[2]}" title="${label}"></i>`;
+  const split = (P, label) => `<div class="split"><span class="split-l">${label}</span><div class="sbar">${MACROS.map(([n, x]) => seg(x, P[x], 0, `${n}: ${pct(P[x])}% da energia`)).join("")}</div>
+    <div class="split-v">${MACROS.map(([n, x, col]) => `<span><i style="background:${col}"></i>${n} <b>${pct(P[x])}%</b></span>`).join("")}</div></div>`;
+  const per = MACROS.reduce((o, [, x]) => (o[x] = T[x] * KCAL_G[x] / en, o), {});
+  const byMeal = MEALS.map(M => { const it = L.filter(m => m.m === M.id), t = it.reduce((a, m) => ({ k:a.k + (+m.k || 0), p:a.p + (+m.p || 0), c:a.c + (+m.c || 0), g:a.g + (+m.g || 0) }), { k:0, p:0, c:0, g:0 }); return { M, it, t }; });
+  const maxE = Math.max(1, ...byMeal.map(b => b.t.p * 4 + b.t.c * 4 + b.t.g * 9));
+  openSheet(k === today() ? "O teu dia" : fmtDay(k), `
+    <div class="legend">${MACROS.map(([n, , col]) => `<span><i style="background:${col}"></i>${n}</span>`).join("")}</div>
+    <div class="card" style="margin-top:12px"><h3>De onde vem a energia</h3><p class="small muted" style="margin-top:2px">Percentagem da energia do dia que vem de cada macro.</p>
+      ${split(per, "Hoje")}${split(ref, S.macro ? "A tua referência" : "Referência geral")}
+      <p class="tiny muted" style="margin-top:10px">Proteína e hidratos dão 4 kcal por grama; gordura dá 9. ${S.macro ? "" : "Sem dados teus, compara com uma divisão equilibrada comum."}</p></div>
+    <div class="card" style="margin-top:12px"><h3>Por refeição</h3>
+      ${byMeal.map(({ M, it, t }) => { const e = t.p * 4 + t.c * 4 + t.g * 9;
+        return `<div class="mealbar"><div class="row between"><span class="small"><b>${M.id}</b></span><span class="small muted num">${it.length ? (on ? `${t.k} kcal · ` : "") + `P ${Math.round(t.p)} · H ${Math.round(t.c)} · G ${Math.round(t.g)} g` : "Por registar"}</span></div>
+          <div class="sbar thin" style="width:${Math.max(e ? 6 : 0, e / maxE * 100)}%">${e ? MACROS.map(([n, x]) => seg(x, t[x] * KCAL_G[x] / e, 0, `${n} ao ${M.id.toLowerCase()}: ${Math.round(t[x])} g`)).join("") : ""}</div></div>`; }).join("")}</div>
+    <div class="card" style="margin-top:12px"><h3>O que comeste</h3>
+      <table class="dtable"><thead><tr><th>Alimento</th>${on ? "<th>kcal</th>" : ""}<th>P</th><th>H</th><th>G</th></tr></thead><tbody>
+      ${L.slice().sort((a, b) => (+b.k || 0) - (+a.k || 0)).map(m => `<tr><td>${esc(m.n)}<small>${esc(m.m)}${m.src === "foto" ? " · estimativa por foto" : ""}</small></td>${on ? `<td class="num">${m.k | 0}</td>` : ""}<td class="num">${Math.round(+m.p || 0)}</td><td class="num">${Math.round(+m.c || 0)}</td><td class="num">${Math.round(+m.g || 0)}</td></tr>`).join("")}
+      <tr class="tot"><td>Total</td>${on ? `<td class="num">${T.k}</td>` : ""}<td class="num">${Math.round(T.p)}</td><td class="num">${Math.round(T.c)}</td><td class="num">${Math.round(T.g)}</td></tr></tbody></table>
+      <p class="tiny muted" style="margin-top:8px">Gramas de proteína (P), hidratos (H) e gordura (G). Valores aproximados.</p></div>`);
+}

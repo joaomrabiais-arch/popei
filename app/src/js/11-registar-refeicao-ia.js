@@ -6,90 +6,151 @@ async function shrink(file){ const img = await createImageBitmap(file); const s 
   return new Promise(r => c.toBlob(r, "image/jpeg", .82)); }
 function addEntry(k, e){ setTimeout(() => say("meal"), 400); (S.days[k] = S.days[k] || []).push(Object.assign({ id:uid(), t:new Date().toLocaleTimeString("pt-PT", { hour:"2-digit", minute:"2-digit" }), q:"" }, e)); save(); ach("meal"); syncChallenges(); }
 function openAdd(meal, tab="foto"){
-  openSheet("Adicionar", `<label class="field"><span>${esc(fmtDay(curDay))}</span><select id="a-meal" aria-label="Refeição">${MEALS.map(m => `<option ${m.id === meal ? "selected" : ""}>${m.id}</option>`).join("")}</select></label>
-    <div class="seg" id="a-tabs" style="margin-top:14px" role="tablist"><button data-t="foto" role="tab">Foto</button><button data-t="pesq" role="tab">Pesquisar</button><button data-t="manual" role="tab">Manual</button><button data-t="rec" role="tab">Repetir</button></div>
+  let cur = MEALS.some(m => m.id === meal) ? meal : defMeal();
+  openSheet("Registar", `<div class="mealchips" id="a-meals" role="radiogroup" aria-label="Refeição">${MEALS.map(m => `<button role="radio" data-m="${m.id}" aria-checked="${m.id === cur}" class="${m.id === cur ? "on" : ""}">${icon(m.ic,"sm")}<span>${m.id === "Pequeno-almoço" ? "Peq.-almoço" : m.id}</span></button>`).join("")}</div>
+    <select id="a-meal" class="hide" aria-hidden="true" tabindex="-1">${MEALS.map(m => `<option ${m.id === cur ? "selected" : ""}>${m.id}</option>`).join("")}</select>
+    <p class="tiny muted" style="margin-top:8px">${esc(fmtDay(curDay))}</p>
+    <div class="seg" id="a-tabs" style="margin-top:12px" role="tablist"><button data-t="foto" role="tab">${icon("camera","xs")} Foto</button><button data-t="pesq" role="tab">${icon("search","xs")} Pesquisar</button><button data-t="manual" role="tab">Manual</button><button data-t="rec" role="tab">Repetir</button></div>
     <div id="a-body" style="margin-top:16px"></div>`, body => {
-    const show = t => { $$("#a-tabs button", body).forEach(b => { b.classList.toggle("on", b.dataset.t === t); b.setAttribute("aria-selected", b.dataset.t === t); }); const el = $("#a-body", body); el.onclick = null; el.oninput = null; ADD[t](el); };
+    $$("#a-meals button", body).forEach(b => b.onclick = () => { cur = b.dataset.m; $("#a-meal", body).value = cur; $$("#a-meals button", body).forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); }); });
+    const show = (t, arg) => { $$("#a-tabs button", body).forEach(b => { b.classList.toggle("on", b.dataset.t === t); b.setAttribute("aria-selected", b.dataset.t === t); }); const el = $("#a-body", body); el.onclick = null; el.oninput = null; ADD[t](el, arg); };
+    addTab = show;
     $$("#a-tabs button", body).forEach(b => b.onclick = () => show(b.dataset.t)); show(tab);
   });
 }
+let addTab = () => {};
 const mealSel = () => $("#a-meal").value;
-const AIERR = { offline:"Sem ligação ao servidor de IA.", error:"O servidor de IA falhou. Tenta outra vez.", not_granted:"Permissão negada para usar a IA.", rate_limited:"Muitas tentativas. Aguarda um instante.", images_unavailable:"Envio de imagens indisponível aqui." };
+const AIERR = { offline:"Sem ligação à internet. Liga-te e tenta outra vez, ou regista à mão.", timeout:"A análise demorou demasiado. Tenta outra vez ou regista à mão.", error:"O servidor de IA falhou. Tenta outra vez.",
+  not_granted:"Permissão negada para usar a IA.", rate_limited:"Atingiste o limite de análises por agora. Tenta mais tarde ou regista à mão.", images_unavailable:"Envio de imagens indisponível aqui.", bad:"A resposta da IA veio incompleta. Tenta outra foto ou regista à mão." };
+// Números que a IA devolve como texto ("195 kcal", "0,5") passam a número; o resto fica 0.
+const toN = (v, max = 5000) => { const m = String(v ?? "").replace(",", ".").match(/\d+(\.\d+)?/); return m ? clamp(Math.round(+m[0]), 0, max) : 0; };
+const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej({ code:"timeout" }), ms))]);
+const norm = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+function cleanAI(r){ // só aceita o formato pedido; nunca inventa itens
+  if (!r || typeof r !== "object") throw { code:"bad" };
+  const itens = (Array.isArray(r.itens) ? r.itens : []).filter(x => x && typeof x === "object" && String(x.nome || "").trim()).slice(0, 12).map(x => ({
+    nome:String(x.nome).trim().slice(0, 60), porcao:String(x.porcao || "").slice(0, 30), confianca:["alta","media","baixa"].includes(x.confianca) ? x.confianca : "media", x:1,
+    b:{ kcal:toN(x.kcal), proteina_g:toN(x.proteina_g, 500), carbo_g:toN(x.carbo_g, 1000), gordura_g:toN(x.gordura_g, 500) } }));
+  return { refeicao:String(r.refeicao || "Refeição").slice(0, 60), clara:r.clara !== false && itens.length > 0, pergunta:String(r.pergunta || "").slice(0, 200), observacao:String(r.observacao || "").slice(0, 200), itens };
+}
 const ADD = {
   foto(el){
-    let blob = null, cur = null;
-    el.innerHTML = `<div class="pick"><label for="f-cam">${icon("camera")}Tirar foto</label><label for="f-gal">${icon("image")}Galeria</label></div>
-      <img id="a-prev" class="preview hide" alt="Fotografia da refeição" style="margin-top:12px">
-      <input id="a-hint" maxlength="120" placeholder="Pormenor opcional (ex.: arroz integral, sem óleo)" style="margin-top:12px" aria-label="Pormenor opcional">
-      <button class="btn block" id="a-go" style="margin-top:12px" disabled>Analisar com IA</button>
-      <div id="a-st" style="margin-top:12px"></div><div id="a-res"></div>
-      <div class="note" style="margin-top:14px">${icon("info","sm")}<span>A análise por foto é uma <b>estimativa</b>, não uma medição. Podes corrigir tudo antes de guardar.</span></div>`;
-    const st = $("#a-st", el), go = $("#a-go", el);
-    aiReady.then(() => { if (!sample && el.isConnected) st.innerHTML = `<div class="note warn">${icon("info","sm")}<span>A análise por IA precisa do Claude ou do servidor grátis da Brota (servidor/LEIA-ME.md). Por agora, usa Pesquisar ou Manual.</span></div>`; });
+    let blob = null, cur = null, ctl = null;
+    const TIPS = [["sparkle","Boa luz, de preferência natural"],["camera","De cima, com o prato inteiro"],["info","Diz o que não se vê (molhos, óleo)"]];
+    const idle = () => { el.innerHTML = `<div class="cam-hero">${abi({ mood:"wave", size:64 })}<div class="grow"><b>Fotografa o teu prato</b><p class="small muted">O ${esc(BRAND.mascot)} identifica os alimentos e estima as porções. Revês tudo antes de guardar.</p></div></div>
+      <div id="a-st"></div>
+      <div class="pick big" id="a-pick"><label for="f-cam">${icon("camera")}<span>Tirar foto</span></label><label for="f-gal">${icon("image")}<span>Da galeria</span></label></div>
+      <ul class="cam-tips">${TIPS.map(([i, t]) => `<li>${icon(i,"xs")}${t}</li>`).join("")}</ul>
+      <p class="tiny muted" style="margin-top:12px">A análise por foto é uma <b>estimativa</b>, não uma medição.</p>`;
+      aiReady.then(() => { if (sample || !el.isConnected) return; const st = $("#a-st", el); if (!st) return;
+        st.innerHTML = `<div class="note warn" style="margin-bottom:12px">${icon("info","sm")}<span>A análise por IA precisa do Claude ou do servidor grátis da Brota (servidor/LEIA-ME.md). Aqui ainda não está ligada, por isso não analisamos fotos. Usa a pesquisa ou regista à mão.</span></div>
+          <div class="row" style="gap:8px;margin-bottom:14px"><button class="btn soft grow sm" id="a-gopq">${icon("search","sm")} Pesquisar</button><button class="btn soft grow sm" id="a-goman">Registar à mão</button></div>`;
+        const pk = $("#a-pick", el); if (pk) pk.classList.add("off");
+        $("#a-gopq", el).onclick = () => addTab("pesq"); $("#a-goman", el).onclick = () => addTab("manual"); }); };
+    const picked = () => { el.innerHTML = `<div class="shot"><img id="a-prev" alt="Fotografia da refeição" src="${URL.createObjectURL(blob)}"><div class="scan hide" id="a-scan"><i></i></div></div>
+      <input id="a-hint" maxlength="120" placeholder="Algo que não se vê? (ex.: arroz integral, sem óleo)" style="margin-top:12px" aria-label="Pormenor opcional">
+      <div class="row" style="gap:8px;margin-top:12px"><label class="btn ghost" for="f-gal" style="flex:none" aria-label="Escolher outra foto">${icon("image","sm")}</label><button class="btn block grow" id="a-go" ${sample ? "" : "disabled"}>${icon("sparkle","sm")} Analisar a foto</button></div>
+      <div id="a-st" style="margin-top:12px"></div><div id="a-res"></div>`;
+      $("#a-go", el).onclick = () => run(); };
     const pick = async e => { const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+      if (!/^image\//.test(f.type)) { toast("Escolhe uma imagem"); return; }
       try { blob = await shrink(f); } catch(err) { toast("Não consegui ler essa imagem."); return; }
-      const p = $("#a-prev", el); p.src = URL.createObjectURL(blob); p.classList.remove("hide"); $("#a-res", el).innerHTML = ""; go.disabled = !sample; };
+      cur = null; picked(); };
     $("#f-cam").onchange = pick; $("#f-gal").onchange = pick;
+    const STEPS = ["A identificar os alimentos…","A estimar as porções…","A calcular os valores…"];
     const run = async extra => {
-      go.disabled = true; st.innerHTML = `<div class="row" style="justify-content:center">${abi({ mood:"think", size:56 })}<span class="muted">O ${esc(BRAND.mascot)} está a olhar para o teu prato…</span></div>`;
+      if (!sample) return; if (navigator.onLine === false) { fail("offline"); return; }
+      const hint = ($("#a-hint", el) || {}).value || "", st = $("#a-st", el), go = $("#a-go", el), sc = $("#a-scan", el), my = ctl = {};
+      go.disabled = true; sc.classList.remove("hide"); $("#a-res", el).innerHTML = "";
+      let si = 0; st.innerHTML = `<div class="ai-wait"><span class="dots"><i></i><i></i><i></i></span><span id="a-step" class="grow">${STEPS[0]}</span><button class="btn ghost sm" id="a-cancel">Cancelar</button></div>`;
+      const tick = setInterval(() => { si++; const s = $("#a-step", el); if (s) s.textContent = si < STEPS.length ? STEPS[si] : si >= 6 ? "Está a demorar mais do que o normal…" : STEPS[STEPS.length - 1]; }, 2200);
+      $("#a-cancel", el).onclick = () => { ctl = null; clearInterval(tick); sc.classList.add("hide"); st.innerHTML = ""; go.disabled = false; };
       const al = (S.u && S.u.al || []).filter(x => x !== "Nenhuma");
       const prompt = "Analisa a fotografia de uma refeição e identifica só os alimentos VISÍVEIS. Estima porção, kcal e macronutrientes de cada um. Sê honesto sobre a incerteza: usa confianca 'alta', 'media' ou 'baixa' em cada item. "
         + "Se a imagem estiver pouco clara, não mostrar comida, ou se um alimento for impossível de identificar, NÃO inventes: põe clara=false e escreve uma pergunta curta ao utilizador em 'pergunta'. "
         + (al.length ? "O utilizador evita: " + al.join(", ") + ". Se algum alimento visível puder conter isso, refere em 'observacao'. " : "")
-        + ($("#a-hint", el).value.trim() ? "Informação do utilizador: " + $("#a-hint", el).value.trim().slice(0,120) + ". " : "") + (extra ? "Resposta do utilizador à tua pergunta: " + extra + ". " : "")
-        + 'Responde APENAS com JSON: {"refeicao":"nome curto","clara":true,"pergunta":"","itens":[{"nome":"","porcao":"ex.: 150 g","kcal":0,"proteina_g":0,"carbo_g":0,"gordura_g":0,"confianca":"alta"}],"observacao":"1 frase sobre a incerteza"}. Usa português europeu.';
-      try { cur = await sample.json(prompt, { images:[blob], modelTier:"default" }); st.innerHTML = ""; renderRes(); ach("photo"); }
-      catch(e) { st.innerHTML = `<div class="note warn">${icon("info","sm")}<span>${esc(AIERR[e && e.code] || "Não foi possível analisar. Tenta outra foto ou regista à mão.")}</span></div>`; }
-      finally { go.disabled = !(blob && sample); }
-    };
-    go.onclick = () => run();
-    const itemRow = (it, i) => { const cf = ["alta","media","baixa"].includes(it.confianca) ? it.confianca : "media";
-      return `<div class="ai-item"><div class="row"><input data-i="${i}" data-f="nome" maxlength="60" value="${esc(it.nome)}" aria-label="Alimento" style="font-weight:600"><span class="conf ${cf}">${{ alta:"Confiança alta", media:"Confiança média", baixa:"Confiança baixa" }[cf]}</span><button class="iconbtn" data-del="${i}" aria-label="Remover alimento">${icon("trash","sm")}</button></div>
-        <input data-i="${i}" data-f="porcao" maxlength="30" value="${esc(it.porcao || "")}" placeholder="Porção" aria-label="Porção" style="margin-top:8px">
-        <div class="g4" style="margin-top:8px">${[["kcal","kcal"],["proteina_g","Prot. g"],["carbo_g","Hidr. g"],["gordura_g","Gord. g"]].map(([f,l]) => `<label class="field"><span>${l}</span><input type="number" inputmode="numeric" min="0" data-i="${i}" data-f="${f}" value="${num(it[f])}"></label>`).join("")}</div></div>`; };
+        + (hint.trim() ? "Informação do utilizador: " + hint.trim().slice(0,120) + ". " : "") + (extra ? "Resposta do utilizador à tua pergunta: " + extra + ". " : "")
+        + 'Responde APENAS com JSON: {"refeicao":"nome curto","clara":true,"pergunta":"","itens":[{"nome":"","porcao":"ex.: 150 g","kcal":0,"proteina_g":0,"carbo_g":0,"gordura_g":0,"confianca":"alta"}],"observacao":"1 frase sobre a incerteza"}. Números sem unidades. Usa português europeu.';
+      try { const raw = await withTimeout(sample.json(prompt, { images:[blob], modelTier:"default" }), 35000); if (ctl !== my) return; cur = cleanAI(raw); st.innerHTML = ""; renderRes(); ach("photo"); }
+      catch(e) { if (ctl !== my) return; fail(e && e.code); }
+      finally { clearInterval(tick); if (ctl === my) { sc.classList.add("hide"); go.disabled = !(blob && sample); } } };
+    const fail = code => { const st = $("#a-st", el); if (!st) return;
+      st.innerHTML = `<div class="note warn">${icon("info","sm")}<span>${esc(AIERR[code] || "Não foi possível analisar. Tenta outra foto ou regista à mão.")}</span></div>
+        <div class="row" style="gap:8px;margin-top:10px"><button class="btn soft grow sm" id="a-retry">Tentar outra vez</button><button class="btn ghost grow sm" id="a-man">Registar à mão</button></div>`;
+      $("#a-retry", el).onclick = () => run(); $("#a-man", el).onclick = () => addTab("manual", { n: ($("#a-hint", el) || {}).value || "" }); };
+    const val = (it, f) => Math.round(it.b[f] * it.x);
     function renderRes(){
-      const r = cur && typeof cur === "object" ? cur : { itens:[] }; cur = r; r.itens = Array.isArray(r.itens) ? r.itens : [];
-      const res = $("#a-res", el);
-      const ask = (r.clara === false || !r.itens.length) ? `<div class="card stack" style="margin-bottom:12px"><div class="row">${abi({ mood:"think", size:48 })}<p><b>Não tenho a certeza.</b> ${esc(r.pergunta || "Consegues dizer-me o que está no prato?")}</p></div>
+      const r = cur, res = $("#a-res", el);
+      const ask = !r.clara ? `<div class="card stack" style="margin-bottom:12px"><div class="row">${abi({ mood:"think", size:48 })}<p><b>Não tenho a certeza.</b> ${esc(r.pergunta || "Consegues dizer-me o que está no prato?")}</p></div>
         <input id="a-ans" maxlength="160" placeholder="Ex.: é arroz de pato com salada" aria-label="Resposta"><button class="btn soft block" id="a-ansb">Responder e analisar de novo</button></div>` : "";
-      res.innerHTML = ask + (r.itens.length ? `<input id="a-name" maxlength="60" value="${esc(r.refeicao || "Refeição")}" aria-label="Nome da refeição" style="font-weight:700">
-        <div style="margin-top:12px" id="a-items">${r.itens.map(itemRow).join("")}</div>
-        <button class="btn ghost block sm" id="a-more" style="margin-top:10px">${icon("plus","sm")} Alimento em falta</button>
-        <div class="card row between" style="margin-top:12px"><b>Total estimado</b><b class="num" id="a-tot"></b></div>
+      const sum = f => r.itens.reduce((a, x) => a + val(x, f), 0);
+      res.innerHTML = ask + (r.itens.length ? `<div class="ai-total"><div><small class="muted">Total estimado</small><b class="num" id="a-tot">${sum("kcal")} kcal</b></div>
+          <div class="ai-mac">${[["proteina_g","Proteína","var(--prot)"],["carbo_g","Hidratos","var(--carb)"],["gordura_g","Gordura","var(--fat)"]].map(([f, n, c]) => `<span><i style="background:${c}"></i>${n} <b class="num">${sum(f)} g</b></span>`).join("")}</div></div>
+        <input id="a-name" maxlength="60" value="${esc(r.refeicao)}" aria-label="Nome da refeição" style="font-weight:700;margin-top:12px">
+        <div id="a-items" style="margin-top:10px">${r.itens.map((it, i) => { const cf = it.confianca;
+          return `<div class="ai-item"><div class="row"><input data-i="${i}" data-f="nome" maxlength="60" value="${esc(it.nome)}" aria-label="Alimento" style="font-weight:600"><button class="iconbtn" data-del="${i}" aria-label="Remover ${esc(it.nome)}">${icon("trash","sm")}</button></div>
+            <div class="row between" style="margin-top:8px"><span class="conf ${cf}">${{ alta:"Confiança alta", media:"Confiança média", baixa:"Confiança baixa" }[cf]}</span><span class="small muted">${esc(it.porcao)}</span></div>
+            <div class="row between" style="margin-top:10px"><div class="stepper"><button data-dx="-1" data-i="${i}" aria-label="Menos">${icon("minus","xs")}</button><b class="num">× ${String(it.x).replace(".", ",")}</b><button data-dx="1" data-i="${i}" aria-label="Mais">${icon("plus","xs")}</button></div>
+              <span class="small num">${val(it, "kcal")} kcal · P ${val(it, "proteina_g")} · H ${val(it, "carbo_g")} · G ${val(it, "gordura_g")}</span></div>
+            <details class="ai-edit"><summary>Corrigir valores</summary><div class="g4" style="margin-top:8px">${[["kcal","kcal"],["proteina_g","Prot. g"],["carbo_g","Hidr. g"],["gordura_g","Gord. g"]].map(([f,l]) => `<label class="field"><span>${l}</span><input type="number" inputmode="numeric" min="0" data-i="${i}" data-v="${f}" value="${val(it, f)}"></label>`).join("")}</div></details></div>`; }).join("")}</div>
+        <button class="btn ghost block sm" id="a-more" style="margin-top:10px">${icon("plus","sm")} Falta um alimento</button>
         ${r.observacao ? `<p class="small muted" style="margin-top:10px">${esc(r.observacao)}</p>` : ""}
-        <button class="btn block" id="a-save" style="margin-top:12px">Guardar no diário</button>` : "");
+        <button class="btn block" id="a-save" style="margin-top:12px;height:52px">Guardar no diário</button>` : "");
       const ab = $("#a-ansb", res); if (ab) ab.onclick = () => { const v = $("#a-ans", res).value.trim(); if (!v) { toast("Escreve o que está no prato"); return; } run(v.slice(0,160)); };
       if (!r.itens.length) return;
-      const tot = () => { $("#a-tot", res).textContent = r.itens.reduce((a, x) => a + num(x.kcal), 0) + " kcal"; }; tot();
-      $("#a-items", res).oninput = e => { const f = e.target.dataset.f, i = +e.target.dataset.i; if (!f || !r.itens[i]) return; r.itens[i][f] = (f === "nome" || f === "porcao") ? e.target.value : num(e.target.value); tot(); };
-      $("#a-items", res).onclick = e => { const b = e.target.closest("[data-del]"); if (!b) return; r.itens.splice(+b.dataset.del, 1); renderRes(); };
-      $("#a-more", res).onclick = () => { r.itens.push({ nome:"", porcao:"", kcal:0, proteina_g:0, carbo_g:0, gordura_g:0, confianca:"alta" }); renderRes(); };
-      $("#a-save", res).onclick = () => { const items = r.itens.filter(x => String(x.nome||"").trim());
-        if (!items.length) { toast("Junta pelo menos um alimento"); return; }
-        const sum = f => items.reduce((a, x) => a + num(x[f]), 0);
-        addEntry(curDay, { n:($("#a-name", res).value.trim() || "Refeição").slice(0,60), k:sum("kcal"), p:sum("proteina_g"), c:sum("carbo_g"), g:sum("gordura_g"), m:mealSel(), q:items.map(x => String(x.nome).trim()).join(", ").slice(0,80), src:"foto" });
+      const items = $("#a-items", res);
+      items.oninput = e => { const i = +e.target.dataset.i, it = r.itens[i]; if (!it) return;
+        if (e.target.dataset.f === "nome") it.nome = e.target.value;
+        const f = e.target.dataset.v; if (f) { it.b[f] = toN(e.target.value) / it.x; $("#a-tot", res).textContent = sum("kcal") + " kcal"; } };
+      items.onchange = e => { if (e.target.dataset.v) renderRes(); };
+      items.onclick = e => { const d = e.target.closest("[data-del]"); if (d) { r.itens.splice(+d.dataset.del, 1); renderRes(); return; }
+        const s = e.target.closest("[data-dx]"); if (s) { const it = r.itens[+s.dataset.i]; it.x = clamp(Math.round((it.x + .5 * +s.dataset.dx) * 2) / 2, .5, 3); renderRes(); } };
+      $("#a-more", res).onclick = () => { r.itens.push({ nome:"", porcao:"", confianca:"alta", x:1, b:{ kcal:0, proteina_g:0, carbo_g:0, gordura_g:0 } }); renderRes(); };
+      $("#a-save", res).onclick = () => { const L = r.itens.filter(x => String(x.nome || "").trim());
+        if (!L.length) { toast("Junta pelo menos um alimento"); return; }
+        const s2 = f => L.reduce((a, x) => a + val(x, f), 0);
+        addEntry(curDay, { n:($("#a-name", res).value.trim() || "Refeição").slice(0,60), k:s2("kcal"), p:s2("proteina_g"), c:s2("carbo_g"), g:s2("gordura_g"), m:mealSel(), q:L.map(x => String(x.nome).trim()).join(", ").slice(0,80), src:"foto" });
         closeSheet(); renderHoje(); toast("Refeição guardada"); };
     }
+    idle();
   },
   pesq(el){
-    el.innerHTML = `<div class="row" style="position:relative"><svg class="ic sm" style="position:absolute;left:14px;color:var(--muted)"><use href="#i-search"/></svg><input id="a-q" type="search" maxlength="40" placeholder="Pesquisar alimento" style="padding-left:42px" aria-label="Pesquisar alimento"></div>
-      <div id="a-fl" style="margin-top:8px"></div><p class="tiny muted" style="margin-top:10px">Valores médios aproximados por 100 g, de tabelas de composição de alimentos. Confirma sempre no rótulo.</p>`;
-    const list = () => { const q = $("#a-q", el).value.trim().toLowerCase(), L = FOODS.filter(f => !q || f.n.toLowerCase().includes(q)).slice(0, 40);
-      $("#a-fl", el).innerHTML = L.map(f => `<button class="food" data-f="${esc(f.n)}"><span class="lt"><b>${esc(f.n)}</b><small>${f.k} kcal · P ${f.p} · H ${f.c} · G ${f.g} por 100 g</small></span>${icon("plus","sm")}</button>`).join("")
-        || `<div class="empty">Sem resultados. Usa o separador Manual.</div>`; };
+    el.innerHTML = `<div class="row" style="position:relative"><svg class="ic sm" style="position:absolute;left:14px;color:var(--muted)"><use href="#i-search"/></svg><input id="a-q" type="search" maxlength="40" placeholder="Pesquisar alimento ou receita" style="padding-left:42px" aria-label="Pesquisar alimento ou receita"></div>
+      <div id="a-fl" style="margin-top:8px"></div><p class="tiny muted" style="margin-top:10px">Valores médios aproximados. Confirma sempre no rótulo.</p>`;
+    const m = mealSel();
+    const list = () => { const raw = $("#a-q", el).value.trim(), q = norm(raw), words = q.split(/\s+/).filter(Boolean), hit = n => words.every(w => norm(n).includes(w));
+      const R = RECIPES.filter(r => recipeAllowed(r) && (!q ? r.c === m || (isMain(m) && isMain(r.c)) : hit(r.n))).slice(0, q ? 8 : 6);
+      const F = FOODS.filter(f => !q || hit(f.n)).slice(0, 30);
+      $("#a-fl", el).innerHTML = (R.length ? `<p class="shop-cat">${q ? "Receitas" : "Receitas para " + m.toLowerCase()}</p>${R.map(r => `<button class="food rfood" data-r="${r.id}">${photoOf(r) ? `<img src="${esc(photoOf(r))}" alt="" loading="lazy">` : `<span class="rf-ph">${icon(CAT_IC[r.c] || "bowl","sm")}</span>`}<span class="lt"><b>${esc(r.n)}</b><small>${kcalOn() ? r.k + " kcal · " : ""}P ${r.p} · H ${r.h} · G ${r.g} por porção</small></span>${icon("plus","sm")}</button>`).join("")}` : "")
+        + (F.length ? `<p class="shop-cat">Alimentos</p>${F.map(f => `<button class="food" data-f="${esc(f.n)}"><span class="lt"><b>${esc(f.n)}</b><small>${kcalOn() ? f.k + " kcal · " : ""}P ${f.p} · H ${f.c} · G ${f.g} por 100 g</small></span>${icon("plus","sm")}</button>`).join("")}` : "")
+        || `<div class="empty">Sem resultados para "${esc(raw)}". <button class="lnk" id="a-toman">Regista à mão</button>.</div>`;
+      const tm = $("#a-toman", el); if (tm) tm.onclick = () => addTab("manual", { n:raw }); };
     $("#a-q", el).oninput = list; list();
-    $("#a-fl", el).onclick = e => { const b = e.target.closest("[data-f]"); if (b) portion(FOODS.find(f => f.n === b.dataset.f)); };
-    const portion = f => { el.innerHTML = `<button class="btn ghost sm" id="a-bk">${icon("left","sm")} Voltar</button>
-      <h3 style="margin-top:14px">${esc(f.n)}</h3><label class="field" style="margin-top:12px"><span>Quantidade (g ou ml)</span><input id="a-g" type="number" inputmode="numeric" min="1" max="2000" value="${f.q}"></label>
+    const facts = v => `<div><b>${v.k}</b><small>kcal</small></div><div><b>${v.p}</b><small>prot. g</small></div><div><b>${v.c}</b><small>hidr. g</small></div><div><b>${v.g}</b><small>gord. g</small></div>`;
+    const back = () => { el.onclick = null; ADD.pesq(el); };
+    const recPortion = r => { let x = 1; el.onclick = null; const draw = () => { const v = { k:Math.round(r.k * x), p:Math.round(r.p * x), c:Math.round(r.h * x), g:Math.round(r.g * x) };
+      el.innerHTML = `<button class="btn ghost sm" id="a-bk">${icon("left","sm")} Voltar</button>
+        <div class="rp-head">${photoOf(r) ? `<img src="${esc(photoOf(r))}" alt="">` : ""}<div><h3>${esc(r.n)}</h3><p class="small muted">${r.t} min · porção da receita</p></div></div>
+        <p class="small" style="margin-top:14px"><b>Quanto comeste?</b></p><div class="row" style="gap:8px;margin-top:8px;flex-wrap:wrap">${[.5, 1, 1.5, 2].map(q => `<button class="chip ${q === x ? "on" : ""}" data-x="${q}">${{ .5:"Meia porção", 1:"1 porção", 1.5:"1 e meia", 2:"2 porções" }[q]}</button>`).join("")}</div>
+        <div class="facts" style="margin-top:14px">${facts(v)}</div><button class="btn block" id="a-ok" style="margin-top:14px">Adicionar</button>`;
+      $("#a-bk", el).onclick = back; $$("[data-x]", el).forEach(b => b.onclick = () => { x = +b.dataset.x; draw(); });
+      $("#a-ok", el).onclick = () => { addEntry(curDay, Object.assign({ n:r.n, m:mealSel(), q:x === 1 ? "1 porção" : String(x).replace(".", ",") + " porções", src:"recipe" }, v)); closeSheet(); renderHoje(); toast("Adicionado"); }; };
+      draw(); };
+    const portion = f => { el.onclick = null; el.innerHTML = `<button class="btn ghost sm" id="a-bk">${icon("left","sm")} Voltar</button>
+      <h3 style="margin-top:14px">${esc(f.n)}</h3>
+      <div class="row" style="gap:8px;margin-top:12px;flex-wrap:wrap">${[[f.q, "1 porção (" + f.q + " g)"], [50, "50 g"], [100, "100 g"], [200, "200 g"]].filter((x, i, a) => a.findIndex(y => y[0] === x[0]) === i).map(([g, l]) => `<button class="chip" data-g="${g}">${l}</button>`).join("")}</div>
+      <label class="field" style="margin-top:12px"><span>Quantidade (g ou ml)</span><input id="a-g" type="number" inputmode="numeric" min="1" max="2000" value="${f.q}"></label>
       <div class="facts" style="margin-top:12px" id="a-fx"></div><button class="btn block" id="a-ok" style="margin-top:14px">Adicionar</button>`;
       const calc = () => { const g = clamp(+$("#a-g", el).value || 0, 0, 2000)/100; return { k:Math.round(f.k*g), p:Math.round(f.p*g), c:Math.round(f.c*g), g:Math.round(f.g*g) }; };
-      const upd = () => { const v = calc(); $("#a-fx", el).innerHTML = `<div><b>${v.k}</b><small>kcal</small></div><div><b>${v.p}</b><small>prot. g</small></div><div><b>${v.c}</b><small>hidr. g</small></div><div><b>${v.g}</b><small>gord. g</small></div>`; };
-      $("#a-g", el).oninput = upd; upd(); $("#a-bk", el).onclick = () => { el.onclick = null; ADD.pesq(el); };
+      const upd = () => { $("#a-fx", el).innerHTML = facts(calc()); $$("[data-g]", el).forEach(b => b.classList.toggle("on", +b.dataset.g === +$("#a-g", el).value)); };
+      $$("[data-g]", el).forEach(b => b.onclick = () => { $("#a-g", el).value = b.dataset.g; upd(); });
+      $("#a-g", el).oninput = upd; upd(); $("#a-bk", el).onclick = back;
       $("#a-ok", el).onclick = () => { const gr = +$("#a-g", el).value; if (!(gr > 0 && gr <= 2000)) { toast("Indica uma quantidade entre 1 e 2000"); return; }
         addEntry(curDay, Object.assign({ n:f.n, m:mealSel(), q:gr + " g", src:"db" }, calc())); closeSheet(); renderHoje(); toast("Adicionado"); }; };
+    $("#a-fl", el).onclick = e => { const b = e.target.closest("[data-f]"); if (b) { portion(FOODS.find(f => f.n === b.dataset.f)); return; } const r = e.target.closest("[data-r]"); if (r) recPortion(RECIPES.find(x => x.id === +r.dataset.r)); };
   },
-  manual(el){
-    el.innerHTML = `<div class="stack"><label class="field"><span>Nome</span><input id="m-n" maxlength="60" placeholder="Ex.: Sopa da avó"></label>
+  manual(el, arg){
+    el.innerHTML = `<div class="stack"><label class="field"><span>Nome</span><input id="m-n" maxlength="60" placeholder="Ex.: Sopa da avó" value="${esc((arg && arg.n) || "")}"></label>
       <label class="field"><span>Porção (opcional)</span><input id="m-q" maxlength="30" placeholder="Ex.: 1 prato"></label>
       <div class="g4">${[["k","kcal"],["p","Prot. g"],["c","Hidr. g"],["g","Gord. g"]].map(([f,l]) => `<label class="field"><span>${l}</span><input id="m-${f}" type="number" inputmode="numeric" min="0" max="5000"></label>`).join("")}</div>
       <p class="tiny muted">Não sabes os valores? Deixa em branco. Registar já conta.</p>

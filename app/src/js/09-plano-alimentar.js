@@ -14,7 +14,10 @@ const MARKETS = ["Continente","Pingo Doce","Lidl","Mercadona","Aldi","Intermarch
 // Cozinha de cada prato principal (id da receita → cozinha). Pequenos-almoços e lanches não contam.
 const CUISINE_OF = { 12:"portuguesa",13:"portuguesa",18:"portuguesa",23:"portuguesa",27:"portuguesa",28:"portuguesa",31:"portuguesa",33:"portuguesa",
   11:"mediterranica",15:"mediterranica",24:"mediterranica",32:"mediterranica",101:"mediterranica",25:"mediterranica",
-  14:"italiana",20:"italiana",29:"italiana",34:"italiana", 19:"asiatica",21:"asiatica",26:"asiatica",30:"asiatica",103:"asiatica", 16:"mexicana",17:"mexicana",22:"mexicana" };
+  14:"italiana",20:"italiana",29:"italiana",34:"italiana", 19:"asiatica",21:"asiatica",26:"asiatica",30:"asiatica",103:"asiatica", 16:"mexicana",17:"mexicana",22:"mexicana",
+  116:"portuguesa",117:"portuguesa",118:"portuguesa",119:"portuguesa",121:"portuguesa",122:"portuguesa",123:"portuguesa",124:"portuguesa",125:"portuguesa",126:"portuguesa",127:"portuguesa",
+  128:"portuguesa",129:"portuguesa",130:"portuguesa",132:"portuguesa",134:"portuguesa",135:"portuguesa",141:"portuguesa",143:"portuguesa",
+  120:"mediterranica",131:"mediterranica",144:"mediterranica",145:"mediterranica", 133:"italiana",136:"italiana",137:"italiana", 138:"mexicana", 139:"asiatica",140:"asiatica",146:"asiatica",147:"asiatica" };
 // O que pode já haver em casa: [rótulo, expressão que apanha o ingrediente nas receitas]
 const PANTRY = [["Arroz",/^arroz/i],["Massa",/^massa(?! de pizza)|esparguete|lasanha/i],["Flocos de aveia",/aveia(?! \S*bebida)|^flocos de aveia/i],["Ovos",/^ovos?\b|ovos cozidos/i],
   ["Leite ou bebida vegetal",/^leite(?! de coco)|^bebida/i],["Iogurte",/iogurte/i],["Atum em lata",/atum/i],["Grão-de-bico",/grão/i],["Feijão",/feijão(?!-verde)/i],["Lentilhas",/lentilhas/i],
@@ -24,7 +27,9 @@ const PANTRY = [["Arroz",/^arroz/i],["Massa",/^massa(?! de pizza)|esparguete|las
 /* ===== Preços de referência =====
    shortcut: preços médios aproximados de supermercado em Portugal, escritos à mão e não verificados; mudam com a loja e a época.
    Trocar por uma tabela com fonte (ou preços do supermercado escolhido) antes de prometer valores. [expressão, €/kg ou €/L, € por unidade] */
-const PRICES = [[/manteiga de amendoim/i,9],[/leite de coco/i,4],[/^leite|^bebida/i,1.1],[/aveia/i,2.2,.1],[/banana/i,1.4,.2],[/pão ralado/i,3],[/pão de hambúrguer/i,0,.4],[/^pão|tortilha/i,3.5,.2],
+const PRICES = [[/manteiga de amendoim/i,9],[/pera\b/i,1.8,.3],[/kiwi/i,3,.3],[/pêssego/i,2.5,.35],[/sardinhas/i,0,.4],[/camarão/i,14],[/febras|lombo de porco/i,6.5],[/peru/i,8.5],
+  [/fiambre/i,0,.3],[/carne de vaca|bife de vaca/i,11],[/carne picada de (peru|frango)/i,7],[/ervilhas/i,2.5],[/parmesão/i,20],[/pesto/i,14],[/noodles/i,4],[/arroz arbóreo/i,3.5],
+  [/caldo de legumes/i,1.5],[/milho para pipocas/i,3],[/massa (pevide|cotovelinhos)/i,1.6],[/pão de centeio/i,4,.25],[/tomate cherry/i,4],[/louro|^sal$/i,0,0],[/leite de coco/i,4],[/^leite|^bebida/i,1.1],[/aveia/i,2.2,.1],[/banana/i,1.4,.2],[/pão ralado/i,3],[/pão de hambúrguer/i,0,.4],[/^pão|tortilha/i,3.5,.2],
   [/abacate/i,6,1],[/ovo/i,0,.25],[/lim(ão|a)/i,2,.3],[/frutos vermelhos/i,8],[/iogurte grego/i,5],[/iogurte/i,2.5,.35],[/granola/i,7],[/^mel/i,8],[/manteiga/i,9],[/chia/i,12],[/requeijão/i,7],
   [/polpa de tomate|tomate pelado/i,1.6],[/tomate/i,2.2,.3],[/^azeite/i,9],[/cogumelos/i,5],[/manga/i,3,1.4],[/grão/i,2.5],[/pepino/i,1.5,.5],[/cebola/i,1.2,.2],[/peito de frango/i,7.5],
   [/pernas de frango/i,0,1.1],[/^arroz/i,1.6],[/alface|rúcula/i,0,.5],[/bacalhau/i,14],[/batata palha/i,8],[/massa de pizza/i,0,1.5],[/^massa|esparguete/i,1.6],[/folhas de lasanha/i,0,.12],
@@ -146,3 +151,15 @@ function prefsSummary(u = S.u || {}){
   if (u.market) L.push(u.market);
   return L;
 }
+
+// O plano faz-se sozinho: a semana atual (a partir de hoje) e, a partir de sexta, a seguinte. Cada semana só é preenchida uma vez,
+// para não voltar a pôr o que a pessoa apagou; mudar as preferências refaz as sugestões (ver o onboarding).
+function ensurePlans(){
+  if (!S.ob) return false; S.planWk = S.planWk || {}; const mon = mondayOf(today()); let ch = false;
+  for (const w of [mon].concat(dow(today()) >= 4 ? [addDays(mon, 7)] : [])) if (!S.planWk[w]) { buildWeekPlan(w, false, w === mon ? today() : w); S.planWk[w] = 1; ch = true; }
+  if (ch) { Object.keys(S.planWk).sort().slice(0, -8).forEach(k => delete S.planWk[k]); save(); }
+  return ch;
+}
+// A lista de compras segue o plano da semana: quando o plano muda, os produtos sugeridos são recalculados.
+function syncShop(){ const mon = mondayOf(today()), sig = S.plan.filter(x => x.date >= mon && x.date <= addDays(mon, 6) && x.r).map(x => x.r + ":" + (x.x || 1)).sort().join(",");
+  if (sig !== S.shopSig) { genShop(mon); S.shopSig = sig; save(); } }

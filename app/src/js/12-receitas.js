@@ -4,6 +4,7 @@ let rFilter = "Todas";
 function recipeAllowed(r){ const u = S.u || {}, al = (u.al||[]).filter(x => x !== "Nenhuma"), dt = u.diet || [];
   if (r.col_id && !S.owned.includes(r.col_id)) return false;
   if (r.al.some(a => al.includes(a))) return false;
+  if (r.pk && dt.includes("Não como carne de porco")) return false;
   const SYN = { "leguminosas":["grão","feijão","lentilha"], "peixe":["salmão","atum","peixe","bacalhau","pescada"], "picante":["caril","malagueta","piri"] };
   const dl = (u.dislikes || []).flatMap(x => SYN[String(x).toLowerCase()] || [String(x).toLowerCase()]).filter(Boolean);
   if (dl.length && r.i.some(i => dl.some(d => i[0].toLowerCase().includes(d)))) return false;
