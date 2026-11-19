@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F7F4ED">
+<title>Brota</title>
+<script src="fotos/fotos.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+/* @css */
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="saving" class="saving" aria-live="polite">Guardado</div>
+
+  <section class="view on" id="v-hoje">
+    <div class="top">
+      <div class="t"><small id="h-date"></small><h1 id="h-hi">Olá</h1></div>
+      <button class="iconbtn" data-go="roda" aria-label="Roda de prémios" id="h-gift"><svg class="ic"><use href="#i-gift"/></svg></button>
+    </div>
+    <div class="week" id="h-week"></div>
+    <div class="card summary" id="h-sum"></div>
+    <div class="tipline" id="h-tip"></div>
+
+    <div class="sec">
+      <div class="sec-h"><h2>Refeições</h2><button class="link" id="h-repeat">Repetir dia anterior</button></div>
+      <div class="list" id="h-meals"></div>
+    </div>
+
+    <div class="sec"><div class="card" id="h-water"></div></div>
+
+    <div class="sec">
+      <div class="sec-h"><h2>Desafios de hoje</h2><button class="link" data-go="roda" id="h-spins"></button></div>
+      <div class="list" id="h-ch"></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-h"><h2>Mais</h2></div>
+      <div class="list" id="h-more"></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-planos">
+    <div class="top"><div class="t"><h1>Planos</h1></div></div>
+    <div class="seg" id="p-seg" style="margin-top:8px"><button data-s="ref" class="on">Refeições</button><button data-s="treino">Treino</button><button data-s="compras">Compras</button></div>
+    <div id="p-ref"></div><div id="p-treino" class="hide"></div><div id="p-compras" class="hide"></div>
+  </section>
+
+  <section class="view" id="v-receitas">
+    <div class="top"><div class="t"><h1>Receitas</h1></div></div>
+    <div class="row" style="margin-top:8px;position:relative"><svg class="ic sm" style="position:absolute;left:14px;color:var(--muted)"><use href="#i-search"/></svg><input id="r-q" type="search" maxlength="40" placeholder="Receita ou ingrediente que tens em casa" style="padding-left:42px" aria-label="Pesquisar receitas"></div>
+    <div class="chips" id="r-f" style="margin-top:12px"></div>
+    <p class="small muted" id="r-n" style="margin:12px 2px"></p>
+    <div class="rgrid" id="r-l"></div>
+  </section>
+
+  <section class="view" id="v-perfil">
+    <div class="top"><div class="t"><h1>Perfil</h1></div></div>
+    <div class="card" id="pf-head" style="display:flex;gap:16px;align-items:center;margin-top:8px"></div>
+    <div class="sec"><div class="list" id="pf-menu"></div></div>
+    <p class="tiny muted" style="margin:18px 4px">A <span data-brand></span> dá informação geral e estimativas. Não substitui médico, nutricionista nem personal trainer.</p>
+  </section>
+
+  <section class="view" id="v-roda">
+    <div class="top">
+      <button class="iconbtn" data-back aria-label="Voltar"><svg class="ic"><use href="#i-left"/></svg></button>
+      <div class="t"><h1>Roda de prémios</h1></div>
+      <button class="iconbtn" id="w-snd" aria-label="Som"></button>
+    </div>
+    <p class="muted small" id="w-sub" style="text-align:center;margin-top:6px"></p>
+    <div class="tries" id="w-tries"></div>
+    <div class="wheel-wrap">
+      <svg class="pointer" viewBox="0 0 34 42" aria-hidden="true"><path d="M17 42 3 14a15 15 0 1 1 28 0Z" fill="#1A2A1F"/><circle cx="17" cy="15" r="5" fill="#F7F4ED"/></svg>
+      <svg class="wheel" viewBox="0 0 200 200" aria-hidden="true"><g class="wheel-rot" id="w-rot"></g></svg>
+      <div class="hub" id="w-hub"></div>
+    </div>
+    <button class="btn block" id="w-spin" style="margin-top:24px;height:56px;font-size:17px">Girar</button>
+    <div class="sec">
+      <div class="card stack">
+        <h3>Como funciona</h3>
+        <p class="small muted">Os giros são grátis e nunca se compram. Ganhas giros ao concluir desafios diários (até 3 guardados). Cada ronda tem 3 tentativas e o resultado de cada uma é aleatório, com as probabilidades abaixo. <b style="color:var(--ink)">Quando terminas as 3 tentativas de uma ronda, recebes o prémio dourado. É garantido, não depende da sorte.</b> Podem sair prémios repetidos. Os prémios desta versão são cosméticos e não expiram.</p>
+        <table class="odds" id="w-odds"></table>
+        <p class="tiny muted" id="w-disc"></p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<nav class="nav" aria-label="Principal"><div class="in">
+  <button class="tab on" data-tab="hoje"><svg class="ic"><use href="#i-home"/></svg>Hoje</button>
+  <button class="tab" data-tab="planos"><svg class="ic"><use href="#i-cal"/></svg>Planos</button>
+  <button class="add" id="nav-add" aria-label="Adicionar refeição"><span><svg class="ic"><use href="#i-plus"/></svg></span></button>
+  <button class="tab" data-tab="receitas"><svg class="ic"><use href="#i-book"/></svg>Receitas</button>
+  <button class="tab" data-tab="perfil"><svg class="ic"><use href="#i-user"/></svg>Perfil</button>
+</div></nav>
+
+<div class="scrim hide" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-t"><div class="grab"></div><div class="sh"><h2 id="sheet-t"></h2><button class="iconbtn" id="sheet-x" aria-label="Fechar"><svg class="ic"><use href="#i-x"/></svg></button></div><div class="sb" id="sheet-b"></div></div>
+<div class="toast" id="toast" role="status"></div>
+<div class="full" id="splash"><div class="bounce" id="sp-m"></div><h1 data-brand></h1><p data-tagline></p></div>
+<div class="full hide" id="ob"><div class="in" id="ob-in"></div></div>
+<input type="file" id="f-cam" accept="image/*" capture="environment"><input type="file" id="f-gal" accept="image/*"><input type="file" id="f-imp" accept="application/json,.json">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3H19v15H7.5A2.5 2.5 0 0 0 5 20.5zM5 20.5A2.5 2.5 0 0 0 7.5 21H19"/><path d="M9 8h6"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5"/></symbol>
+<symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5V20h14v-7.5M12 8.5V20M12 8.5C10 4 6.5 4.5 7 7c.3 1.5 5 1.5 5 1.5s4.7 0 5-1.5c.5-2.5-3-3-5 1.5"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></symbol>
+<symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.5-2h6l1.5 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="i-image" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="m4 17 5-4.5 4 3.5 3-2.5 4 3.5"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4.5h4V7M6.5 7l1 13h9l1-13"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></symbol>
+<symbol id="i-heart-f" viewBox="0 0 24 24"><path fill="currentColor" d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/></symbol>
+<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4.5l3 2"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+<symbol id="i-dumbbell" viewBox="0 0 24 24"><path d="M3 10v4M6 7.5v9M18 7.5v9M21 10v4M6 12h12"/></symbol>
+<symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2.5l2 11h10.5l2-8H7"/><circle cx="9" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="m12 4 2.4 5 5.4.6-4 3.7 1.1 5.4L12 16l-4.9 2.7 1.1-5.4-4-3.7 5.4-.6z"/></symbol>
+<symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4zM15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+<symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4zM16 9.5l5 5M21 9.5l-5 5"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M5 5h14a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 17h-8l-4.5 3.5V17H5a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 5 5z"/></symbol>
+<symbol id="i-coffee" viewBox="0 0 24 24"><path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5zM16 10.5h1.5a2.5 2.5 0 0 1 0 5H16M8 3.5c-.8 1 .8 2 0 3M12 3.5c-.8 1 .8 2 0 3"/></symbol>
+<symbol id="i-bowl" viewBox="0 0 24 24"><path d="M3.5 11h17a8.5 8.5 0 0 1-17 0zM9 19.5h6M8 8c0-2 2-2 2-4M13 8c0-2 2-2 2-4"/></symbol>
+<symbol id="i-apple" viewBox="0 0 24 24"><path d="M12 8c-1.5-1.3-6-1.6-6.5 3.5C5 16 8 20 10 20c1 0 1.2-.5 2-.5s1 .5 2 .5c2 0 5-4 4.5-8.5C18 6.4 13.5 6.7 12 8zM12 8c0-2 .8-3.6 2.5-4.5"/></symbol>
+<symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.5s6 6.6 6 11a6 6 0 0 1-12 0c0-4.4 6-11 6-11z"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z"/></symbol>
+<symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8.5 20h7M9.5 17h5"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/></symbol>
+<symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19C5 10 10 5 19 5c0 9-5 14-14 14zM5 19l8-8"/></symbol>
+<symbol id="i-brush" viewBox="0 0 24 24"><path d="M14.5 4.5 19.5 9.5 11 18l-5-5zM6 13l-2 7 7-2"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5 5 6v5.5c0 4.2 3 7.6 7 9 4-1.4 7-4.8 7-9V6z"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8"/></symbol>
+<symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3.5c.8 4.4 2.6 6.4 7 7.5-4.4 1.1-6.2 3.1-7 7.5-.8-4.4-2.6-6.4-7-7.5 4.4-1.1 6.2-3.1 7-7.5z"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8v.01"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 11 12 15.5 16.5 11M5 20h14"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15.5V4.5M7.5 9 12 4.5 16.5 9M5 20h14"/></symbol>
+<symbol id="i-bed" viewBox="0 0 24 24"><path d="M3 18V7M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="1.8"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></symbol>
+<symbol id="i-crown" viewBox="0 0 24 24"><path d="M4 18h16M5 15 3.5 7l5 3.5L12 5l3.5 5.5 5-3.5L19 15z"/></symbol>
+</svg>
+
+<script>
+// @js
+
+</script>
+</body>
+</html>

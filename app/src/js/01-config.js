@@ -1,0 +1,34 @@
+"use strict";
+/* =========================================================
+   CONFIGURAÇÃO — nome, mascotes, prémios e descontos.
+   ========================================================= */
+const BRAND = {
+  name: "Brota",                    // nome provisório: confirmar registo de marca antes de lançar
+  tagline: "Come bem, mexe-te, sem pressão.",
+  mascot: "Abi",                    // o abacate
+  mascot2: "Morango",               // o morango
+  storageKey: "brota_v1",
+  legacyKeys: ["nutrivida"],        // dados da NutriVida migrados automaticamente
+  aiEndpoint: ""                    // URL do servidor grátis com Llama (ver servidor/LEIA-ME.md). Vazio = a IA só funciona dentro do Claude.
+};
+// Prémios da roda. weight = peso relativo; a probabilidade real é calculada e mostrada na app.
+const REWARDS = [
+  { id:"acc_chef",    type:"acc",     name:"Chapéu de chef",    desc:"Um chapéu para o Abi usar na cozinha.", weight:18, color:"#56745E" },
+  { id:"acc_oculos",  type:"acc",     name:"Óculos de sol",     desc:"O Abi fica pronto para o verão.",       weight:18, color:"#2F6B3A" },
+  { id:"acc_banda",   type:"acc",     name:"Fita desportiva",   desc:"Para os dias de treino.",               weight:16, color:"#6C9471" },
+  { id:"acc_cachecol",type:"acc",     name:"Cachecol",          desc:"Para os dias frios.",                   weight:14, color:"#3E5C46" },
+  { id:"tema_pessego",type:"theme",   name:"Tema Pêssego",      desc:"Muda a cor principal da app.",          weight:10, color:"#8A7451", accent:"pessego" },
+  { id:"tema_mar",    type:"theme",   name:"Tema Mar",          desc:"Muda a cor principal da app.",          weight:10, color:"#B0684E", accent:"mar" },
+  { id:"col_verao",   type:"recipes", name:"Receitas de verão", desc:"Desbloqueia 3 receitas frescas.",       weight:8,  color:"#4E7F57" },
+  { id:"badge_sorte", type:"badge",   name:"Medalha da sorte",  desc:"Uma medalha para a tua coleção.",       weight:6,  color:"#73624A" }
+];
+// Prémio dourado: garantido no fim de cada ronda de 3 tentativas (por esta ordem).
+const GOLDEN = [
+  { id:"acc_coroa",  type:"acc",   name:"Coroa dourada",   desc:"O prémio dourado da primeira ronda." },
+  { id:"tema_ouro",  type:"theme", name:"Tema Dourado",    desc:"Uma cor só para quem completa rondas.", accent:"ouro" },
+  { id:"gold_badge", type:"badge", name:"Medalha dourada", desc:"Mais uma medalha dourada para a coleção." }
+];
+// Descontos de parceiros: adicionar SÓ com acordo real. Vazio = não aparecem na roda.
+// Formato: { id:"desc_x", type:"discount", name:"10% na Loja X", partner:"Loja X", code:"CODIGO", expires:"2027-03-31", terms:"Compra mínima de 20 €.", desc:"Desconto oferecido pela Loja X.", weight:5, color:"#9B5DE5" }
+const DISCOUNTS = [];
+

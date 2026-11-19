@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node tests/serve.js",
     "test": "node tests/site.test.js",
-    "test:app": "node tests/app.test.js"
+    "test:app": "node tools/build.js && node tests/app.test.js",
+    "build": "node tools/build.js"
   },
   "devDependencies": {
     "playwright": "^1.48.0"
