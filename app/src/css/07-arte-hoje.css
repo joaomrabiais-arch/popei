@@ -90,3 +90,39 @@
 .wcard .glasses{margin-top:16px}
 .wcard .glass{height:26px;border-radius:7px 7px 9px 9px}
 @media (prefers-reduced-motion:reduce){.wat-b i s{animation:none}}
+
+/* ===== AvocoraFit Pro: ecrã de subscrição ===== */
+.pw2-hero{position:relative;margin:-4px 0 0;padding:22px 20px 22px;border-radius:var(--r-lg);overflow:hidden;color:#F4F7F2;
+  background:radial-gradient(120% 90% at 85% 0%,#3E7A4C 0%,transparent 60%),linear-gradient(160deg,#1F4A2B,#122B19)}
+.pw2-pics{display:flex;justify-content:flex-end;margin-bottom:-6px}
+.pw2-pics img{width:62px;height:62px;border-radius:50%;object-fit:cover;border:3px solid #1F4A2B;margin-left:-14px;box-shadow:0 6px 14px rgba(0,0,0,.25)}
+.pw2-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:#E9C46A;color:#2B2108;font-size:11px;font-weight:800;letter-spacing:.08em}
+.pw2-badge .ic{color:#2B2108}
+.pw2-hero h2{font:700 24px/1.15 var(--fd);letter-spacing:-.02em;margin-top:12px;text-wrap:balance}
+.pw2-hero p{font-size:14px;line-height:1.45;color:#C9D8CC;margin-top:8px}
+.pw2-ben{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:14px}
+.pw2-ben li{display:flex;gap:14px;align-items:flex-start}
+.pw2-ic{width:40px;height:40px;flex:none;border-radius:12px;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand)}
+.pw2-ben b{display:block;font-weight:600;font-size:15px}
+.pw2-ben small{display:block;color:var(--muted);font-size:13px;line-height:1.4;margin-top:2px}
+.pw2-plan{position:relative;display:flex;align-items:center;gap:12px;margin-top:20px;padding:16px;border-radius:var(--r-md);background:var(--surface);border:2px solid var(--brand)}
+.pw2-radio{width:22px;height:22px;flex:none;border-radius:50%;border:2px solid var(--brand);display:grid;place-items:center}
+.pw2-radio i{width:10px;height:10px;border-radius:50%;background:var(--brand)}
+.pw2-plan b{font-weight:700}.pw2-plan .grow small{display:block;font-size:12px;color:var(--muted)}
+.pw2-pr{text-align:right;display:flex;flex-direction:column;align-items:flex-end}
+.pw2-pr s{font-size:12px;color:var(--muted)}
+.pw2-pr b{font:700 22px var(--fd);letter-spacing:-.01em}
+.pw2-pr small{font-size:11px;color:var(--muted)}
+.pw2-tag{position:absolute;top:-11px;right:14px;padding:3px 9px;border-radius:999px;background:var(--brand);color:var(--brand-ink);font-size:11px;font-weight:700}
+.pw2-cta{margin-top:14px;height:54px}
+.pw2-cta:disabled{opacity:1;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
+.pw2-fine{text-align:center;margin-top:10px;line-height:1.45}
+#pro-wheel{margin-top:6px}
+.pw2-cmp{margin-top:14px;padding:12px 14px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line)}
+.pw2-cmp summary{cursor:pointer;font-weight:600;color:var(--ink-2)}
+.pw2-cmp .pro-cmp{margin-top:10px}
+.pw2-cmp .pro-cmp td:first-child{padding-left:4px;text-indent:0}
+.pw2-cmp .pro-cmp .ic{color:var(--brand)}
+.pw2-hero h2{color:#F4F7F2;margin-top:46px}
+.pw2-pics{position:absolute;top:14px;right:14px;margin:0}
+.pw2-pics img{width:56px;height:56px}

@@ -1,6 +1,7 @@
 /* ========================== Utilidades ========================== */
 const $ = (s, el=document) => el.querySelector(s);
 const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+const pl = (n, one, many) => `${n} ${n === 1 ? one : many}`; // "1 giro", "3 giros"
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const dkey = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const parseK = k => { const [y,m,d] = k.split("-").map(Number); return new Date(y, m-1, d); };

@@ -48,7 +48,7 @@ function openRecipe(id){
     <div class="row"><button class="btn ghost grow sm" id="rc-fav">${icon(fav ? "heart-f" : "heart","sm")} ${fav ? "Guardada" : "Guardar"}</button><button class="btn ghost grow sm" id="rc-shop">${icon("cart","sm")} Compras</button><button class="btn ghost grow sm" id="rc-eat">${icon("check","sm")} Comi</button></div></div>
     <p class="tiny muted" style="margin-top:14px">Se tens alergias, confirma sempre os rótulos dos ingredientes.</p>`, b => {
     $("#rc-fav", b).onclick = () => { S.fav = fav ? S.fav.filter(x => x !== id) : S.fav.concat(id); save(); if (!fav) { ach("fav"); say("fav"); } closeSheet(); toast(fav ? "Removida das favoritas" : "Guardada nas favoritas"); refreshAll(); };
-    $("#rc-shop", b).onclick = () => { const n = r.i.reduce((a, x) => a + addShop(x[0], x[1], x[2]), 0); save(); toast(n ? `${n} ingrediente(s) na lista de compras` : "Já estavam todos na lista"); };
+    $("#rc-shop", b).onclick = () => { const n = r.i.reduce((a, x) => a + addShop(x[0], x[1], x[2]), 0); save(); toast(n ? `${pl(n, "ingrediente", "ingredientes")} na lista de compras` : "Já estavam todos na lista"); };
     $("#rc-eat", b).onclick = () => { addEntry(curDay, { n:r.n, k:r.k, p:r.p, c:r.h, g:r.g, m:r.c, q:"1 porção", src:"recipe" }); ach("cook"); closeSheet(); go("hoje"); toast("Adicionado ao diário"); };
     $("#rc-plan", b).onclick = () => openPlanAdd(today(), r);
   });

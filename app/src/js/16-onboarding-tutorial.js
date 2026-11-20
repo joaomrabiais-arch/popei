@@ -137,7 +137,7 @@ function openOnboarding(edit, startKey, single){
     else if (s.type === "tdays" || s.type === "days") { const key = s.type === "tdays" ? "tdays" : "gdaysSel", D = A[key] || [];
       body = `<div class="row" id="ob-days" style="flex-wrap:wrap;gap:8px">${DOWL.map((d, i) => `<button class="chip ${D.includes(i) ? "on" : ""}" data-i="${i}" aria-pressed="${D.includes(i)}">${d}</button>`).join("")}</div>
         ${s.type === "tdays" ? `<button class="opt ${Array.isArray(A.tdays) && !A.tdays.length ? "on" : ""}" id="ob-notr" style="margin-top:12px;width:100%"><span class="tick">${icon("check","xs")}</span>Não treino, por agora</button>` : ""}
-        <p class="small muted" style="margin-top:12px">${D.length} dia(s) escolhido(s).</p>`; }
+        <p class="small muted" style="margin-top:12px">${D.length === 1 ? "1 dia escolhido" : D.length + " dias escolhidos"}.</p>`; }
     else if (s.type === "people") body = `<div class="bigstep"><button class="iconbtn" data-pp="-1" aria-label="Menos uma pessoa" ${A.people <= 1 ? "disabled" : ""}>${icon("minus")}</button><b class="num">${A.people}</b><button class="iconbtn" data-pp="1" aria-label="Mais uma pessoa" ${A.people >= 8 ? "disabled" : ""}>${icon("plus")}</button></div>
       <p class="small muted" style="text-align:center;margin-top:6px">${A.people === 1 ? "Só eu" : `Eu e mais ${A.people - 1}`}</p>`;
     else if (s.type === "budget") { if (!(+A.budget > 0)) A.budget = String(Math.max(20, Math.ceil(pv.cost / 10) * 10));

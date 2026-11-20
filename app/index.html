@@ -861,6 +861,42 @@ body:has(#toast.on) .talk{display:none}
 .wcard .glasses{margin-top:16px}
 .wcard .glass{height:26px;border-radius:7px 7px 9px 9px}
 @media (prefers-reduced-motion:reduce){.wat-b i s{animation:none}}
+
+/* ===== AvocoraFit Pro: ecrã de subscrição ===== */
+.pw2-hero{position:relative;margin:-4px 0 0;padding:22px 20px 22px;border-radius:var(--r-lg);overflow:hidden;color:#F4F7F2;
+  background:radial-gradient(120% 90% at 85% 0%,#3E7A4C 0%,transparent 60%),linear-gradient(160deg,#1F4A2B,#122B19)}
+.pw2-pics{display:flex;justify-content:flex-end;margin-bottom:-6px}
+.pw2-pics img{width:62px;height:62px;border-radius:50%;object-fit:cover;border:3px solid #1F4A2B;margin-left:-14px;box-shadow:0 6px 14px rgba(0,0,0,.25)}
+.pw2-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:#E9C46A;color:#2B2108;font-size:11px;font-weight:800;letter-spacing:.08em}
+.pw2-badge .ic{color:#2B2108}
+.pw2-hero h2{font:700 24px/1.15 var(--fd);letter-spacing:-.02em;margin-top:12px;text-wrap:balance}
+.pw2-hero p{font-size:14px;line-height:1.45;color:#C9D8CC;margin-top:8px}
+.pw2-ben{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:14px}
+.pw2-ben li{display:flex;gap:14px;align-items:flex-start}
+.pw2-ic{width:40px;height:40px;flex:none;border-radius:12px;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand)}
+.pw2-ben b{display:block;font-weight:600;font-size:15px}
+.pw2-ben small{display:block;color:var(--muted);font-size:13px;line-height:1.4;margin-top:2px}
+.pw2-plan{position:relative;display:flex;align-items:center;gap:12px;margin-top:20px;padding:16px;border-radius:var(--r-md);background:var(--surface);border:2px solid var(--brand)}
+.pw2-radio{width:22px;height:22px;flex:none;border-radius:50%;border:2px solid var(--brand);display:grid;place-items:center}
+.pw2-radio i{width:10px;height:10px;border-radius:50%;background:var(--brand)}
+.pw2-plan b{font-weight:700}.pw2-plan .grow small{display:block;font-size:12px;color:var(--muted)}
+.pw2-pr{text-align:right;display:flex;flex-direction:column;align-items:flex-end}
+.pw2-pr s{font-size:12px;color:var(--muted)}
+.pw2-pr b{font:700 22px var(--fd);letter-spacing:-.01em}
+.pw2-pr small{font-size:11px;color:var(--muted)}
+.pw2-tag{position:absolute;top:-11px;right:14px;padding:3px 9px;border-radius:999px;background:var(--brand);color:var(--brand-ink);font-size:11px;font-weight:700}
+.pw2-cta{margin-top:14px;height:54px}
+.pw2-cta:disabled{opacity:1;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
+.pw2-fine{text-align:center;margin-top:10px;line-height:1.45}
+#pro-wheel{margin-top:6px}
+.pw2-cmp{margin-top:14px;padding:12px 14px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line)}
+.pw2-cmp summary{cursor:pointer;font-weight:600;color:var(--ink-2)}
+.pw2-cmp .pro-cmp{margin-top:10px}
+.pw2-cmp .pro-cmp td:first-child{padding-left:4px;text-indent:0}
+.pw2-cmp .pro-cmp .ic{color:var(--brand)}
+.pw2-hero h2{color:#F4F7F2;margin-top:46px}
+.pw2-pics{position:absolute;top:14px;right:14px;margin:0}
+.pw2-pics img{width:56px;height:56px}
 /* ===== Guia de estilo da AvocoraFit (sobrepõe os tokens antigos; ver DESIGN.md) =====
    Fundo verde-folha muito claro em vez do creme "de IA"; texto secundário com contraste AA;
    letra do sistema no texto e nos controlos, Bricolage só nos títulos e números. */
@@ -923,7 +959,7 @@ button:active:not(:disabled),.btn:active,.li:active,.opt:active,.chip:active{tra
   <section class="view on" id="v-hoje">
     <div class="top">
       <div class="t"><small id="h-date"></small><h1 id="h-hi">Olá</h1></div>
-      <span class="streak" id="h-streak" hidden></span><button class="iconbtn" data-go="roda" aria-label="Roda de prémios" id="h-gift"><svg class="ic"><use href="#i-gift"/></svg></button>
+      <span class="streak" id="h-streak" hidden></span><button class="iconbtn" data-go="roda" aria-label="Roda de descontos" id="h-gift"><svg class="ic"><use href="#i-gift"/></svg></button>
     </div>
     <div class="week" id="h-week"></div>
     <div class="card summary" id="h-sum"></div>
@@ -972,7 +1008,7 @@ button:active:not(:disabled),.btn:active,.li:active,.opt:active,.chip:active{tra
   <section class="view" id="v-roda">
     <div class="top">
       <button class="iconbtn" data-back aria-label="Voltar"><svg class="ic"><use href="#i-left"/></svg></button>
-      <div class="t"><h1>Roda de prémios</h1></div>
+      <div class="t"><h1>Roda de descontos</h1></div>
       <button class="iconbtn" id="w-snd" aria-label="Som"></button>
     </div>
     <p class="muted small" id="w-sub" style="text-align:center;margin-top:6px"></p>
@@ -1105,6 +1141,7 @@ const DISCOUNTS = [];
 /* ========================== Utilidades ========================== */
 const $ = (s, el=document) => el.querySelector(s);
 const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+const pl = (n, one, many) => `${n} ${n === 1 ? one : many}`; // "1 giro", "3 giros"
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const dkey = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const parseK = k => { const [y,m,d] = k.split("-").map(Number); return new Date(y, m-1, d); };
@@ -1235,7 +1272,7 @@ const LINES = {
 };
 let lastSay = 0;
 function say(kind, force){
-  if (S.talk === false || !S.ob || !$("#ob").classList.contains("hide") || $("#tour")) return;
+  if (S.talk !== true || !S.ob || !$("#ob").classList.contains("hide") || $("#tour")) return;
   const now = Date.now(); if (!force && now - lastSay < 12000) return;
   const L = LINES[kind]; if (!L) return; lastSay = now;
   const [who, text, mood, fx] = L[Math.floor(rnd() * L.length)];
@@ -1882,7 +1919,7 @@ function prefsSummary(u = S.u || {}){
   if (P.cuis.length) L.push(P.cuis.map(c => (CUISINES.find(x => x[0] === c) || [,c])[1]).join(", "));
   L.push(P.tdays.length ? "Treino: " + P.tdays.map(d => DOW[d]).join(" ") : "Sem dias de treino");
   if (P.budget) L.push(`Até ${P.budget} € por semana`);
-  if (P.home.length) L.push(`${P.home.length} básico(s) em casa`);
+  if (P.home.length) L.push(`${pl(P.home.length, "básico", "básicos")} em casa`);
   if (u.market) L.push(u.market);
   return L;
 }
@@ -2351,7 +2388,7 @@ function openRecipe(id){
     <div class="row"><button class="btn ghost grow sm" id="rc-fav">${icon(fav ? "heart-f" : "heart","sm")} ${fav ? "Guardada" : "Guardar"}</button><button class="btn ghost grow sm" id="rc-shop">${icon("cart","sm")} Compras</button><button class="btn ghost grow sm" id="rc-eat">${icon("check","sm")} Comi</button></div></div>
     <p class="tiny muted" style="margin-top:14px">Se tens alergias, confirma sempre os rótulos dos ingredientes.</p>`, b => {
     $("#rc-fav", b).onclick = () => { S.fav = fav ? S.fav.filter(x => x !== id) : S.fav.concat(id); save(); if (!fav) { ach("fav"); say("fav"); } closeSheet(); toast(fav ? "Removida das favoritas" : "Guardada nas favoritas"); refreshAll(); };
-    $("#rc-shop", b).onclick = () => { const n = r.i.reduce((a, x) => a + addShop(x[0], x[1], x[2]), 0); save(); toast(n ? `${n} ingrediente(s) na lista de compras` : "Já estavam todos na lista"); };
+    $("#rc-shop", b).onclick = () => { const n = r.i.reduce((a, x) => a + addShop(x[0], x[1], x[2]), 0); save(); toast(n ? `${pl(n, "ingrediente", "ingredientes")} na lista de compras` : "Já estavam todos na lista"); };
     $("#rc-eat", b).onclick = () => { addEntry(curDay, { n:r.n, k:r.k, p:r.p, c:r.h, g:r.g, m:r.c, q:"1 porção", src:"recipe" }); ach("cook"); closeSheet(); go("hoje"); toast("Adicionado ao diário"); };
     $("#rc-plan", b).onclick = () => openPlanAdd(today(), r);
   });
@@ -2556,7 +2593,7 @@ function renderRoda(){
   const rot = $("#w-rot"); if (!rot.childElementCount) { rot.innerHTML = wheelSegments(false); rot.style.transform = `rotate(${wheelAngle}deg)`; }
   $("#w-hub").innerHTML = abi({ mood: spinning ? "wow" : "wink", size:50 });
   $("#w-tries").innerHTML = [0,1,2].map(i => `<i class="${i < S.round ? "on" : ""}"></i>`).join("") + `<span class="gp ${S.round >= 2 ? "lit" : ""}" title="Prémio dourado">${icon("crown","xs")}</span>`;
-  $("#w-sub").innerHTML = `Tentativa <b>${Math.min(S.round+1, 3)} de 3</b> desta ronda · Giros disponíveis: <b>${S.spins}</b><br>No fim das 3 tentativas recebes, garantido: <b style="color:var(--gold)">${esc(g.name)}</b>`;
+  $("#w-sub").innerHTML = `<b>${pl(S.spins, "giro disponível", "giros disponíveis")}</b> · giro ${Math.min(S.round+1, 3)} de 3 da ronda<br>Ao fim da ronda ganhas também: <b style="color:var(--gold)">${esc(g.name)}</b>`;
   $("#w-odds").innerHTML = W.map(w => `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${w.color};margin-right:8px"></span>${esc(w.name)}</td><td>${(w.weight/tot*100).toLocaleString("pt-PT", { maximumFractionDigits:1 })}% por giro</td></tr>`).join("")
     + `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--gold);margin-right:8px"></span><b>${esc(g.name)}</b> (no fim da ronda)</td><td><b style="color:var(--gold)">Garantido</b></td></tr>`;
   $("#w-disc").textContent = DISCOUNTS.length ? "Descontos de parceiros: válidos só nas condições e até à data indicadas em cada prémio." : "Ainda não há descontos de parceiros na roda. Só vão aparecer quando houver acordos reais, com condições e validade indicadas.";
@@ -2606,16 +2643,22 @@ function grant(p, gold, after){
 const eurPro = v => v.toLocaleString("pt-PT", { minimumFractionDigits:2, maximumFractionDigits:2 }) + " €";
 function openPro(){
   const d = S.proDisc || 0, p = PRO.price, withD = p * (1 - d / 100);
-  openSheet(`${BRAND.name} Pro`, `<div class="pro-hero">${abi({ mood:"party", size:84, acc:"acc_coroa" })}<div><b>Mais fotos, planos mais longos e os teus dados seguros</b><p class="small muted">O essencial continua grátis. O Pro é para quem quer mais.</p></div></div>
-    <table class="pro-cmp" style="margin-top:14px"><thead><tr><th></th><th>Grátis</th><th>Pro</th></tr></thead><tbody>
-      ${[["camera","Análise de fotos com IA","3 por dia","20 por dia"],["cal","Plano de refeições automático","1 semana","4 semanas"],["cart","Lista de compras","✓","✓"],
-         ["dumbbell","Treino guiado com progressão","✓","✓"],["chart","Histórico e tendências","30 dias","Sempre"],["upload","Cópia na nuvem e vários aparelhos","—","✓"]]
-        .map(([i, t, f, p]) => `<tr><td>${icon(i,"xs")}<span>${t}</span></td><td>${f}</td><td><b>${p}</b></td></tr>`).join("")}</tbody></table>
-    <p class="tiny muted" style="margin-top:6px">Como vai ficar quando o Pro abrir (previsto). Os limites do plano grátis ainda não estão ativos.</p>
-    <div class="pro-price"><div><small class="muted">Preço por mês</small>${d ? `<s class="muted">${eurPro(p)}</s> <b>${eurPro(withD)}</b>` : `<b>${eurPro(p)}</b>`}</div>${d ? `<span class="pro-tag">-${d}% no 1.º ano</span>` : ""}</div>
-    <p class="tiny muted" style="margin-top:8px">${esc(PRO.note[0].toUpperCase() + PRO.note.slice(1))}. As funções gratuitas continuam gratuitas.</p>
-    <div class="note" style="margin-top:14px">${icon("info","sm")}<span>Ainda não é possível subscrever: o Pro está a ser preparado. ${d ? `O teu desconto de ${d}% fica guardado neste aparelho e não expira.` : "Gira a roda para ganhar um desconto para quando abrir."}</span></div>
-    <button class="btn soft block" id="pro-wheel" style="margin-top:14px">${icon("gift","sm")} Ir à roda de descontos</button>`, b => {
+  const pics = ["Pequeno-almoço", "Almoço", "Jantar"].map(mealPic).filter(Boolean);
+  const BEN = [["camera","Análise de fotos com IA","Até 20 fotos por dia. No plano grátis são 3."],["cal","Planos de 4 semanas","Planeia o mês e as compras de uma só vez."],
+    ["chart","Histórico completo","Tendências de peso, energia e treino, sem limite de tempo."],["upload","Cópia na nuvem","Os teus dados seguros e em todos os aparelhos."]];
+  const CMP = [["Análise de fotos com IA","3 por dia","20 por dia"],["Plano de refeições automático","1 semana","4 semanas"],["Lista de compras",1,1],["Treino guiado com progressão",1,1],["Histórico e tendências","30 dias","Sempre"],["Cópia na nuvem",0,1]];
+  const cell = v => v === 1 ? icon("check","sm") : v === 0 ? `<span class="muted">—</span>` : v;
+  openSheet(`${BRAND.name} Pro`, `<div class="pw2-hero"><div class="pw2-pics">${pics.map(src => `<img src="${esc(src)}" alt="">`).join("")}</div>
+      <span class="pw2-badge">${icon("crown","xs")} PRO</span><h2>Mais tempo para comer bem, menos tempo a planear</h2><p>O plano grátis continua grátis. O Pro junta mais análises, planos mais longos e os teus dados na nuvem.</p></div>
+    <ul class="pw2-ben">${BEN.map(([i, t, s]) => `<li><span class="pw2-ic">${icon(i,"sm")}</span><div><b>${t}</b><small>${s}</small></div></li>`).join("")}</ul>
+    <div class="pw2-plan"><div class="pw2-radio"><i></i></div><div class="grow"><b>Mensal</b><small>${esc(PRO.note[0].toUpperCase() + PRO.note.slice(1))}</small></div>
+      <div class="pw2-pr">${d ? `<s>${eurPro(p)}</s>` : ""}<b>${eurPro(d ? withD : p)}</b><small>por mês</small></div>${d ? `<span class="pw2-tag">-${d}% no 1.º ano</span>` : ""}</div>
+    <button class="btn block pw2-cta" disabled aria-disabled="true">Disponível em breve</button>
+    <p class="tiny muted pw2-fine">Ainda não é possível subscrever: o Pro está a ser preparado. ${d ? `O teu desconto de ${d}% fica guardado neste aparelho e não expira.` : "Gira a roda para ganhar um desconto para quando abrir."}</p>
+    <button class="btn ghost block" id="pro-wheel">${icon("gift","sm")} ${d ? "Tentar um desconto maior na roda" : "Ganhar um desconto na roda"}</button>
+    <details class="pw2-cmp"><summary>Comparar Grátis e Pro</summary><table class="pro-cmp"><thead><tr><th></th><th>Grátis</th><th>Pro</th></tr></thead><tbody>
+      ${CMP.map(([t, f, q]) => `<tr><td>${t}</td><td>${cell(f)}</td><td><b>${cell(q)}</b></td></tr>`).join("")}</tbody></table>
+      <p class="tiny muted" style="margin-top:6px">Previsto. Os limites do plano grátis ainda não estão ativos.</p></details>`, b => {
     $("#pro-wheel", b).onclick = () => { closeSheet(); go("roda"); };
   });
 }
@@ -2627,8 +2670,8 @@ function renderPerfil(){
     <div class="row" style="margin-top:8px;gap:14px;flex-wrap:wrap"><span class="small"><b class="num">${days}</b> <span class="muted">${days===1?"dia":"dias"}</span></span><span class="small"><b class="num">${wks}</b> <span class="muted">${wks===1?"treino":"treinos"}</span></span><span class="small"><b class="num">${Object.keys(S.ach).length}</b> <span class="muted">conquistas</span></span></div></div>`;
   const M = [
     ["crown","gold",`${BRAND.name} Pro`, S.proDisc ? `Tens ${S.proDisc}% de desconto guardado` : "Gira a roda e ganha desconto", openPro],
-    ["gift","gold","Roda de descontos",`${S.spins} giro(s) · ronda ${S.round}/3`, () => go("roda")],
-    ["sparkle","","Armário do " + BRAND.mascot, `${S.owned.filter(id => id.startsWith("acc_")).length} acessório(s) ganho(s)`, openCloset],
+    ["gift","gold","Roda de descontos",`${pl(S.spins, "giro disponível", "giros disponíveis")}`, () => go("roda")],
+    ["sparkle","","Armário do " + BRAND.mascot, `${pl(S.owned.filter(id => id.startsWith("acc_")).length, "acessório ganho", "acessórios ganhos")}`, openCloset],
     ["chart","sky","Progresso","Peso, energia, água e treinos", openSummary],
     ["trophy","gold","Conquistas",`${Object.keys(S.ach).length} de ${ACH.length}`, openAch],
     ["leaf","","Bem-estar","Sono, energia e humor", openWell],
@@ -2759,7 +2802,7 @@ function openLook(){
   const ACC = [["", "Abacate", "#2F6B3A", true]].concat(ACCESSORIES.concat(GOLDEN).filter(t => t.type === "theme").map(t => [t.accent, t.name.replace("Tema ",""), COL[t.accent], S.owned.includes(t.id)]));
   openSheet("Aparência e som", `<div class="stack"><div class="field"><span>Tema</span><div class="seg" id="lk-t">${[["","Automático"],["light","Claro"],["dark","Escuro"]].map(([v,l]) => `<button data-v="${v}" class="${(S.theme || "") === v ? "on" : ""}">${l}</button>`).join("")}</div></div>
     <div class="field"><span>Cor principal</span><div class="row" style="flex-wrap:wrap;gap:8px" id="lk-a">${ACC.map(([v, l, c, own]) => `<button class="chip ${(S.accent || "") === v ? "on" : ""}" data-v="${v}" data-own="${own ? 1 : 0}" style="${own ? "" : "opacity:.5"}"><span style="width:14px;height:14px;border-radius:50%;background:${c}"></span>${esc(l)}${own ? "" : " · por ganhar"}</button>`).join("")}</div><p class="tiny muted" style="margin-top:6px">Mais cores ganham-se na roda de prémios.</p></div>
-    <div class="card stack"><label class="row between"><span>Sons</span><input type="checkbox" id="lk-s" ${S.snd ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label><label class="row between"><span>O ${esc(BRAND.mascot)} fala comigo</span><input type="checkbox" id="lk-tk" ${S.talk !== false ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label><label class="row between"><span>Animações reduzidas</span><input type="checkbox" id="lk-m" ${S.mot ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label></div></div>`, b => {
+    <div class="card stack"><label class="row between"><span>Sons</span><input type="checkbox" id="lk-s" ${S.snd ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label><label class="row between"><span>O ${esc(BRAND.mascot)} fala comigo</span><input type="checkbox" id="lk-tk" ${S.talk === true ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label><label class="row between"><span>Animações reduzidas</span><input type="checkbox" id="lk-m" ${S.mot ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label></div></div>`, b => {
     $$("#lk-t button", b).forEach(x => x.onclick = () => { S.theme = x.dataset.v; save(); applyPrefs(); openLook(); });
     $$("#lk-a button", b).forEach(x => x.onclick = () => { if (x.dataset.own !== "1") { toast("Ganha esta cor na roda de prémios"); return; } S.accent = x.dataset.v; save(); applyPrefs(); openLook(); });
     $("#lk-s", b).onchange = e => { S.snd = e.target.checked; save(); if (S.snd) snd("ok"); };
@@ -2927,7 +2970,7 @@ function openOnboarding(edit, startKey, single){
     else if (s.type === "tdays" || s.type === "days") { const key = s.type === "tdays" ? "tdays" : "gdaysSel", D = A[key] || [];
       body = `<div class="row" id="ob-days" style="flex-wrap:wrap;gap:8px">${DOWL.map((d, i) => `<button class="chip ${D.includes(i) ? "on" : ""}" data-i="${i}" aria-pressed="${D.includes(i)}">${d}</button>`).join("")}</div>
         ${s.type === "tdays" ? `<button class="opt ${Array.isArray(A.tdays) && !A.tdays.length ? "on" : ""}" id="ob-notr" style="margin-top:12px;width:100%"><span class="tick">${icon("check","xs")}</span>Não treino, por agora</button>` : ""}
-        <p class="small muted" style="margin-top:12px">${D.length} dia(s) escolhido(s).</p>`; }
+        <p class="small muted" style="margin-top:12px">${D.length === 1 ? "1 dia escolhido" : D.length + " dias escolhidos"}.</p>`; }
     else if (s.type === "people") body = `<div class="bigstep"><button class="iconbtn" data-pp="-1" aria-label="Menos uma pessoa" ${A.people <= 1 ? "disabled" : ""}>${icon("minus")}</button><b class="num">${A.people}</b><button class="iconbtn" data-pp="1" aria-label="Mais uma pessoa" ${A.people >= 8 ? "disabled" : ""}>${icon("plus")}</button></div>
       <p class="small muted" style="text-align:center;margin-top:6px">${A.people === 1 ? "Só eu" : `Eu e mais ${A.people - 1}`}</p>`;
     else if (s.type === "budget") { if (!(+A.budget > 0)) A.budget = String(Math.max(20, Math.ceil(pv.cost / 10) * 10));

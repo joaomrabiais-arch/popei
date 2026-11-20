@@ -76,7 +76,7 @@ const LINES = {
 };
 let lastSay = 0;
 function say(kind, force){
-  if (S.talk === false || !S.ob || !$("#ob").classList.contains("hide") || $("#tour")) return;
+  if (S.talk !== true || !S.ob || !$("#ob").classList.contains("hide") || $("#tour")) return;
   const now = Date.now(); if (!force && now - lastSay < 12000) return;
   const L = LINES[kind]; if (!L) return; lastSay = now;
   const [who, text, mood, fx] = L[Math.floor(rnd() * L.length)];

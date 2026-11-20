@@ -14,7 +14,7 @@ function renderRoda(){
   const rot = $("#w-rot"); if (!rot.childElementCount) { rot.innerHTML = wheelSegments(false); rot.style.transform = `rotate(${wheelAngle}deg)`; }
   $("#w-hub").innerHTML = abi({ mood: spinning ? "wow" : "wink", size:50 });
   $("#w-tries").innerHTML = [0,1,2].map(i => `<i class="${i < S.round ? "on" : ""}"></i>`).join("") + `<span class="gp ${S.round >= 2 ? "lit" : ""}" title="Prémio dourado">${icon("crown","xs")}</span>`;
-  $("#w-sub").innerHTML = `Tentativa <b>${Math.min(S.round+1, 3)} de 3</b> desta ronda · Giros disponíveis: <b>${S.spins}</b><br>No fim das 3 tentativas recebes, garantido: <b style="color:var(--gold)">${esc(g.name)}</b>`;
+  $("#w-sub").innerHTML = `<b>${pl(S.spins, "giro disponível", "giros disponíveis")}</b> · giro ${Math.min(S.round+1, 3)} de 3 da ronda<br>Ao fim da ronda ganhas também: <b style="color:var(--gold)">${esc(g.name)}</b>`;
   $("#w-odds").innerHTML = W.map(w => `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${w.color};margin-right:8px"></span>${esc(w.name)}</td><td>${(w.weight/tot*100).toLocaleString("pt-PT", { maximumFractionDigits:1 })}% por giro</td></tr>`).join("")
     + `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--gold);margin-right:8px"></span><b>${esc(g.name)}</b> (no fim da ronda)</td><td><b style="color:var(--gold)">Garantido</b></td></tr>`;
   $("#w-disc").textContent = DISCOUNTS.length ? "Descontos de parceiros: válidos só nas condições e até à data indicadas em cada prémio." : "Ainda não há descontos de parceiros na roda. Só vão aparecer quando houver acordos reais, com condições e validade indicadas.";
@@ -64,16 +64,22 @@ function grant(p, gold, after){
 const eurPro = v => v.toLocaleString("pt-PT", { minimumFractionDigits:2, maximumFractionDigits:2 }) + " €";
 function openPro(){
   const d = S.proDisc || 0, p = PRO.price, withD = p * (1 - d / 100);
-  openSheet(`${BRAND.name} Pro`, `<div class="pro-hero">${abi({ mood:"party", size:84, acc:"acc_coroa" })}<div><b>Mais fotos, planos mais longos e os teus dados seguros</b><p class="small muted">O essencial continua grátis. O Pro é para quem quer mais.</p></div></div>
-    <table class="pro-cmp" style="margin-top:14px"><thead><tr><th></th><th>Grátis</th><th>Pro</th></tr></thead><tbody>
-      ${[["camera","Análise de fotos com IA","3 por dia","20 por dia"],["cal","Plano de refeições automático","1 semana","4 semanas"],["cart","Lista de compras","✓","✓"],
-         ["dumbbell","Treino guiado com progressão","✓","✓"],["chart","Histórico e tendências","30 dias","Sempre"],["upload","Cópia na nuvem e vários aparelhos","—","✓"]]
-        .map(([i, t, f, p]) => `<tr><td>${icon(i,"xs")}<span>${t}</span></td><td>${f}</td><td><b>${p}</b></td></tr>`).join("")}</tbody></table>
-    <p class="tiny muted" style="margin-top:6px">Como vai ficar quando o Pro abrir (previsto). Os limites do plano grátis ainda não estão ativos.</p>
-    <div class="pro-price"><div><small class="muted">Preço por mês</small>${d ? `<s class="muted">${eurPro(p)}</s> <b>${eurPro(withD)}</b>` : `<b>${eurPro(p)}</b>`}</div>${d ? `<span class="pro-tag">-${d}% no 1.º ano</span>` : ""}</div>
-    <p class="tiny muted" style="margin-top:8px">${esc(PRO.note[0].toUpperCase() + PRO.note.slice(1))}. As funções gratuitas continuam gratuitas.</p>
-    <div class="note" style="margin-top:14px">${icon("info","sm")}<span>Ainda não é possível subscrever: o Pro está a ser preparado. ${d ? `O teu desconto de ${d}% fica guardado neste aparelho e não expira.` : "Gira a roda para ganhar um desconto para quando abrir."}</span></div>
-    <button class="btn soft block" id="pro-wheel" style="margin-top:14px">${icon("gift","sm")} Ir à roda de descontos</button>`, b => {
+  const pics = ["Pequeno-almoço", "Almoço", "Jantar"].map(mealPic).filter(Boolean);
+  const BEN = [["camera","Análise de fotos com IA","Até 20 fotos por dia. No plano grátis são 3."],["cal","Planos de 4 semanas","Planeia o mês e as compras de uma só vez."],
+    ["chart","Histórico completo","Tendências de peso, energia e treino, sem limite de tempo."],["upload","Cópia na nuvem","Os teus dados seguros e em todos os aparelhos."]];
+  const CMP = [["Análise de fotos com IA","3 por dia","20 por dia"],["Plano de refeições automático","1 semana","4 semanas"],["Lista de compras",1,1],["Treino guiado com progressão",1,1],["Histórico e tendências","30 dias","Sempre"],["Cópia na nuvem",0,1]];
+  const cell = v => v === 1 ? icon("check","sm") : v === 0 ? `<span class="muted">—</span>` : v;
+  openSheet(`${BRAND.name} Pro`, `<div class="pw2-hero"><div class="pw2-pics">${pics.map(src => `<img src="${esc(src)}" alt="">`).join("")}</div>
+      <span class="pw2-badge">${icon("crown","xs")} PRO</span><h2>Mais tempo para comer bem, menos tempo a planear</h2><p>O plano grátis continua grátis. O Pro junta mais análises, planos mais longos e os teus dados na nuvem.</p></div>
+    <ul class="pw2-ben">${BEN.map(([i, t, s]) => `<li><span class="pw2-ic">${icon(i,"sm")}</span><div><b>${t}</b><small>${s}</small></div></li>`).join("")}</ul>
+    <div class="pw2-plan"><div class="pw2-radio"><i></i></div><div class="grow"><b>Mensal</b><small>${esc(PRO.note[0].toUpperCase() + PRO.note.slice(1))}</small></div>
+      <div class="pw2-pr">${d ? `<s>${eurPro(p)}</s>` : ""}<b>${eurPro(d ? withD : p)}</b><small>por mês</small></div>${d ? `<span class="pw2-tag">-${d}% no 1.º ano</span>` : ""}</div>
+    <button class="btn block pw2-cta" disabled aria-disabled="true">Disponível em breve</button>
+    <p class="tiny muted pw2-fine">Ainda não é possível subscrever: o Pro está a ser preparado. ${d ? `O teu desconto de ${d}% fica guardado neste aparelho e não expira.` : "Gira a roda para ganhar um desconto para quando abrir."}</p>
+    <button class="btn ghost block" id="pro-wheel">${icon("gift","sm")} ${d ? "Tentar um desconto maior na roda" : "Ganhar um desconto na roda"}</button>
+    <details class="pw2-cmp"><summary>Comparar Grátis e Pro</summary><table class="pro-cmp"><thead><tr><th></th><th>Grátis</th><th>Pro</th></tr></thead><tbody>
+      ${CMP.map(([t, f, q]) => `<tr><td>${t}</td><td>${cell(f)}</td><td><b>${cell(q)}</b></td></tr>`).join("")}</tbody></table>
+      <p class="tiny muted" style="margin-top:6px">Previsto. Os limites do plano grátis ainda não estão ativos.</p></details>`, b => {
     $("#pro-wheel", b).onclick = () => { closeSheet(); go("roda"); };
   });
 }

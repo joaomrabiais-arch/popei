@@ -154,7 +154,7 @@ function prefsSummary(u = S.u || {}){
   if (P.cuis.length) L.push(P.cuis.map(c => (CUISINES.find(x => x[0] === c) || [,c])[1]).join(", "));
   L.push(P.tdays.length ? "Treino: " + P.tdays.map(d => DOW[d]).join(" ") : "Sem dias de treino");
   if (P.budget) L.push(`Até ${P.budget} € por semana`);
-  if (P.home.length) L.push(`${P.home.length} básico(s) em casa`);
+  if (P.home.length) L.push(`${pl(P.home.length, "básico", "básicos")} em casa`);
   if (u.market) L.push(u.market);
   return L;
 }
