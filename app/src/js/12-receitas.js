@@ -24,7 +24,7 @@ function renderReceitas(){
   // Descobrir: filas temáticas por cima da lista completa (só sem pesquisa nem filtro).
   let disc = $("#r-disc"); if (!disc) { disc = document.createElement("div"); disc.id = "r-disc"; $("#r-n").before(disc); }
   const rows = !q && rFilter === "Todas" ? [
-    ["Ricas em proteína", ok.filter(r => r.p * 4 / r.k >= .25)], ["Prontas em 15 minutos", ok.filter(r => r.t <= 15)],
+    ["Ricas em proteína", ok.filter(r => r.p * 4 / r.k >= .25)], ["Doces mais leves", ok.filter(r => r.c !== "Almoço" && r.c !== "Jantar" && /chocolate|bolo|brownie|doce|gelado|mousse|assada|bolinhas|panqueca|pudim|cacau|mel\b/i.test(r.n + " " + r.i.map(x => x[0]).join(" ")))], ["Prontas em 15 minutos", ok.filter(r => r.t <= 15)],
     [kcalOn() ? "Até 400 kcal" : "Leves", ok.filter(r => r.k <= 400 && r.c !== "Lanche")], ["Sopas e caldos", ok.filter(r => artKind(r) === "sopa")],
     ["Sabores portugueses", ok.filter(r => CUISINE_OF[r.id] === "portuguesa")], ["Para cozinhar em quantidade", ok.filter(r => (r.srv || 1) >= 4 && isMain(r.c))]
   ].filter(([, R]) => R.length >= 3) : [];

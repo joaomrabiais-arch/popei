@@ -35,7 +35,8 @@ function renderHoje(){
   $("#h-meals").innerHTML = MEALS.map(M => { const it = L.filter(m => m.m === M.id), kc = it.reduce((a,m) => a+(+m.k||0), 0), tg = Math.round(S.goal * ({ "Pequeno-almoço":.25, "Almoço":.35, "Lanche":.1, "Jantar":.3 }[M.id]) / 10) * 10;
     const pl = S.plan.find(x => x.date === k && x.m === M.id && x.r), pr = pl && RECIPES.find(r => r.id === pl.r);
     const ir = it.length ? RECIPES.find(r => r.n === it[0].n) : pr; // a foto do que comeste; se ainda nada, a do prato planeado
-    return `<div class="mealw"><div class="meal">${ir && photoOf(ir) ? `<img class="meal-ph" src="${esc(photoOf(ir))}" alt="">` : artTile(MEAL_ART[M.id], 52)}
+    const mph = (ir && photoOf(ir)) || (it.length && picOf(it[0].n, M.id)) || (pr && photoOf(pr)) || mealPic(M.id);
+    return `<div class="mealw"><div class="meal">${mph ? `<img class="meal-ph" src="${esc(mph)}" alt="">` : artTile(MEAL_ART[M.id], 52)}
       <div class="lt"><b>${M.id}</b><small>${kcalOn() ? `${kc} / ${tg} kcal` : it.length ? it.length + (it.length > 1 ? " itens" : " item") : "Por registar"}</small>${kcalOn() ? `<span class="mbar"><i style="width:${Math.min(100, Math.round(kc / tg * 100))}%"></i></span>` : ""}</div>
       <button class="plus" data-add="${M.id}" aria-label="Adicionar ao ${M.id}">${icon("plus","sm")}</button></div>
       ${!it.length && pr && k === today() ? `<div class="meal-plan"><span class="small">No plano: <button class="lnk" data-prec="${pr.id}"><b>${esc(pr.n)}</b></button></span><button class="btn soft sm" data-ate="${pl.id}">Comi isto</button></div>` : ""}
@@ -48,8 +49,12 @@ function renderHoje(){
 
   // 3) Água
   const w = S.water[k] || 0, Lt = v => (v*0.25).toLocaleString("pt-PT", { maximumFractionDigits:2 });
-  $("#h-water").innerHTML = `<div class="water"><span class="wdrop">${icon("drop")}</span><div class="grow"><h3>Água</h3><p class="small muted"><span class="num" style="color:var(--ink)">${Lt(w)} L</span> de ${Lt(S.wg)} L</p></div>
-    <button class="iconbtn" id="w-minus" aria-label="Tirar um copo" ${w ? "" : "disabled"}>${icon("minus","sm")}</button><button class="iconbtn wplus" id="w-plus" aria-label="Mais um copo">${icon("plus","sm")}</button></div>
+  const wp = Math.min(100, Math.round(w / Math.max(1, S.wg) * 100)), wleft = Math.max(0, S.wg - w);
+  $("#h-water").className = "card wcard";
+  $("#h-water").innerHTML = `<div class="wat"><div class="wat-b" role="img" aria-label="${wp}% do objetivo de água"><i style="height:${wp}%"><s></s></i><b class="num">${wp}%</b></div>
+      <div class="grow wat-t"><h3>Água</h3><p class="wat-v"><b class="num">${Lt(w)}</b> <span>de ${Lt(S.wg)} L</span></p>
+        <p class="small wat-m">${w >= S.wg ? "Objetivo cumprido. Boa!" : w ? `Faltam ${wleft} copo${wleft > 1 ? "s" : ""} de 250 ml` : "Começa com um copo agora"}</p>
+        <div class="wat-a"><button class="iconbtn" id="w-minus" aria-label="Tirar um copo" ${w ? "" : "disabled"}>${icon("minus","sm")}</button><button class="btn wplus" id="w-plus" aria-label="Mais um copo">${icon("plus","sm")} 1 copo</button></div></div></div>
     <div class="glasses">${Array.from({ length:S.wg }, (_, i) => `<button class="glass ${i < w ? "drunk" : ""}" data-g="${i}" aria-label="Copo ${i+1} de 250 ml${i < w ? ", bebido" : ""}"><i></i></button>`).join("")}</div>`;
   $$("#h-water .glass").forEach(b => b.onclick = () => { const i = +b.dataset.g; setWater(k, i < w ? i : i+1); });
   $("#w-minus").onclick = () => setWater(k, w-1); $("#w-plus").onclick = () => setWater(k, w+1);

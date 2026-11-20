@@ -5,12 +5,19 @@ async function shrink(file){ const img = await createImageBitmap(file); const s 
   const c = document.createElement("canvas"); c.width = Math.round(img.width*s); c.height = Math.round(img.height*s); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
   return new Promise(r => c.toBlob(r, "image/jpeg", .82)); }
 function addEntry(k, e){ setTimeout(() => say("meal"), 400); (S.days[k] = S.days[k] || []).push(Object.assign({ id:uid(), t:new Date().toLocaleTimeString("pt-PT", { hour:"2-digit", minute:"2-digit" }), q:"" }, e)); save(); ach("meal"); syncChallenges(); }
+// Imagens no Registar: foto da receita, foto do alimento ou, sem nenhuma, o mosaico desenhado da refeição.
+const MEAL_PIC = { "Pequeno-almoço":"Papas de aveia com banana", "Almoço":"Frango grelhado com arroz e salada", "Lanche":"Iogurte com frutos vermelhos e nozes", "Jantar":"Salmão no forno com brócolos" };
+const recByName = n => { const k = norm(n).trim(); return RECIPES.find(r => norm(r.n) === k); };
+const picOf = (name, meal) => { const r = recByName(name); return (r && photoOf(r)) || (typeof PHOTO_FOOD !== "undefined" && PHOTO_FOOD[name]) || ""; };
+const thumb = (name, meal, size = 48) => { const src = picOf(name, meal); return src ? `<img class="th" src="${esc(src)}" alt="" loading="lazy" style="width:${size}px;height:${size}px">` : artTile(MEAL_ART[meal] || "almoco", size, "th"); };
+const mealPic = m => { const r = recByName(MEAL_PIC[m] || "") || RECIPES.find(x => x.c === m && photoOf(x)); return r ? photoOf(r) : ""; };
 function openAdd(meal, tab="foto"){
   let cur = MEALS.some(m => m.id === meal) ? meal : defMeal();
-  openSheet("Registar", `<div class="mealchips" id="a-meals" role="radiogroup" aria-label="Refeição">${MEALS.map(m => `<button role="radio" data-m="${m.id}" aria-checked="${m.id === cur}" class="${m.id === cur ? "on" : ""}">${icon(m.ic,"sm")}<span>${m.id === "Pequeno-almoço" ? "Peq.-almoço" : m.id}</span></button>`).join("")}</div>
+  openSheet("Registar", `<div class="mealchips" id="a-meals" role="radiogroup" aria-label="Refeição">${MEALS.map(m => { const src = mealPic(m.id), [c1, c2] = ART_BG[MEAL_ART[m.id]] || ART_BG.almoco;
+      return `<button role="radio" data-m="${m.id}" aria-checked="${m.id === cur}" class="mc ${m.id === cur ? "on" : ""}" style="--a1:${c1};--a2:${c2}">${src ? `<img src="${esc(src)}" alt="">` : `<span class="mc-art">${artSVG(MEAL_ART[m.id], 40)}</span>`}<span class="mc-l">${m.id === "Pequeno-almoço" ? "Peq.-almoço" : m.id}</span><i class="mc-ok">${icon("check","xs")}</i></button>`; }).join("")}</div>
     <select id="a-meal" class="hide" aria-hidden="true" tabindex="-1">${MEALS.map(m => `<option ${m.id === cur ? "selected" : ""}>${m.id}</option>`).join("")}</select>
     <p class="tiny muted" style="margin-top:8px">${esc(fmtDay(curDay))}</p>
-    <div class="seg" id="a-tabs" style="margin-top:12px" role="tablist"><button data-t="foto" role="tab">${icon("camera","xs")} Foto</button><button data-t="pesq" role="tab">${icon("search","xs")} Pesquisar</button><button data-t="manual" role="tab">Manual</button><button data-t="rec" role="tab">Repetir</button></div>
+    <div class="seg" id="a-tabs" style="margin-top:12px" role="tablist"><button data-t="foto" role="tab">${icon("camera","xs")} Foto</button><button data-t="pesq" role="tab">${icon("search","xs")} Pesquisar</button><button data-t="manual" role="tab">${icon("brush","xs")} Manual</button><button data-t="rec" role="tab">${icon("copy","xs")} Repetir</button></div>
     <div id="a-body" style="margin-top:16px"></div>`, body => {
     $$("#a-meals button", body).forEach(b => b.onclick = () => { cur = b.dataset.m; $("#a-meal", body).value = cur; $$("#a-meals button", body).forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); }); });
     const show = (t, arg) => { $$("#a-tabs button", body).forEach(b => { b.classList.toggle("on", b.dataset.t === t); b.setAttribute("aria-selected", b.dataset.t === t); }); const el = $("#a-body", body); el.onclick = null; el.oninput = null; ADD[t](el, arg); };
@@ -137,8 +144,8 @@ const ADD = {
     const list = () => { const raw = $("#a-q", el).value.trim(), q = norm(raw), words = q.split(/\s+/).filter(Boolean), hit = n => words.every(w => norm(n).includes(w));
       const R = RECIPES.filter(r => recipeAllowed(r) && (!q ? r.c === m || (isMain(m) && isMain(r.c)) : hit(r.n))).slice(0, q ? 8 : 6);
       const F = FOODS.filter(f => !q || hit(f.n)).slice(0, 30);
-      $("#a-fl", el).innerHTML = (R.length ? `<p class="shop-cat">${q ? "Receitas" : "Receitas para " + m.toLowerCase()}</p>${R.map(r => `<button class="food rfood" data-r="${r.id}">${photoOf(r) ? `<img src="${esc(photoOf(r))}" alt="" loading="lazy">` : `<span class="rf-ph">${icon(CAT_IC[r.c] || "bowl","sm")}</span>`}<span class="lt"><b>${esc(r.n)}</b><small>${kcalOn() ? r.k + " kcal · " : ""}P ${r.p} · H ${r.h} · G ${r.g} por porção</small></span>${icon("plus","sm")}</button>`).join("")}` : "")
-        + (F.length ? `<p class="shop-cat">Alimentos</p>${F.map(f => `<button class="food" data-f="${esc(f.n)}"><span class="lt"><b>${esc(f.n)}</b><small>${kcalOn() ? f.k + " kcal · " : ""}P ${f.p} · H ${f.c} · G ${f.g} por 100 g</small></span>${icon("plus","sm")}</button>`).join("")}` : "")
+      $("#a-fl", el).innerHTML = (R.length ? `<p class="shop-cat">${q ? "Receitas" : "Receitas para " + m.toLowerCase()}</p>${R.map(r => `<button class="food rfood" data-r="${r.id}">${thumb(r.n, r.c, 52)}<span class="lt"><b>${esc(r.n)}</b><small>${kcalOn() ? r.k + " kcal · " : ""}P ${r.p} · H ${r.h} · G ${r.g} por porção</small></span>${icon("plus","sm")}</button>`).join("")}` : "")
+        + (F.length ? `<p class="shop-cat">Alimentos simples</p>${F.map(f => `<button class="food rfood" data-f="${esc(f.n)}">${thumb(f.n, m, 52)}<span class="lt"><b>${esc(f.n)}</b><small>${kcalOn() ? f.k + " kcal · " : ""}P ${f.p} · H ${f.c} · G ${f.g} por 100 g</small></span>${icon("plus","sm")}</button>`).join("")}` : "")
         || `<div class="empty">Sem resultados para "${esc(raw)}". <button class="lnk" id="a-toman">Regista à mão</button>.</div>`;
       const tm = $("#a-toman", el); if (tm) tm.onclick = () => addTab("manual", { n:raw }); };
     $("#a-q", el).oninput = list; list();
@@ -153,7 +160,7 @@ const ADD = {
       $("#a-ok", el).onclick = () => { addEntry(curDay, Object.assign({ n:r.n, m:mealSel(), q:x === 1 ? "1 porção" : String(x).replace(".", ",") + " porções", src:"recipe" }, v)); closeSheet(); renderHoje(); toast("Adicionado"); }; };
       draw(); };
     const portion = f => { el.onclick = null; el.innerHTML = `<button class="btn ghost sm" id="a-bk">${icon("left","sm")} Voltar</button>
-      <h3 style="margin-top:14px">${esc(f.n)}</h3>
+      <div class="rp-head">${thumb(f.n, mealSel(), 72)}<div><h3>${esc(f.n)}</h3><p class="small muted">${kcalOn() ? f.k + " kcal por 100 g · " : ""}valores médios</p></div></div>
       <div class="row" style="gap:8px;margin-top:12px;flex-wrap:wrap">${[[f.q, "1 porção (" + f.q + " g)"], [50, "50 g"], [100, "100 g"], [200, "200 g"]].filter((x, i, a) => a.findIndex(y => y[0] === x[0]) === i).map(([g, l]) => `<button class="chip" data-g="${g}">${l}</button>`).join("")}</div>
       <label class="field" style="margin-top:12px"><span>Quantidade (g ou ml)</span><input id="a-g" type="number" inputmode="numeric" min="1" max="2000" value="${f.q}"></label>
       <div class="facts" style="margin-top:12px" id="a-fx"></div><button class="btn block" id="a-ok" style="margin-top:14px">Adicionar</button>`;
@@ -166,11 +173,14 @@ const ADD = {
     $("#a-fl", el).onclick = e => { const b = e.target.closest("[data-f]"); if (b) { portion(FOODS.find(f => f.n === b.dataset.f)); return; } const r = e.target.closest("[data-r]"); if (r) recPortion(RECIPES.find(x => x.id === +r.dataset.r)); };
   },
   manual(el, arg){
-    el.innerHTML = `<div class="stack"><label class="field"><span>Nome</span><input id="m-n" maxlength="60" placeholder="Ex.: Sopa da avó" value="${esc((arg && arg.n) || "")}"></label>
-      <label class="field"><span>Porção (opcional)</span><input id="m-q" maxlength="30" placeholder="Ex.: 1 prato"></label>
-      <div class="g4">${[["k","kcal"],["p","Prot. g"],["c","Hidr. g"],["g","Gord. g"]].map(([f,l]) => `<label class="field"><span>${l}</span><input id="m-${f}" type="number" inputmode="numeric" min="0" max="5000"></label>`).join("")}</div>
+    el.innerHTML = `<div class="stack"><div class="man-top">${artTile(MEAL_ART[mealSel()] || "almoco", 56)}<label class="field grow"><span>O que comeste?</span><input id="m-n" class="man-n" maxlength="60" placeholder="Ex.: Sopa da avó" value="${esc((arg && arg.n) || "")}"></label></div>
+      <div><p class="small" style="margin-bottom:8px"><b>Porção</b> <span class="muted">opcional</span></p><div class="hchips" id="m-qc">${["1 prato", "Meio prato", "1 taça", "1 unidade", "1 fatia"].map(q => `<button class="chip" data-q="${q}">${q}</button>`).join("")}</div>
+      <input id="m-q" maxlength="30" placeholder="Ou escreve (ex.: 2 colheres)" style="margin-top:8px" aria-label="Porção"></div>
+      <div class="man-mac"><p class="small" style="margin-bottom:8px"><b>Valores</b> <span class="muted">se souberes</span></p><div class="g4">${[["k","kcal"],["p","Prot. g"],["c","Hidr. g"],["g","Gord. g"]].map(([f,l]) => `<label class="field"><span>${l}</span><input id="m-${f}" type="number" inputmode="numeric" min="0" max="5000"></label>`).join("")}</div>
+</div>
       <p class="tiny muted">Não sabes os valores? Deixa em branco. Registar já conta.</p>
       <button class="btn block" id="m-ok">Adicionar</button></div>`;
+    $("#m-qc", el).onclick = e => { const b = e.target.closest("[data-q]"); if (!b) return; $("#m-q", el).value = b.dataset.q; $$("#m-qc .chip", el).forEach(x => x.classList.toggle("on", x === b)); };
     $("#m-ok", el).onclick = () => { const n = $("#m-n", el).value.trim(); if (!n) { toast("Escreve o nome"); return; }
       addEntry(curDay, { n:n.slice(0,60), q:$("#m-q", el).value.trim().slice(0,30), k:num($("#m-k", el).value), p:num($("#m-p", el).value,500), c:num($("#m-c", el).value,1000), g:num($("#m-g", el).value,500), m:mealSel(), src:"manual" });
       closeSheet(); renderHoje(); toast("Adicionado"); };
@@ -178,9 +188,9 @@ const ADD = {
   rec(el){
     const seen = new Map(); Object.keys(S.days).sort().reverse().forEach(d => (S.days[d]||[]).slice().reverse().forEach(m => { const key = String(m.n).trim().toLowerCase(); if (!seen.has(key)) seen.set(key, m); }));
     const items = [], row = (m, fav) => { items.push({ n:m.n, k:m.k|0, p:m.p|0, c:m.c|0, g:m.g|0, q:m.q || "" });
-      return `<button class="food" data-j="${items.length-1}"><span class="lt"><b>${fav ? icon("heart-f","xs") : ""}${esc(m.n)}</b><small>${kcalOn() ? (m.k|0) + " kcal" : esc(m.m || "")}${m.q ? " · " + esc(m.q) : ""}</small></span>${icon("plus","sm")}</button>`; };
-    el.innerHTML = (S.favM.length ? `<h3>Favoritas</h3><div style="margin:6px 0 16px">${S.favM.map(m => row(m, 1)).join("")}</div>` : "")
-      + `<h3>Recentes</h3><div style="margin-top:6px">${[...seen.values()].slice(0, 15).map(m => row(m)).join("") || `<div class="empty">Ainda sem refeições registadas.</div>`}</div>`;
+      return `<button class="food rfood" data-j="${items.length-1}">${thumb(m.n, m.m, 52)}<span class="lt"><b>${fav ? icon("heart-f","xs") : ""}${esc(m.n)}</b><small>${kcalOn() ? (m.k|0) + " kcal" : esc(m.m || "")}${m.q ? " · " + esc(m.q) : ""}</small></span>${icon("plus","sm")}</button>`; };
+    el.innerHTML = `<p class="small muted" style="margin-bottom:10px">Toca para repetir em ${esc(mealSel().toLowerCase())}, com as mesmas quantidades.</p>` + (S.favM.length ? `<h3>Favoritas</h3><div style="margin:6px 0 16px">${S.favM.map(m => row(m, 1)).join("")}</div>` : "")
+      + `<h3>Recentes</h3><div style="margin-top:6px">${[...seen.values()].slice(0, 15).map(m => row(m)).join("") || `<div class="empty">${abi({ mood:"think", size:72 })}<p>Ainda não registaste refeições. Quando registares, aparecem aqui para repetir num toque.</p></div>`}</div>`;
     el.onclick = e => { const b = e.target.closest("[data-j]"); if (!b) return; const m = items[+b.dataset.j]; addEntry(curDay, Object.assign({}, m, { m:mealSel(), src:"repeat" })); closeSheet(); renderHoje(); toast("Repetido: " + m.n); };
   }
 };

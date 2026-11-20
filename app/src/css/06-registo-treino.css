@@ -173,3 +173,29 @@
 .ai-item input[data-f="nome"]:focus{border-bottom-color:var(--brand);outline:none}
 .shot{scroll-margin-top:8px}
 #a-body.has-res #a-go{display:none}
+
+/* ===== Registar: refeições com foto, miniaturas e manual ===== */
+.mealchips{gap:8px}
+.mealchips .mc{position:relative;height:84px;padding:0;border-radius:var(--r-md);overflow:hidden;border:2px solid transparent;background:linear-gradient(145deg,var(--a1),var(--a2));display:block;transition:transform .15s,border-color .2s}
+.mealchips .mc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mc-art{position:absolute;inset:0;display:grid;place-items:center;padding-bottom:18px}
+.mealchips .mc::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(10,16,12,.72))}
+.mc-l{position:absolute;left:6px;right:6px;bottom:7px;z-index:1;color:#fff;font-size:12px;font-weight:700;text-align:center;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+.mc-ok{position:absolute;top:6px;right:6px;z-index:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--brand);color:var(--brand-ink);transform:scale(0);transition:transform .2s cubic-bezier(.3,1.5,.5,1)}
+.mealchips .mc.on{border-color:var(--brand);transform:translateY(-2px);box-shadow:0 6px 16px rgba(30,70,40,.22)}
+.mealchips .mc.on .mc-ok{transform:scale(1)}
+.mealchips .mc:not(.on) img{filter:saturate(.75)}
+.mealchips .mc:active{transform:scale(.96)}
+.th{flex:none;border-radius:14px;object-fit:cover;margin-right:0}
+.food.rfood{gap:14px;padding:10px 2px}
+.food.rfood .lt b{font-weight:600}
+.rp-head .th,.rp-head img{width:72px;height:72px;border-radius:16px}
+.man-top{display:flex;align-items:flex-end;gap:12px}
+.man-top .art-tile{border-radius:16px}
+.man-n{font:600 17px var(--fd)}
+.man-mac{padding:14px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line)}
+#a-tabs button{display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.mealchips .mc{border:0;box-shadow:inset 0 0 0 1px var(--line)}
+.mealchips .mc.on{box-shadow:0 0 0 2.5px var(--brand),0 8px 18px rgba(30,70,40,.25)}
+.mealchips .mc.on .mc-ok .ic,.mc-ok .ic{color:#fff}
+.mc-l{font-size:11.5px;letter-spacing:-.01em;left:3px;right:3px}

@@ -81,3 +81,20 @@
 .opts.grid2{grid-template-columns:1fr 1fr}
 .opts.grid2 .opt{min-height:48px;padding:10px 12px;font-size:14px}
 .tcard{aspect-ratio:auto;height:260px;flex:none}
+/* Planos: faixa da semana com fotos */
+.pweek{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:-4px -4px 16px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.pw{display:flex;flex-direction:column;align-items:center;gap:5px;padding:4px 0;border-radius:12px;background:none}
+.pw-d{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase}
+.pw-ph{width:42px;height:42px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--surface-2);box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--line)}
+.pw-ph img{width:100%;height:100%;object-fit:cover}
+.pw-n{font:600 13px var(--fd);color:var(--ink-2)}
+.pw.today .pw-ph{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--brand)}.pw.today .pw-n{color:var(--brand)}
+.pw.past .pw-ph{opacity:.55}
+.pw:active .pw-ph{transform:scale(.92)}
+.stat3 small{display:block;line-height:1.3}.stat3 small.ref{font-size:11px;color:var(--faint);margin-top:2px}
+.stat3 div{padding:12px 6px}
+.wk-range{text-align:center}
+.pitem .th{width:44px;height:44px;border-radius:12px}.pitem{align-items:center;padding:5px 0}.pitem .mt{width:76px}
+.pw-ph{width:36px;height:36px;box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--line)}
+.pw.past .pw-ph:empty{background:none;border:1.5px dashed var(--line);box-shadow:none}
+.pw-ph:empty{background:var(--surface-2)}
