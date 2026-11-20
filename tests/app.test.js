@@ -93,11 +93,11 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
 
   // 5. Foto sem IA: mostra aviso honesto
   await page.click("#nav-add"); await page.waitForTimeout(600);
-  ok(/precisa do Claude ou do servidor/.test(await page.textContent("#a-body")), "aviso de IA indisponível fora do Claude");
+  ok(/ainda não está ligada/.test(await page.textContent("#a-body")), "aviso de IA indisponível fora do Claude");
   // 5b. Foto com IA simulada: números em texto, porções, estado de espera e tempo limite
   await shot("05-adicionar-foto"); await sheetClose();
   const foto = async impl => page.evaluate(async impl => { sample = eval(impl); document.querySelectorAll(".dialog,.celebrate").forEach(x => x.remove()); openAdd("Almoço"); await new Promise(r => setTimeout(r, 150));
-    const c = document.createElement("canvas"); c.width = c.height = 20; const b = await new Promise(r => c.toBlob(r, "image/jpeg")); const dt = new DataTransfer(); dt.items.add(new File([b], "x.jpg", { type:"image/jpeg" }));
+    const b = await (await fetch(PHOTO_AI[1])).blob(); const dt = new DataTransfer(); dt.items.add(new File([b], "x.jpg", { type:"image/jpeg" }));
     const f = document.getElementById("f-gal"); f.files = dt.files; f.dispatchEvent(new Event("change")); await new Promise(r => setTimeout(r, 300)); document.getElementById("a-go").click(); }, impl);
   await foto(`(() => { const f = async () => ({ text:"" }); f.json = async () => ({ refeicao:"Arroz com frango", clara:true, itens:[{ nome:"Arroz", porcao:"150 g", kcal:"195 kcal", proteina_g:"4 g", carbo_g:"42", gordura_g:"0,5", confianca:"alta" }, { nome:"Frango", porcao:"120 g", kcal:198, proteina_g:37, carbo_g:0, gordura_g:4, confianca:"media" }] }); return f; })()`);
   await page.waitForTimeout(500); await shot("05b-foto-resultado");

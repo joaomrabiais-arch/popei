@@ -1,4 +1,4 @@
-// Servidor de IA grátis da Brota: Cloudflare Worker com Llama 3.2 11B Vision (Workers AI).
+// Servidor de IA grátis da AvocoraFit: Cloudflare Worker com Llama 3.2 11B Vision (Workers AI).
 // Recebe { prompt, image? (JPEG em base64) } e devolve { text }. A chave nunca sai da Cloudflare.
 const MODEL = "@cf/meta/llama-3.2-11b-vision-instruct";
 const HITS = new Map(), WINDOW_MS = 10 * 60 * 1000, MAX_HITS = 20; // até 20 pedidos por IP a cada 10 minutos

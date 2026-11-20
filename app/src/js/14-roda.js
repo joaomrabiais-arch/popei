@@ -64,8 +64,12 @@ function grant(p, gold, after){
 const eurPro = v => v.toLocaleString("pt-PT", { minimumFractionDigits:2, maximumFractionDigits:2 }) + " €";
 function openPro(){
   const d = S.proDisc || 0, p = PRO.price, withD = p * (1 - d / 100);
-  openSheet(`${BRAND.name} Pro`, `<div class="pro-hero">${abi({ mood:"party", size:84, acc:"acc_coroa" })}<div><b>Tudo o que a app faz, sem limites</b><p class="small muted">Para quem quer ir mais longe, ao seu ritmo.</p></div></div>
-    <ul class="pro-list">${[["camera","Análise de fotos sem limite diário"],["dumbbell","Planos de treino avançados com progressão de cargas"],["cal","Planos de refeições para várias semanas"],["chart","Estatísticas e tendências detalhadas"]].map(([i, t]) => `<li>${icon(i,"sm")}<span>${t}</span></li>`).join("")}</ul>
+  openSheet(`${BRAND.name} Pro`, `<div class="pro-hero">${abi({ mood:"party", size:84, acc:"acc_coroa" })}<div><b>Mais fotos, planos mais longos e os teus dados seguros</b><p class="small muted">O essencial continua grátis. O Pro é para quem quer mais.</p></div></div>
+    <table class="pro-cmp" style="margin-top:14px"><thead><tr><th></th><th>Grátis</th><th>Pro</th></tr></thead><tbody>
+      ${[["camera","Análise de fotos com IA","3 por dia","20 por dia"],["cal","Plano de refeições automático","1 semana","4 semanas"],["cart","Lista de compras","✓","✓"],
+         ["dumbbell","Treino guiado com progressão","✓","✓"],["chart","Histórico e tendências","30 dias","Sempre"],["upload","Cópia na nuvem e vários aparelhos","—","✓"]]
+        .map(([i, t, f, p]) => `<tr><td>${icon(i,"xs")}<span>${t}</span></td><td>${f}</td><td><b>${p}</b></td></tr>`).join("")}</tbody></table>
+    <p class="tiny muted" style="margin-top:6px">Como vai ficar quando o Pro abrir (previsto). Os limites do plano grátis ainda não estão ativos.</p>
     <div class="pro-price"><div><small class="muted">Preço por mês</small>${d ? `<s class="muted">${eurPro(p)}</s> <b>${eurPro(withD)}</b>` : `<b>${eurPro(p)}</b>`}</div>${d ? `<span class="pro-tag">-${d}% no 1.º ano</span>` : ""}</div>
     <p class="tiny muted" style="margin-top:8px">${esc(PRO.note[0].toUpperCase() + PRO.note.slice(1))}. As funções gratuitas continuam gratuitas.</p>
     <div class="note" style="margin-top:14px">${icon("info","sm")}<span>Ainda não é possível subscrever: o Pro está a ser preparado. ${d ? `O teu desconto de ${d}% fica guardado neste aparelho e não expira.` : "Gira a roda para ganhar um desconto para quando abrir."}</span></div>

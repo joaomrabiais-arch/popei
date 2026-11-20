@@ -37,20 +37,30 @@ const ADD = {
   foto(el){
     let blob = null, cur = null, ctl = null;
     const TIPS = [["sparkle","Boa luz, de preferência natural"],["camera","De cima, com o prato inteiro"],["info","Diz o que não se vê (molhos, óleo)"]];
-    const idle = () => { el.innerHTML = `<div class="cam-hero">${abi({ mood:"wave", size:64 })}<div class="grow"><b>Fotografa o teu prato</b><p class="small muted">O ${esc(BRAND.mascot)} identifica os alimentos e estima as porções. Revês tudo antes de guardar.</p></div></div>
-      <div id="a-st"></div>
-      <div class="pick big" id="a-pick"><label for="f-cam">${icon("camera")}<span>Tirar foto</span></label><label for="f-gal">${icon("image")}<span>Da galeria</span></label></div>
-      <ul class="cam-tips">${TIPS.map(([i, t]) => `<li>${icon(i,"xs")}${t}</li>`).join("")}</ul>
-      <p class="tiny muted" style="margin-top:12px">A análise por foto é uma <b>estimativa</b>, não uma medição.</p>`;
+    const HINTS = ["Com azeite", "Sem óleo", "Frito", "Grelhado", "Integral", "Com molho"];
+    const idle = () => { el.classList.remove("busy", "has-res"); el.innerHTML = `<div id="a-st"></div>
+      <div class="cam" id="a-pick"><div class="cam-vf"><i class="cc tl"></i><i class="cc tr"></i><i class="cc bl"></i><i class="cc br"></i>
+        <span class="cam-plate">${icon("bowl")}</span><b>Enquadra o prato inteiro</b><small>De cima, com boa luz</small></div>
+        <div class="cam-bar"><label class="cam-side" for="f-gal">${icon("image","sm")}<span>Galeria</span></label>
+          <label class="cam-shutter" for="f-cam" aria-label="Tirar foto"><i></i></label>
+          <button class="cam-side" id="a-gopq2">${icon("search","sm")}<span>Pesquisar</span></button></div></div>
+      <p class="tiny muted cam-note">${icon("info","xs")} O resultado é uma <b>estimativa</b>. Revês e corriges tudo antes de guardar.</p>`;
+      $("#a-gopq2", el).onclick = () => addTab("pesq");
       aiReady.then(() => { if (sample || !el.isConnected) return; const st = $("#a-st", el); if (!st) return;
-        st.innerHTML = `<div class="note warn" style="margin-bottom:12px">${icon("info","sm")}<span>A análise por IA precisa do Claude ou do servidor grátis da Brota (servidor/LEIA-ME.md). Aqui ainda não está ligada, por isso não analisamos fotos. Usa a pesquisa ou regista à mão.</span></div>
+        st.innerHTML = `<div class="note warn" style="margin-bottom:12px">${icon("info","sm")}<span>A análise de fotos ainda não está ligada nesta versão, por isso não analisamos a imagem. Podes pesquisar o alimento ou registar à mão.</span></div>
           <div class="row" style="gap:8px;margin-bottom:14px"><button class="btn soft grow sm" id="a-gopq">${icon("search","sm")} Pesquisar</button><button class="btn soft grow sm" id="a-goman">Registar à mão</button></div>`;
         const pk = $("#a-pick", el); if (pk) pk.classList.add("off");
         $("#a-gopq", el).onclick = () => addTab("pesq"); $("#a-goman", el).onclick = () => addTab("manual"); }); };
-    const picked = () => { el.innerHTML = `<div class="shot"><img id="a-prev" alt="Fotografia da refeição" src="${URL.createObjectURL(blob)}"><div class="scan hide" id="a-scan"><i></i></div></div>
-      <input id="a-hint" maxlength="120" placeholder="Algo que não se vê? (ex.: arroz integral, sem óleo)" style="margin-top:12px" aria-label="Pormenor opcional">
-      <div class="row" style="gap:8px;margin-top:12px"><label class="btn ghost" for="f-gal" style="flex:none" aria-label="Escolher outra foto">${icon("image","sm")}</label><button class="btn block grow" id="a-go" ${sample ? "" : "disabled"}>${icon("sparkle","sm")} Analisar a foto</button></div>
+    const picked = () => { el.classList.remove("busy", "has-res"); el.innerHTML = `<div class="shot"><img id="a-prev" alt="Fotografia da refeição" src="${URL.createObjectURL(blob)}"><div class="scan hide" id="a-scan"><i></i></div>
+        <label class="shot-re" for="f-gal">${icon("image","xs")} Trocar</label></div>
+      <div class="a-hintw"><p class="small" style="margin:14px 0 8px"><b>Algo que não se vê?</b> <span class="muted">Opcional</span></p>
+        <div class="hchips" id="a-hc">${HINTS.map(h => `<button class="chip" data-h="${h}" aria-pressed="false">${h}</button>`).join("")}</div>
+        <input id="a-hint" maxlength="120" placeholder="Ou escreve (ex.: arroz integral, meia dose)" style="margin-top:10px" aria-label="Pormenor opcional"></div>
+      <button class="btn block" id="a-go" style="margin-top:14px;height:52px" ${sample ? "" : "disabled"}>${icon("sparkle","sm")} Analisar a foto</button>
       <div id="a-st" style="margin-top:12px"></div><div id="a-res"></div>`;
+      $("#a-hc", el).onclick = e => { const b = e.target.closest("[data-h]"); if (!b) return; const on = b.getAttribute("aria-pressed") !== "true", inp = $("#a-hint", el);
+        b.setAttribute("aria-pressed", on); b.classList.toggle("on", on);
+        const parts = inp.value.split(",").map(x => x.trim()).filter(x => x && x !== b.dataset.h); if (on) parts.push(b.dataset.h); inp.value = parts.join(", ").slice(0, 120); };
       $("#a-go", el).onclick = () => run(); };
     const pick = async e => { const f = e.target.files[0]; e.target.value = ""; if (!f) return;
       if (!/^image\//.test(f.type)) { toast("Escolhe uma imagem"); return; }
@@ -61,19 +71,21 @@ const ADD = {
     const run = async extra => {
       if (!sample) return; if (navigator.onLine === false) { fail("offline"); return; }
       const hint = ($("#a-hint", el) || {}).value || "", st = $("#a-st", el), go = $("#a-go", el), sc = $("#a-scan", el), my = ctl = {};
-      go.disabled = true; sc.classList.remove("hide"); $("#a-res", el).innerHTML = "";
-      let si = 0; st.innerHTML = `<div class="ai-wait"><span class="dots"><i></i><i></i><i></i></span><span id="a-step" class="grow">${STEPS[0]}</span><button class="btn ghost sm" id="a-cancel">Cancelar</button></div>`;
-      const tick = setInterval(() => { si++; const s = $("#a-step", el); if (s) s.textContent = si < STEPS.length ? STEPS[si] : si >= 6 ? "Está a demorar mais do que o normal…" : STEPS[STEPS.length - 1]; }, 2200);
-      $("#a-cancel", el).onclick = () => { ctl = null; clearInterval(tick); sc.classList.add("hide"); st.innerHTML = ""; go.disabled = false; };
+      go.disabled = true; sc.classList.remove("hide"); $("#a-res", el).innerHTML = ""; el.classList.add("busy"); el.classList.remove("has-res");
+      let si = 0; st.innerHTML = `<div class="ai-steps" role="status">${STEPS.map((s, i) => `<div class="ai-s ${i ? "" : "on"}"><i>${icon("check","xs")}</i><span>${s.replace("…", "")}</span></div>`).join("")}
+        <div class="row between" style="margin-top:6px"><small class="muted" id="a-step">Costuma demorar uns segundos</small><button class="btn ghost sm" id="a-cancel">Cancelar</button></div></div>`;
+      const tick = setInterval(() => { si++; $$(".ai-s", st).forEach((x, i) => { x.classList.toggle("dn", i < Math.min(si, STEPS.length - 1)); x.classList.toggle("on", i === Math.min(si, STEPS.length - 1)); });
+        if (si >= 6) { const s = $("#a-step", el); if (s) s.textContent = "Está a demorar mais do que o normal…"; } }, 2200);
+      $("#a-cancel", el).onclick = () => { ctl = null; clearInterval(tick); sc.classList.add("hide"); st.innerHTML = ""; go.disabled = false; el.classList.remove("busy"); };
       const al = (S.u && S.u.al || []).filter(x => x !== "Nenhuma");
       const prompt = "Analisa a fotografia de uma refeição e identifica só os alimentos VISÍVEIS. Estima porção, kcal e macronutrientes de cada um. Sê honesto sobre a incerteza: usa confianca 'alta', 'media' ou 'baixa' em cada item. "
         + "Se a imagem estiver pouco clara, não mostrar comida, ou se um alimento for impossível de identificar, NÃO inventes: põe clara=false e escreve uma pergunta curta ao utilizador em 'pergunta'. "
         + (al.length ? "O utilizador evita: " + al.join(", ") + ". Se algum alimento visível puder conter isso, refere em 'observacao'. " : "")
         + (hint.trim() ? "Informação do utilizador: " + hint.trim().slice(0,120) + ". " : "") + (extra ? "Resposta do utilizador à tua pergunta: " + extra + ". " : "")
         + 'Responde APENAS com JSON: {"refeicao":"nome curto","clara":true,"pergunta":"","itens":[{"nome":"","porcao":"ex.: 150 g","kcal":0,"proteina_g":0,"carbo_g":0,"gordura_g":0,"confianca":"alta"}],"observacao":"1 frase sobre a incerteza"}. Números sem unidades. Usa português europeu.';
-      try { const raw = await withTimeout(sample.json(prompt, { images:[blob], modelTier:"default" }), 35000); if (ctl !== my) return; cur = cleanAI(raw); st.innerHTML = ""; renderRes(); ach("photo"); }
+      try { const raw = await withTimeout(sample.json(prompt, { images:[blob], modelTier:"default" }), 35000); if (ctl !== my) return; cur = cleanAI(raw); st.innerHTML = ""; renderRes.seen = 0; renderRes(); ach("photo"); }
       catch(e) { if (ctl !== my) return; fail(e && e.code); }
-      finally { clearInterval(tick); if (ctl === my) { sc.classList.add("hide"); go.disabled = !(blob && sample); } } };
+      finally { clearInterval(tick); if (ctl === my) { sc.classList.add("hide"); go.disabled = !(blob && sample); el.classList.remove("busy"); } } };
     const fail = code => { const st = $("#a-st", el); if (!st) return;
       st.innerHTML = `<div class="note warn">${icon("info","sm")}<span>${esc(AIERR[code] || "Não foi possível analisar. Tenta outra foto ou regista à mão.")}</span></div>
         <div class="row" style="gap:8px;margin-top:10px"><button class="btn soft grow sm" id="a-retry">Tentar outra vez</button><button class="btn ghost grow sm" id="a-man">Registar à mão</button></div>`;
@@ -84,8 +96,11 @@ const ADD = {
       const ask = !r.clara ? `<div class="card stack" style="margin-bottom:12px"><div class="row">${abi({ mood:"think", size:48 })}<p><b>Não tenho a certeza.</b> ${esc(r.pergunta || "Consegues dizer-me o que está no prato?")}</p></div>
         <input id="a-ans" maxlength="160" placeholder="Ex.: é arroz de pato com salada" aria-label="Resposta"><button class="btn soft block" id="a-ansb">Responder e analisar de novo</button></div>` : "";
       const sum = f => r.itens.reduce((a, x) => a + val(x, f), 0);
-      res.innerHTML = ask + (r.itens.length ? `<div class="ai-total"><div><small class="muted">Total estimado</small><b class="num" id="a-tot">${sum("kcal")} kcal</b></div>
-          <div class="ai-mac">${[["proteina_g","Proteína","var(--prot)"],["carbo_g","Hidratos","var(--carb)"],["gordura_g","Gordura","var(--fat)"]].map(([f, n, c]) => `<span><i style="background:${c}"></i>${n} <b class="num">${sum(f)} g</b></span>`).join("")}</div></div>
+      const MC = [["proteina_g","Proteína","var(--prot)",4],["carbo_g","Hidratos","var(--carb)",4],["gordura_g","Gordura","var(--fat)",9]], mk = Math.max(1, MC.reduce((a, [f,,, m]) => a + sum(f) * m, 0));
+      el.classList.toggle("has-res", r.itens.length > 0);
+      res.innerHTML = ask + (r.itens.length ? `<div class="ai-total2"><div class="row between"><div><small class="muted">Total estimado · ${r.itens.length} alimento${r.itens.length > 1 ? "s" : ""}</small><b class="num" id="a-tot">${sum("kcal")} kcal</b></div><span class="tag-est">aprox.</span></div>
+          <div class="sbar" style="margin-top:12px">${MC.map(([f,, c, m]) => `<i style="background:${c};flex:${sum(f) * m / mk || .001}"></i>`).join("")}</div>
+          <div class="ai-mac2">${MC.map(([f, n, c]) => `<span><i style="background:${c}"></i>${n}<b class="num">${sum(f)} g</b></span>`).join("")}</div></div>
         <input id="a-name" maxlength="60" value="${esc(r.refeicao)}" aria-label="Nome da refeição" style="font-weight:700;margin-top:12px">
         <div id="a-items" style="margin-top:10px">${r.itens.map((it, i) => { const cf = it.confianca;
           return `<div class="ai-item"><div class="row"><input data-i="${i}" data-f="nome" maxlength="60" value="${esc(it.nome)}" aria-label="Alimento" style="font-weight:600"><button class="iconbtn" data-del="${i}" aria-label="Remover ${esc(it.nome)}">${icon("trash","sm")}</button></div>
@@ -96,6 +111,7 @@ const ADD = {
         <button class="btn ghost block sm" id="a-more" style="margin-top:10px">${icon("plus","sm")} Falta um alimento</button>
         ${r.observacao ? `<p class="small muted" style="margin-top:10px">${esc(r.observacao)}</p>` : ""}
         <button class="btn block" id="a-save" style="margin-top:12px;height:52px">Guardar no diário</button>` : "");
+      if (r.itens.length && !renderRes.seen) { renderRes.seen = 1; setTimeout(() => ($(".shot", el) || res).scrollIntoView({ behavior:"smooth", block:"start" }), 420); }
       const ab = $("#a-ansb", res); if (ab) ab.onclick = () => { const v = $("#a-ans", res).value.trim(); if (!v) { toast("Escreve o que está no prato"); return; } run(v.slice(0,160)); };
       if (!r.itens.length) return;
       const items = $("#a-items", res);

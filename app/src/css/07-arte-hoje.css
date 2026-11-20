@@ -63,3 +63,11 @@
 .top .streak[hidden]{display:none}
 #h-wt [hidden]{display:none}
 #h-wt .grow{min-width:0}
+.pro-cmp{width:100%;border-collapse:collapse;font-size:13px}
+.pro-cmp th{font-size:12px;color:var(--muted);font-weight:600;padding:6px 4px;text-align:center}
+.pro-cmp th:last-child,.pro-cmp td:last-child{background:var(--brand-soft);color:var(--ink)}
+.pro-cmp th:last-child{border-radius:10px 10px 0 0;color:var(--brand)}
+.pro-cmp tr:last-child td:last-child{border-radius:0 0 10px 10px}
+.pro-cmp td{padding:9px 4px;border-top:1px solid var(--line);text-align:center;color:var(--ink-2);white-space:nowrap}
+.pro-cmp td:first-child{text-align:left;white-space:normal;color:var(--ink);font-weight:500;padding-left:26px;text-indent:-22px}
+.pro-cmp td:first-child .ic{color:var(--brand);vertical-align:-3px;margin-right:6px;text-indent:0}
