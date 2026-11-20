@@ -1,0 +1,27 @@
+/* ===== Movimento "cinematográfico", com calma =====
+   Fundo vivo no topo (luz a mexer devagar), cartões que entram em cascata e passos das perguntas com transição.
+   Nada disto carrega informação; com "reduzir movimento" fica tudo parado. */
+.app{position:relative;z-index:1}
+.aurora{position:fixed;left:0;right:0;top:0;height:62vh;z-index:0;pointer-events:none;overflow:hidden;
+  -webkit-mask-image:linear-gradient(#000 40%,transparent);mask-image:linear-gradient(#000 40%,transparent)}
+.aurora i{position:absolute;width:62vmax;height:62vmax;border-radius:50%;filter:blur(64px);opacity:.42;will-change:transform}
+.aurora i:nth-child(1){background:#BFE3A8;left:-22vmax;top:-30vmax;animation:au1 22s ease-in-out infinite alternate}
+.aurora i:nth-child(2){background:#E6EE9E;right:-26vmax;top:-26vmax;animation:au2 26s ease-in-out infinite alternate;opacity:.34}
+.aurora i:nth-child(3){background:#B9DDF2;left:10vmax;top:-38vmax;animation:au3 30s ease-in-out infinite alternate;opacity:.28}
+@keyframes au1{to{transform:translate(18vmax,8vmax) scale(1.15)}}
+@keyframes au2{to{transform:translate(-16vmax,10vmax) scale(.9)}}
+@keyframes au3{to{transform:translate(8vmax,14vmax) scale(1.2)}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .aurora i{opacity:.16}}
+:root[data-theme="dark"] .aurora i{opacity:.16}
+/* Cartões em cascata quando se abre um separador */
+.view.on>*{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+.view.on>*:nth-child(2){animation-delay:.04s}.view.on>*:nth-child(3){animation-delay:.08s}.view.on>*:nth-child(4){animation-delay:.12s}
+.view.on>*:nth-child(5){animation-delay:.16s}.view.on>*:nth-child(6){animation-delay:.2s}.view.on>*:nth-child(n+7){animation-delay:.24s}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+/* Perguntas iniciais: cada passo entra com suavidade */
+#ob-in .ob-q,#ob-in .opts,#ob-in .tgrid,#ob-in .bigstep,#ob-in .hook,#ob-in .ob-form{animation:rise .42s cubic-bezier(.2,.8,.2,1) both}
+#ob-in .opts,#ob-in .tgrid,#ob-in .hook{animation-delay:.06s}
+#ob-in .ob-q .mwrap{animation:pop .6s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes pop{from{transform:scale(.7) translateY(10px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.aurora i,.view.on>*,#ob-in *{animation:none!important}}
+:root[data-motion="low"] .aurora i,:root[data-motion="low"] .view.on>*,:root[data-motion="low"] #ob-in *{animation:none!important}

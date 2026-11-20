@@ -8,7 +8,10 @@ const BRAND = {
   mascot: "Abi",                    // o abacate
   storageKey: "brota_v1",
   legacyKeys: ["nutrivida"],        // dados da NutriVida migrados automaticamente
-  aiEndpoint: ""                    // URL do servidor grátis com Llama (ver servidor/LEIA-ME.md). Vazio = a IA só funciona dentro do Claude.
+  aiEndpoint: "",                   // URL do servidor grátis com Llama (ver servidor/LEIA-ME.md). Vazio = a IA só funciona dentro do Claude.
+  // Conta e cópia na nuvem (Supabase, região UE). A chave "anon" é pública por desenho: a proteção está nas regras RLS de servidor/supabase.sql.
+  // Vazio = sem contas; a app funciona só neste aparelho e o Perfil não mostra a opção.
+  supabase: { url: "", anonKey: "" }
 };
 // Prémios da roda. weight = peso relativo; a probabilidade real é calculada e mostrada na app.
 const REWARDS = [

@@ -25,6 +25,7 @@ function load(){
 }
 let saveT;
 function save(){
+  S.updatedAt = Date.now(); if (typeof cloudQueue === "function") cloudQueue();
   try { localStorage.setItem(BRAND.storageKey, JSON.stringify(S)); const s = $("#saving"); s.classList.add("on"); clearTimeout(saveT); saveT = setTimeout(() => s.classList.remove("on"), 900); }
   catch(e) { toast("Não foi possível guardar neste aparelho."); }
 }

@@ -19,3 +19,13 @@ Análise e kit de arranque a partir do vídeo TikTok "$12.5k this month — AI D
 - [`loja/index.html`](loja/index.html) — template de loja de produto único (editar o objeto `CONFIG`).
 
 Abrir os `.html` diretamente no browser; não há dependências.
+
+## Publicar e ligar contas
+
+1. **Vercel:** em vercel.com, "Add New → Project" e escolhe este repositório. O `vercel.json` já diz como montar e publicar (pasta `app/`).
+2. **Supabase:**
+   - cria um projeto na região UE;
+   - corre `servidor/supabase.sql` no SQL Editor;
+   - copia o URL e a chave "anon" para `BRAND.supabase` em `app/src/js/01-config.js`;
+   - em Authentication, põe o endereço da Vercel como Site URL.
+3. A opção "Conta e cópia na nuvem" só aparece no Perfil depois do passo 2.

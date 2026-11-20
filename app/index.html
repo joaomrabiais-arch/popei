@@ -721,9 +721,37 @@ button:active:not(:disabled),.btn:active,.li:active,.opt:active,.chip:active{tra
 .hook{list-style:none;padding:0;margin:4px 0 0;display:grid;gap:12px}
 .hook li{display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);font-weight:500}
 .hook li span{width:36px;height:36px;flex:none;border-radius:12px;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand)}
+/* ===== Movimento "cinematográfico", com calma =====
+   Fundo vivo no topo (luz a mexer devagar), cartões que entram em cascata e passos das perguntas com transição.
+   Nada disto carrega informação; com "reduzir movimento" fica tudo parado. */
+.app{position:relative;z-index:1}
+.aurora{position:fixed;left:0;right:0;top:0;height:62vh;z-index:0;pointer-events:none;overflow:hidden;
+  -webkit-mask-image:linear-gradient(#000 40%,transparent);mask-image:linear-gradient(#000 40%,transparent)}
+.aurora i{position:absolute;width:62vmax;height:62vmax;border-radius:50%;filter:blur(64px);opacity:.42;will-change:transform}
+.aurora i:nth-child(1){background:#BFE3A8;left:-22vmax;top:-30vmax;animation:au1 22s ease-in-out infinite alternate}
+.aurora i:nth-child(2){background:#E6EE9E;right:-26vmax;top:-26vmax;animation:au2 26s ease-in-out infinite alternate;opacity:.34}
+.aurora i:nth-child(3){background:#B9DDF2;left:10vmax;top:-38vmax;animation:au3 30s ease-in-out infinite alternate;opacity:.28}
+@keyframes au1{to{transform:translate(18vmax,8vmax) scale(1.15)}}
+@keyframes au2{to{transform:translate(-16vmax,10vmax) scale(.9)}}
+@keyframes au3{to{transform:translate(8vmax,14vmax) scale(1.2)}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .aurora i{opacity:.16}}
+:root[data-theme="dark"] .aurora i{opacity:.16}
+/* Cartões em cascata quando se abre um separador */
+.view.on>*{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+.view.on>*:nth-child(2){animation-delay:.04s}.view.on>*:nth-child(3){animation-delay:.08s}.view.on>*:nth-child(4){animation-delay:.12s}
+.view.on>*:nth-child(5){animation-delay:.16s}.view.on>*:nth-child(6){animation-delay:.2s}.view.on>*:nth-child(n+7){animation-delay:.24s}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+/* Perguntas iniciais: cada passo entra com suavidade */
+#ob-in .ob-q,#ob-in .opts,#ob-in .tgrid,#ob-in .bigstep,#ob-in .hook,#ob-in .ob-form{animation:rise .42s cubic-bezier(.2,.8,.2,1) both}
+#ob-in .opts,#ob-in .tgrid,#ob-in .hook{animation-delay:.06s}
+#ob-in .ob-q .mwrap{animation:pop .6s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes pop{from{transform:scale(.7) translateY(10px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.aurora i,.view.on>*,#ob-in *{animation:none!important}}
+:root[data-motion="low"] .aurora i,:root[data-motion="low"] .view.on>*,:root[data-motion="low"] #ob-in *{animation:none!important}
 </style>
 </head>
 <body>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
 <div class="app">
   <div id="saving" class="saving" aria-live="polite">Guardado</div>
 
@@ -871,7 +899,10 @@ const BRAND = {
   mascot: "Abi",                    // o abacate
   storageKey: "brota_v1",
   legacyKeys: ["nutrivida"],        // dados da NutriVida migrados automaticamente
-  aiEndpoint: ""                    // URL do servidor grátis com Llama (ver servidor/LEIA-ME.md). Vazio = a IA só funciona dentro do Claude.
+  aiEndpoint: "",                   // URL do servidor grátis com Llama (ver servidor/LEIA-ME.md). Vazio = a IA só funciona dentro do Claude.
+  // Conta e cópia na nuvem (Supabase, região UE). A chave "anon" é pública por desenho: a proteção está nas regras RLS de servidor/supabase.sql.
+  // Vazio = sem contas; a app funciona só neste aparelho e o Perfil não mostra a opção.
+  supabase: { url: "", anonKey: "" }
 };
 // Prémios da roda. weight = peso relativo; a probabilidade real é calculada e mostrada na app.
 const REWARDS = [
@@ -942,6 +973,7 @@ function load(){
 }
 let saveT;
 function save(){
+  S.updatedAt = Date.now(); if (typeof cloudQueue === "function") cloudQueue();
   try { localStorage.setItem(BRAND.storageKey, JSON.stringify(S)); const s = $("#saving"); s.classList.add("on"); clearTimeout(saveT); saveT = setTimeout(() => s.classList.remove("on"), 900); }
   catch(e) { toast("Não foi possível guardar neste aparelho."); }
 }
@@ -1694,6 +1726,7 @@ function renderHoje(){
     ${L.length ? `<button class="sum-more" id="h-detail">Ver o dia em detalhe ${icon("right","xs")}</button>` : ""}`;
   const hd = $("#h-detail"); if (hd) hd.onclick = () => openDayDetail(k);
   requestAnimationFrame(() => requestAnimationFrame(() => { const f = $("#ringfg"); if (f) f.style.strokeDashoffset = (C*(1-frac)).toFixed(1); }));
+  countTo($("#h-sum .rv b"), "ring"); $$("#h-sum .mr-ring b").forEach((b, i) => countTo(b, "mac" + i));
   renderCoach();
 
   // 2) Refeições: nome + kcal (ou porção) e nada mais
@@ -1801,6 +1834,13 @@ function openDayDetail(k){
       <tr class="tot"><td>Total</td>${on ? `<td class="num">${T.k}</td>` : ""}<td class="num">${Math.round(T.p)}</td><td class="num">${Math.round(T.c)}</td><td class="num">${Math.round(T.g)}</td></tr></tbody></table>
       <p class="tiny muted" style="margin-top:8px">Gramas de proteína (P), hidratos (H) e gordura (G). Valores aproximados.</p></div>`);
 }
+
+// Os números contam do valor anterior até ao novo, em vez de saltarem (sem animação com "reduzir movimento").
+const lastNum = {};
+function countTo(el, key){ if (!el || !el.firstChild) return; const node = el.firstChild, to = parseInt(node.textContent, 10) || 0, from = lastNum[key] ?? 0; lastNum[key] = to;
+  if (lowMotion() || from === to) return; const t0 = performance.now(), d = 650;
+  const step = t => { const p = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - p, 3); node.textContent = Math.round(from + (to - from) * e); if (p < 1) requestAnimationFrame(step); };
+  node.textContent = from; requestAnimationFrame(step); }
 /* ========================== Adicionar refeição ========================== */
 let sample = null;
 const aiReady = (async () => { try { sample = (window.claude && await window.claude.use("sample")) || (BRAND.aiEndpoint ? remoteAI(BRAND.aiEndpoint) : null); } catch(e) { sample = null; } })();
@@ -2305,6 +2345,7 @@ function renderPerfil(){
     ["target","","Preferências","Alimentação, alergias, calorias", openPrefs],
     ["brush","","Aparência e som","Tema, cores, animações", openLook],
     ["info","","Como funciona a app","Visita guiada de 1 minuto", () => startTour()],
+    ...(cloudOn() ? [["upload","","Conta e cópia na nuvem", cloudUser ? "Ligada: " + cloudUser.email : "Guarda os teus dados em segurança", openAccount]] : []),
     ["shield","","Dados e privacidade","Exportar, importar, apagar", openData]
   ];
   $("#pf-menu").innerHTML = M.map((m, i) => `<button class="li" data-m="${i}"><span class="badge ${m[1]}">${icon(m[0])}</span><span class="lt"><b>${esc(m[2])}</b><small>${esc(m[3])}</small></span>${icon("right","sm")}</button>`).join("");
@@ -2779,6 +2820,64 @@ function customFromAnswers(){
     goal:u.goal || "manter", lim:(u.lim || []).filter(x => x !== "Nenhuma"), bmi: validBody(p) && u.age === "18 ou mais" ? p.w / ((p.h / 100) ** 2) : 22, age: p.age || 30 });
   u.gym = "sim"; S.wk = { prog:"custom", custom:pl, days:pl.days.slice(), start:today(), done:{}, ex:{} }; save(); renderTreino(); toast("Plano de treino criado com as tuas respostas");
 }
+/* ========================== Conta e cópia na nuvem (Supabase) ==========================
+   Só existe se BRAND.supabase estiver preenchido. Entrada por ligação mágica no e-mail (sem palavras-passe feitas à mão).
+   Guarda o estado inteiro numa linha por pessoa (tabela brota_state), protegida por RLS: cada pessoa só lê e escreve a sua.
+   A app continua a funcionar sem rede: grava sempre no aparelho e envia para a nuvem quando pode. */
+const cloudOn = () => !!(BRAND.supabase && BRAND.supabase.url && BRAND.supabase.anonKey);
+let cloud = null, cloudUser = null, cloudT = null;
+const SUPA_JS = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";
+function loadCloud(){
+  if (!cloudOn()) return Promise.resolve(null); if (cloud) return Promise.resolve(cloud);
+  return new Promise((ok, no) => { const sc = document.createElement("script"); sc.src = SUPA_JS; sc.crossOrigin = "anonymous";
+    sc.onload = () => { cloud = window.supabase.createClient(BRAND.supabase.url, BRAND.supabase.anonKey, { auth:{ persistSession:true, detectSessionInUrl:true } });
+      cloud.auth.onAuthStateChange((_e, sess) => { cloudUser = sess && sess.user ? sess.user : null; });
+      cloud.auth.getSession().then(({ data }) => { cloudUser = data.session ? data.session.user : null; if (cloudUser) cloudPull(); ok(cloud); }); };
+    sc.onerror = () => no(new Error("sem ligação")); document.head.appendChild(sc); });
+}
+// Envia o estado 3 s depois da última alteração (junta várias alterações num só pedido).
+function cloudQueue(){ if (!cloudUser || !cloud) return; clearTimeout(cloudT); cloudT = setTimeout(cloudPush, 3000); }
+async function cloudPush(){ if (!cloudUser || !cloud || navigator.onLine === false) return false;
+  const { error } = await cloud.from("brota_state").upsert({ user_id:cloudUser.id, data:S, updated_at:new Date(S.updatedAt || Date.now()).toISOString() });
+  if (error) { console.warn("nuvem:", error.message); return false; } return true; }
+// Ao entrar: se a cópia na nuvem for mais recente do que a do aparelho, pergunta antes de a usar. Nunca apaga sem perguntar.
+async function cloudPull(){ if (!cloudUser || !cloud) return;
+  const { data, error } = await cloud.from("brota_state").select("data,updated_at").eq("user_id", cloudUser.id).maybeSingle();
+  if (error) { toast("Não foi possível ler a cópia na nuvem."); return; }
+  if (!data) { await cloudPush(); return; } // primeira vez: sobe o que está no aparelho (migração sem perder dados)
+  const remoteAt = Date.parse(data.updated_at) || 0;
+  if (remoteAt > (S.updatedAt || 0) + 1000 && data.data && typeof data.data === "object" && data.data.v) {
+    if (S.ob && !await confirmDlg("Há uma cópia mais recente na nuvem (de outro aparelho). Usar essa? A deste aparelho é substituída.", "Usar a da nuvem")) { await cloudPush(); return; }
+    S = Object.assign(structuredClone(DEFAULT), data.data); localStorage.setItem(BRAND.storageKey, JSON.stringify(S)); applyPrefs(); refreshAll(); toast("Dados da nuvem carregados");
+  } else if ((S.updatedAt || 0) > remoteAt) await cloudPush();
+}
+function openAccount(){
+  if (!cloudOn()) return;
+  loadCloud().then(() => {
+    const u = cloudUser;
+    openSheet("Conta e cópia na nuvem", u ? `<div class="card"><p class="small muted">Ligada como</p><b>${esc(u.email || "")}</b>
+        <p class="small muted" style="margin-top:8px">Os teus dados ficam guardados neste aparelho e numa cópia na nuvem (servidores na UE). Só tu os vês.</p></div>
+        <div class="stack" style="margin-top:12px"><button class="btn block" id="ac-sync">${icon("upload","sm")} Sincronizar agora</button><button class="btn ghost block" id="ac-out">Terminar sessão</button>
+        <button class="btn ghost block" id="ac-del" style="color:var(--accent)">Apagar a cópia na nuvem</button></div>
+        <p class="tiny muted" style="margin-top:10px">Apagar a cópia não apaga os dados deste aparelho.</p>`
+      : `<p class="small">Entra com o teu e-mail para guardares os dados e os usares noutro aparelho. Enviamos-te uma ligação; não há palavra-passe.</p>
+        <label class="field" style="margin-top:12px"><span>E-mail</span><input id="ac-mail" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="nome@exemplo.pt"></label>
+        <label class="row" style="gap:10px;margin-top:12px;align-items:flex-start"><input type="checkbox" id="ac-ok" style="width:22px;height:22px;flex:none;accent-color:var(--brand)"><span class="small">Aceito que os meus dados de alimentação, peso e treino sejam guardados na nuvem (UE) para os poder recuperar. Posso apagá-los quando quiser.</span></label>
+        <button class="btn block" id="ac-go" style="margin-top:14px">Enviar ligação</button>
+        ${isMinor() ? `<p class="tiny muted" style="margin-top:10px">Se tens menos de 16 anos, pede a um adulto que te ajude a criar a conta.</p>` : ""}`, b => {
+      const go = $("#ac-go", b); if (go) go.onclick = async () => { const m = $("#ac-mail", b).value.trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m)) { toast("Escreve um e-mail válido"); return; } if (!$("#ac-ok", b).checked) { toast("Precisas de aceitar para guardar na nuvem"); return; }
+        go.disabled = true; const { error } = await cloud.auth.signInWithOtp({ email:m, options:{ emailRedirectTo: location.href.split("#")[0] } });
+        go.disabled = false; if (error) { toast(/rate/i.test(error.message) ? "Muitos pedidos. Espera um minuto." : "Não foi possível enviar. Tenta outra vez."); return; }
+        closeSheet(); toast("Enviámos-te uma ligação. Abre o e-mail neste aparelho."); };
+      const sy = $("#ac-sync", b); if (sy) sy.onclick = async () => { toast(await cloudPush() ? "Sincronizado" : "Sem ligação. Tento mais tarde."); };
+      const out = $("#ac-out", b); if (out) out.onclick = async () => { await cloud.auth.signOut(); cloudUser = null; closeSheet(); renderPerfil(); toast("Sessão terminada. Os dados ficam neste aparelho."); };
+      const del = $("#ac-del", b); if (del) del.onclick = async () => { if (!await confirmDlg("Apagar a cópia dos teus dados na nuvem? Os dados deste aparelho ficam.", "Apagar")) return;
+        const { error } = await cloud.from("brota_state").delete().eq("user_id", cloudUser.id); toast(error ? "Não foi possível apagar. Tenta outra vez." : "Cópia na nuvem apagada"); };
+    });
+  }).catch(() => toast("Sem ligação. A conta precisa de internet."));
+}
+if (cloudOn()) loadCloud().catch(() => {});
 /* ========================== Arranque ========================== */
 function applyPrefs(){ const r = document.documentElement; if (S.theme) r.dataset.theme = S.theme; else r.removeAttribute("data-theme");
   if (S.accent) r.dataset.accent = S.accent; else r.removeAttribute("data-accent"); if (S.mot) r.dataset.motion = "low"; else r.removeAttribute("data-motion"); }

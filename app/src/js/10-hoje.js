@@ -27,6 +27,7 @@ function renderHoje(){
     ${L.length ? `<button class="sum-more" id="h-detail">Ver o dia em detalhe ${icon("right","xs")}</button>` : ""}`;
   const hd = $("#h-detail"); if (hd) hd.onclick = () => openDayDetail(k);
   requestAnimationFrame(() => requestAnimationFrame(() => { const f = $("#ringfg"); if (f) f.style.strokeDashoffset = (C*(1-frac)).toFixed(1); }));
+  countTo($("#h-sum .rv b"), "ring"); $$("#h-sum .mr-ring b").forEach((b, i) => countTo(b, "mac" + i));
   renderCoach();
 
   // 2) Refeições: nome + kcal (ou porção) e nada mais
@@ -134,3 +135,10 @@ function openDayDetail(k){
       <tr class="tot"><td>Total</td>${on ? `<td class="num">${T.k}</td>` : ""}<td class="num">${Math.round(T.p)}</td><td class="num">${Math.round(T.c)}</td><td class="num">${Math.round(T.g)}</td></tr></tbody></table>
       <p class="tiny muted" style="margin-top:8px">Gramas de proteína (P), hidratos (H) e gordura (G). Valores aproximados.</p></div>`);
 }
+
+// Os números contam do valor anterior até ao novo, em vez de saltarem (sem animação com "reduzir movimento").
+const lastNum = {};
+function countTo(el, key){ if (!el || !el.firstChild) return; const node = el.firstChild, to = parseInt(node.textContent, 10) || 0, from = lastNum[key] ?? 0; lastNum[key] = to;
+  if (lowMotion() || from === to) return; const t0 = performance.now(), d = 650;
+  const step = t => { const p = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - p, 3); node.textContent = Math.round(from + (to - from) * e); if (p < 1) requestAnimationFrame(step); };
+  node.textContent = from; requestAnimationFrame(step); }

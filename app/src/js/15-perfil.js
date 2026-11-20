@@ -15,6 +15,7 @@ function renderPerfil(){
     ["target","","Preferências","Alimentação, alergias, calorias", openPrefs],
     ["brush","","Aparência e som","Tema, cores, animações", openLook],
     ["info","","Como funciona a app","Visita guiada de 1 minuto", () => startTour()],
+    ...(cloudOn() ? [["upload","","Conta e cópia na nuvem", cloudUser ? "Ligada: " + cloudUser.email : "Guarda os teus dados em segurança", openAccount]] : []),
     ["shield","","Dados e privacidade","Exportar, importar, apagar", openData]
   ];
   $("#pf-menu").innerHTML = M.map((m, i) => `<button class="li" data-m="${i}"><span class="badge ${m[1]}">${icon(m[0])}</span><span class="lt"><b>${esc(m[2])}</b><small>${esc(m[3])}</small></span>${icon("right","sm")}</button>`).join("");
