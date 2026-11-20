@@ -33,7 +33,8 @@ function renderHoje(){
   // Cada refeição: ilustração (ou a foto do prato do plano), progresso e, se ainda não comeste, o prato planeado com "Comi isto".
   $("#h-meals").innerHTML = MEALS.map(M => { const it = L.filter(m => m.m === M.id), kc = it.reduce((a,m) => a+(+m.k||0), 0), tg = Math.round(S.goal * ({ "Pequeno-almoço":.25, "Almoço":.35, "Lanche":.1, "Jantar":.3 }[M.id]) / 10) * 10;
     const pl = S.plan.find(x => x.date === k && x.m === M.id && x.r), pr = pl && RECIPES.find(r => r.id === pl.r);
-    return `<div class="mealw"><div class="meal">${pr && photoOf(pr) ? `<img class="meal-ph" src="${esc(photoOf(pr))}" alt="">` : artTile(MEAL_ART[M.id], 52)}
+    const ir = it.length ? RECIPES.find(r => r.n === it[0].n) : pr; // a foto do que comeste; se ainda nada, a do prato planeado
+    return `<div class="mealw"><div class="meal">${ir && photoOf(ir) ? `<img class="meal-ph" src="${esc(photoOf(ir))}" alt="">` : artTile(MEAL_ART[M.id], 52)}
       <div class="lt"><b>${M.id}</b><small>${kcalOn() ? `${kc} / ${tg} kcal` : it.length ? it.length + (it.length > 1 ? " itens" : " item") : "Por registar"}</small>${kcalOn() ? `<span class="mbar"><i style="width:${Math.min(100, Math.round(kc / tg * 100))}%"></i></span>` : ""}</div>
       <button class="plus" data-add="${M.id}" aria-label="Adicionar ao ${M.id}">${icon("plus","sm")}</button></div>
       ${!it.length && pr && k === today() ? `<div class="meal-plan"><span class="small">No plano: <button class="lnk" data-prec="${pr.id}"><b>${esc(pr.n)}</b></button></span><button class="btn soft sm" data-ate="${pl.id}">Comi isto</button></div>` : ""}

@@ -72,7 +72,7 @@ for (const [id, v] of Object.entries(PHOTO_EMB)) { const r = RECIPES.find(x => x
 // Fotografia real: embebida (img) ou na pasta fotos/ (criada por tools/fotos.py). Sem foto, um espaço neutro.
 const CAT_IC = { "Pequeno-almoço":"coffee", "Almoço":"bowl", "Lanche":"apple", "Jantar":"moon" };
 const photoOf = r => r.img || ((window.BROTA_FOTOS || {})[r.id] || {}).f || "";
-const photoCredit = r => r.cr || ((window.BROTA_FOTOS || {})[r.id] || {}).cr || "";
+const photoCredit = r => r.ai ? "Imagem ilustrativa, gerada por IA" : r.cr ||((window.BROTA_FOTOS || {})[r.id] || {}).cr || "";
 function recipeCover(r){ const src = photoOf(r); return src
   ? `<img class="cover" src="${esc(src)}" alt="${esc(r.n)}" loading="lazy" decoding="async">`
   : (() => { const kd = artKind(r), [a, b] = ART_BG[kd]; return `<span class="cover-ph cover-art" style="--a1:${a};--a2:${b}" aria-hidden="true">${artSVG(kd, 92)}</span>`; })(); }
