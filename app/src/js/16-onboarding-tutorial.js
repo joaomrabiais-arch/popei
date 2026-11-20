@@ -28,7 +28,7 @@ const OB = [
   { k:"novelty", sec:4, one:1, q:() => "Quantas receitas novas por semana?", s:"Do que já conheces ao mais aventureiro.", o:NOVELTY },
   { k:"taste", sec:4, type:"taste", q:() => `Ensina o ${BRAND.mascot}`, s:A => Object.keys(A.taste || {}).length >= 3 ? "Já chega. Continua se quiseres." : "Cozinhavas isto? Toca para passar, gostar ou adorar." },
   { k:"tdays", sec:5, type:"tdays", q:() => "Em que dias treinas?", s:"Nesses dias o plano leva mais proteína e hidratos. Não treinas? Tudo bem." },
-  { k:"gym", sec:5, who:"morango", m:"wow", one:1, q:A => `Queres que te monte um plano de treino${nm(A)}?`, s:"Feito à tua medida, com treino guiado. Podes ativá-lo mais tarde em Planos.", o:[["sim","Sim, quero treinar"],["nao","Agora não"]] },
+  { k:"gym", sec:5, who:"abi", m:"wow", one:1, q:A => `Queres que te monte um plano de treino${nm(A)}?`, s:"Feito à tua medida, com treino guiado. Podes ativá-lo mais tarde em Planos.", o:[["sim","Sim, quero treinar"],["nao","Agora não"]] },
   { k:"place", sec:5, one:1, when:A => A.gym === "sim", q:() => "Onde vais treinar?", s:"Escolhe o sítio onde treinas mais vezes.", o:[["gym","No ginásio"],["equip","Em casa, com halteres ou elásticos"],["casa","Em casa, sem material"],["rua","Na rua ou num parque"]] },
   { k:"equip", sec:5, ex:"Nenhum", when:A => A.gym === "sim" && A.place !== "gym", q:() => "Que material tens à mão?", s:"Escolhe tudo o que tens.", o:["Halteres","Elásticos","Kettlebell","Barra de elevações","Banco ou degrau","Tapete","Nenhum"] },
   { k:"gdaysSel", sec:5, type:"days", when:A => A.gym === "sim" && !gymDaysOk(A.tdays), q:() => "Em que dias consegues treinar?", s:"Para o plano de treino, escolhe 2 a 6 dias." },
@@ -107,7 +107,7 @@ function openOnboarding(edit, startKey, single){
     S.plan = S.plan.filter(x => !(x.a && x.date >= today())); S.planWk = {}; ensurePlans();
     if (A.gym === "sim" && (!single || keyChanged === "tdays" || keyChanged === "gym")) { const pl = planFor(); S.wkHist = Object.assign(S.wkHist || {}, (S.wk && S.wk.done) || {}); S.wk = { prog:"custom", custom:pl, days:pl.days.slice(), start:today(), done:{}, ex:{} }; }
     if (first) S.spins = 3; save(); ob.classList.add("hide"); refreshAll();
-    if (first) setTimeout(() => celebrate({ who:"morango", title:"Presente de boas-vindas", name:"3 giros na roda de prémios", desc:`Gira a roda e ganha acessórios para o ${BRAND.mascot}. No fim das 3 tentativas, o prémio dourado é garantido.`, mood:"party", action:{ label:"Ir à roda", fn:() => go("roda") }, onClose:() => setTimeout(() => { if (!S.tourDone) startTour(); }, 300) }), 300);
+    if (first) setTimeout(() => celebrate({ who:"abi", title:"Presente de boas-vindas", name:"3 giros na roda de prémios", desc:`Gira a roda e ganha acessórios para o ${BRAND.mascot}. No fim das 3 tentativas, o prémio dourado é garantido.`, mood:"party", action:{ label:"Ir à roda", fn:() => go("roda") }, onClose:() => setTimeout(() => { if (!S.tourDone) startTour(); }, 300) }), 300);
     else { toast(single ? "Guardado. O plano desta semana foi atualizado." : "Preferências guardadas e plano atualizado"); if (!single) say(A.gym === "sim" ? "plan" : "hello", true); }
   };
 
@@ -124,7 +124,7 @@ function openOnboarding(edit, startKey, single){
   const optBtn = (s, [v, l, d]) => `<button class="opt ${sel(s, v) ? "on" : ""}" data-o="${esc(v)}" aria-pressed="${sel(s, v)}"><span class="tick">${icon("check","xs")}</span>${d ? `<span><b style="display:block;font-weight:600">${esc(l)}</b><small class="muted">${esc(d)}</small></span>` : esc(l)}</button>`;
 
   const draw = () => { const V = vis(); n = Math.min(n, V.length - 1); const s = V[n], pv = preview();
-    let body = "", q = s.q ? s.q(A) : "", sub = typeof s.s === "function" ? s.s(A) : s.s || "", head = s.who ? face(s.who, { mood: mood || s.m, size: s.who === "morango" ? 96 : 84 }) : "";
+    let body = "", q = s.q ? s.q(A) : "", sub = typeof s.s === "function" ? s.s(A) : s.s || "", head = s.who ? face(s.who, { mood: mood || s.m, size: s.who === "abi" ? 96 : 84 }) : "";
     if (s.type === "text") body = `<input id="ob-n" maxlength="40" autocomplete="given-name" placeholder="O teu nome" value="${esc(A.name)}" aria-label="Nome">`;
     else if (s.type === "age") body = `<label class="field"><span>Idade</span><input id="ob-age" type="number" inputmode="numeric" min="10" max="100" value="${A.ageN || ""}"></label><p class="small" id="ob-agen" style="margin-top:8px;color:var(--muted)"></p>`;
     else if (s.type === "body") body = `<div class="ob-form"><div class="seg" id="ob-sex"><button data-v="f" class="${B.sex === "f" ? "on" : ""}">Feminino</button><button data-v="m" class="${B.sex === "m" ? "on" : ""}">Masculino</button></div>
@@ -146,14 +146,14 @@ function openOnboarding(edit, startKey, single){
         <div class="row between tiny muted" style="margin-top:6px"><span>Comida, estimada em ${eur(pv.cost)}</span><span>Orçamento ${B2} €</span></div>
         <p class="small muted" style="margin-top:10px">${pv.cost > B2 ? "Acima do orçamento: na próxima pergunta escolhes o que fazer." : "Cabe no orçamento, a contar com o que tens na cozinha."}</p>`; }
     else if (s.type === "taste") { if (!A._tl) A._tl = withU(A, () => { const R = RECIPES.filter(recipeAllowed), pick = (f, n2) => R.filter(f).sort(() => rnd() - .5).slice(0, n2); return pick(r => isMain(r.c), 6).concat(pick(r => r.c === "Pequeno-almoço", 2)).map(r => r.id); });
-      A._ti = A._ti || 0; const r = RECIPES.find(x => x.id === A._tl[A._ti]), cnt = Object.keys(A.taste || {}).length;
-      body = r ? `<div class="tcard">${photoOf(r) ? `<img src="${esc(photoOf(r))}" alt="">` : `<span class="tcard-ph">${icon(CAT_IC[r.c] || "bowl")}</span>`}<div class="tcard-t"><small>${esc(r.c)}</small><b>${esc(r.n)}</b><small>${r.t} min · ${r.p} g de proteína</small></div></div>
-        <div class="tbtns"><button data-tv="-1" aria-label="Passar">${icon("x")}<span>Passar</span></button><button data-tv="1" aria-label="Gostar">${icon("check")}<span>Gostar</span></button><button data-tv="2" aria-label="Adorar">${icon("heart-f")}<span>Adorar</span></button></div>
-        <p class="tiny muted" style="text-align:center;margin-top:8px">${cnt} de ${A._tl.length} · O que passas aparece menos; o que adoras, mais.</p>`
-        : `<div class="note">${icon("check","sm")}<span>Obrigado! Já sei do que gostas.</span></div>`; }
+      const ST = { 1:["like","check","Gosto"], 2:["love","heart-f","Adoro"], "-1":["no","x","Não é para mim"] };
+      body = `<div class="tgrid">${A._tl.map(id => { const r = RECIPES.find(x => x.id === id); if (!r) return ""; const v = ST[(A.taste || {})[id]];
+        return `<button class="tg ${v ? v[0] : ""}" data-tg="${id}" aria-label="${esc(r.n)}${v ? ": " + v[2] : ""}">${photoOf(r) ? `<img src="${esc(photoOf(r))}" alt="">` : (() => { const kd = artKind(r), [c1, c2] = ART_BG[kd]; return `<span class="tg-art" style="--a1:${c1};--a2:${c2}">${artSVG(kd, 64)}</span>`; })()}
+          <span class="tg-n">${esc(r.n)}</span><span class="tg-s">${v ? icon(v[1], "xs") + " " + v[2] : "Toca para avaliar"}</span></button>`; }).join("")}</div>
+        <p class="tiny muted" style="margin-top:10px">Um toque: gosto · dois: adoro · três: não é para mim. O que adoras aparece mais vezes; o que não é para ti, quase nunca.</p>`; }
 
     else if (s.type === "result") { const r = pv.r, pl = A.gym === "sim" ? planFor() : null, k0 = today(), E0 = pv.E.filter(x => x.date === k0).sort((a, b) => mealOrder(a.m) - mealOrder(b.m));
-      head = `<div class="mascots">${abi({ mood:"party", size:80 })}${morango({ mood:"party", size:96 })}</div>`; q = `O plano está pronto${nm(A)}.`;
+      head = `<div class="mascots">${abi({ mood:"party", size:104 })}</div>`; q = `O plano está pronto${nm(A)}.`;
       const dishes = new Set(pv.E.filter(x => isMain(x.m)).map(x => x.r)).size;
       sub = `${pv.P.people} pessoa${pv.P.people > 1 ? "s" : ""} · ${dishes} pratos · ${pv.E.length} refeições esta semana, à medida da tua casa. Não tens de responder a mais nada.`;
       body = (r ? `<p class="small muted">A tua referência diária${pv.P.tdays.length ? " (nos dias de treino um pouco mais)" : ""}:</p>${refCard(r)}${r.note ? `<div class="note warn" style="margin-top:12px">${icon("info","sm")}<span>${esc(r.note)}</span></div>` : ""}`
@@ -175,7 +175,7 @@ function openOnboarding(edit, startKey, single){
       <button class="btn block" id="ob-n2" ${valid(s) ? "" : "disabled"} style="height:54px">${s.type === "result" ? "Ver o meu plano" : single ? "Guardar" : "Continuar"}</button>
       ${s.type !== "result" && s.type !== "text" ? `<button class="skip" id="ob-skip">${single ? "Cancelar" : "Saltar esta pergunta"}</button>` : ""}`;
     const nextBtn = $("#ob-n2", inn), recheck = () => { nextBtn.disabled = !valid(s); };
-    $$(".opts .opt", inn).forEach(b => b.onclick = () => { readIn(s); tog(s, b.dataset.o); A._note = b.textContent.trim().slice(0, 40); mood = s.who === "morango" ? (b.dataset.o === "nao" ? "think" : "party") : "happy"; draw(); });
+    $$(".opts .opt", inn).forEach(b => b.onclick = () => { readIn(s); tog(s, b.dataset.o); A._note = b.textContent.trim().slice(0, 40); mood = s.who === "abi" ? (b.dataset.o === "nao" ? "think" : "party") : "happy"; draw(); });
     $$("#ob-sex button", inn).forEach(x => x.onclick = () => { readIn(s); B.sex = x.dataset.v; draw(); });
     $$("#ob-h,#ob-w", inn).forEach(x => x.oninput = () => { readIn(s); A._noBody = false; recheck(); });
     const ag = $("#ob-age", inn); if (ag) { const msg = () => { $("#ob-agen", inn).textContent = A.ageN && A.ageN < 18 && A.ageN >= 10 ? "Combinado: sem calorias nem metas de peso. Vamos focar-nos em refeições regulares e variadas." : ""; };
@@ -184,7 +184,8 @@ function openOnboarding(edit, startKey, single){
     $$("#ob-days button", inn).forEach(x => x.onclick = () => { const key = s.type === "tdays" ? "tdays" : "gdaysSel", i = +x.dataset.i, a = A[key] || []; A[key] = a.includes(i) ? a.filter(y => y !== i) : a.concat(i).sort((p, q2) => p - q2); draw(); });
     $$("[data-pp]", inn).forEach(x => x.onclick = () => { A.people = clamp(A.people + +x.dataset.pp, 1, 8); A._note = A.people + (A.people > 1 ? " pessoas" : " pessoa"); draw(); });
     $$("[data-bd]", inn).forEach(x => x.onclick = () => { A.budget = String(clamp(+A.budget + +x.dataset.bd, 10, 1000)); A._note = "Orçamento " + A.budget + " €"; draw(); });
-    $$("[data-tv]", inn).forEach(x => x.onclick = () => { const id = A._tl[A._ti]; A.taste = Object.assign({}, A.taste, { [id]: +x.dataset.tv }); A._ti++; A._note = { "-1":"Passar", "1":"Gostar", "2":"Adorar" }[x.dataset.tv]; mood = +x.dataset.tv > 0 ? "happy" : "think"; draw(); });
+    $$("[data-tg]", inn).forEach(x => x.onclick = () => { const id = +x.dataset.tg, t = Object.assign({}, A.taste), nx = { undefined:1, 1:2, 2:-1, "-1":undefined }[t[id]];
+      if (nx === undefined) delete t[id]; else t[id] = nx; A.taste = t; A._note = nx === undefined ? "Sem avaliação" : { 1:"Gosto", 2:"Adoro", "-1":"Não é para mim" }[nx] + " · " + (RECIPES.find(r => r.id === id) || {}).n; draw(); });
     const we = $("#ob-we", inn); if (we) we.onclick = () => { A.weMore = A.weMore === false; A._note = A.weMore ? "Mais tempo ao fim de semana" : "Igual ao fim de semana"; draw(); };
     const sr = $("#ob-srch", inn); if (sr) { sr.value = A._q || ""; const flt = () => { A._q = sr.value; const q = norm(sr.value); $$(".opts .opt", inn).forEach(o => o.classList.toggle("hide", !!q && !norm(o.textContent).includes(q))); }; sr.oninput = flt; flt(); }
     const nt = $("#ob-notr", inn); if (nt) nt.onclick = () => { A.tdays = []; draw(); };
@@ -246,7 +247,7 @@ function startTour(i = 0){
     const r = t.getBoundingClientRect(), below = r.bottom < innerHeight * .55;
     o.innerHTML = `<div class="tour-spot" style="top:${r.top - 6}px;left:${r.left - 6}px;width:${r.width + 12}px;height:${r.height + 12}px"></div>
       <div class="tour-card" style="${below ? `top:${Math.min(innerHeight - 220, r.bottom + 14)}px` : `bottom:${Math.min(innerHeight - 220, innerHeight - r.top + 14)}px`}" role="dialog" aria-label="Como funciona">
-        <div class="row" style="align-items:flex-end;gap:8px">${face(i % 3 === 2 ? "morango" : "abi", { mood: i === TOUR.length - 1 ? "party" : "wave", size: i % 3 === 2 ? 70 : 58 })}${bubbleHTML(i % 3 === 2 ? "morango" : "abi", { cls:"grow" })}</div>
+        <div class="row" style="align-items:flex-end;gap:8px">${face(i % 3 === 2 ? "abi" : "abi", { mood: i === TOUR.length - 1 ? "party" : "wave", size: i % 3 === 2 ? 70 : 58 })}${bubbleHTML(i % 3 === 2 ? "abi" : "abi", { cls:"grow" })}</div>
         <div class="row between" style="margin-top:12px"><button class="skip" id="tour-skip" style="width:auto;padding:8px 0">Saltar</button><span class="tiny muted">${i + 1} de ${TOUR.length}</span><button class="btn sm" id="tour-next">${i === TOUR.length - 1 ? "Começar" : "Seguinte"}</button></div></div>`;
     speak(o, text, { fast:true });
     $("#tour-next", o).onclick = () => startTour(i + 1); $("#tour-skip", o).onclick = endTour;

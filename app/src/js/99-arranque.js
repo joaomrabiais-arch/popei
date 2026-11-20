@@ -6,7 +6,7 @@ function refreshAll(){ (RENDER[curTab] || renderHoje)(); }
 load(); applyPrefs();
 document.title = BRAND.name;
 $$("[data-brand]").forEach(e => e.textContent = BRAND.name); $$("[data-tagline]").forEach(e => e.textContent = BRAND.tagline);
-$("#sp-m").innerHTML = `<div class="mascots">${abi({ mood:"wave", size:120, acc:null })}${morango({ mood:"wink", size:130 })}</div>`;
+$("#sp-m").innerHTML = `<div class="mascots">${abi({ mood:"wave", size:150, acc:null })}</div>`;
 ensurePlans(); syncChallenges(); renderHoje();
 (() => { const sp = $("#splash");
   const end = () => { if (!sp.isConnected) return; sp.classList.add("out"); setTimeout(() => sp.remove(), 500); if (!S.ob) openOnboarding(false); else if (S.lastHello !== today()) { S.lastHello = today(); save(); setTimeout(() => say("hello", true), 900); } };

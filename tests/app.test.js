@@ -36,7 +36,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
     if (opt === "DIAS") { for (const d of [0, 2, 4]) await page.click(`#ob-days [data-i="${d}"]`); await shot("02d-dias"); }
     else if (opt === "SKIP") { await page.click("#ob-skip"); continue; }
     else if (opt === "PEOPLE") { await page.click('[data-pp="1"]'); await shot("02g-pessoas"); }
-    else if (opt === "TASTE") { for (const v of ["2", "1", "-1"]) await page.click(`[data-tv="${v}"]`); await shot("02h-ensinar"); }
+    else if (opt === "TASTE") { const tg = i => page.click(`.tgrid .tg >> nth=${i}`); await tg(0); await tg(0); await tg(1); await tg(2); await tg(2); await tg(2); await shot("02h-ensinar"); }
     else for (const o of [].concat(opt)) await page.click(`.opt[data-o="${o}"]`);
     if (opt === "dobro") await shot("02e-cozinha"); if (opt === "30") await shot("02i-tempo");
     await page.click("#ob-n2");

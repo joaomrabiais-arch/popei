@@ -25,10 +25,10 @@ function confetti(){ if (lowMotion()) return; const c = document.createElement("
 function celebrate({ title, name, desc, mood="party", action, kind, onClose, who }){
   const d = document.createElement("div"); d.className = "celebrate";
   d.innerHTML = `<div class="card stack" role="alertdialog" aria-modal="true" aria-label="${esc(title)}">
-    ${who === "morango" ? morango({ mood, size:150 }) : abi({ mood, size:100 })}<p class="small" style="font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:${kind === "gold" ? "var(--gold)" : "var(--brand)"}">${esc(title)}</p>
+    ${who === "abi" ? abi({ mood, size:150 }) : abi({ mood, size:100 })}<p class="small" style="font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:${kind === "gold" ? "var(--gold)" : "var(--brand)"}">${esc(title)}</p>
     <h2>${esc(name)}</h2><p class="muted">${esc(desc)}</p>
     ${action ? `<button class="btn block" data-a>${esc(action.label)}</button>` : ""}<button class="btn ${action ? "ghost" : ""} block" data-x>${action ? "Fechar" : "Boa!"}</button></div>`;
-  document.body.appendChild(d); confetti(); setTimeout(() => burst($(".mwrap", d), who === "morango" ? "spark" : "heart"), 350); snd(kind === "gold" ? "gold" : "win"); $("[data-x]", d).focus();
+  document.body.appendChild(d); confetti(); setTimeout(() => burst($(".mwrap", d), who === "abi" ? "spark" : "heart"), 350); snd(kind === "gold" ? "gold" : "win"); $("[data-x]", d).focus();
   const close = () => { d.remove(); if (onClose) setTimeout(onClose, 200); };
   d.onclick = e => { if (e.target.closest("[data-a]")) { close(); action.fn(); } else if (e.target.closest("[data-x]") || e.target === d) close(); };
 }
@@ -83,8 +83,8 @@ function openSummary(){
   const tot = ds.reduce((a, k) => { const t = dayTotals(k); return { p:a.p+t.p, c:a.c+t.c, g:a.g+t.g }; }, { p:0, c:0, g:0 }), en = tot.p*4 + tot.c*4 + tot.g*9 || 1;
   const pc = [["Proteína", tot.p*4/en, "var(--brand)"], ["Hidratos", tot.c*4/en, "var(--brand-2)"], ["Gordura", tot.g*9/en, "var(--brand-3)"]];
   const W = Object.entries(S.weights || {}).sort(([a],[b]) => a < b ? -1 : 1).slice(-30), first = W[0], last = W[W.length-1];
-  const line = logged >= 5 ? ["morango","Semana muito consistente. Estou orgulhoso!","party"] : logged >= 2 ? ["abi","Boa semana. Cada registo ajuda-te a conhecer-te melhor.","happy"] : ["abi","Uma semana mais calma também conta. Estou aqui quando quiseres.","happy"];
-  openSheet("Progresso", `<div class="card row">${(line[0] === "morango" ? morango : abi)({ mood:line[2], size: line[0] === "morango" ? 60 : 44 })}<p>${line[1]}</p></div>
+  const line = logged >= 5 ? ["abi","Semana muito consistente. Estou orgulhoso!","party"] : logged >= 2 ? ["abi","Boa semana. Cada registo ajuda-te a conhecer-te melhor.","happy"] : ["abi","Uma semana mais calma também conta. Estou aqui quando quiseres.","happy"];
+  openSheet("Progresso", `<div class="card row">${abi({ mood:line[2], size: line[0] === "abi" ? 60 : 44 })}<p>${line[1]}</p></div>
     <div class="stat3" style="margin-top:12px"><div><b>${logged}/7</b><small>dias com registo</small></div><div><b>${wk}</b><small>treinos</small></div><div><b>${chd}</b><small>desafios</small></div></div>
     ${isMinor() ? "" : `<div class="card" style="margin-top:16px"><div class="row between"><h3>Peso</h3>${last && first !== last ? `<span class="small muted">${(last[1]-first[1] > 0 ? "+" : "") + (last[1]-first[1]).toFixed(1).replace(".",",")} kg desde ${first[0].slice(8)}/${first[0].slice(5,7)}</span>` : ""}</div>
       <div style="margin-top:8px">${lineChart(W, { goal: S.u && S.u.tw ? +S.u.tw : null })}</div>

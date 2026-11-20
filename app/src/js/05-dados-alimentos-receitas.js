@@ -75,5 +75,5 @@ const photoOf = r => r.img || ((window.BROTA_FOTOS || {})[r.id] || {}).f || "";
 const photoCredit = r => r.cr || ((window.BROTA_FOTOS || {})[r.id] || {}).cr || "";
 function recipeCover(r){ const src = photoOf(r); return src
   ? `<img class="cover" src="${esc(src)}" alt="${esc(r.n)}" loading="lazy" decoding="async">`
-  : `<span class="cover-ph" aria-hidden="true">${icon(CAT_IC[r.c] || "bowl")}</span>`; }
+  : (() => { const kd = artKind(r), [a, b] = ART_BG[kd]; return `<span class="cover-ph cover-art" style="--a1:${a};--a2:${b}" aria-hidden="true">${artSVG(kd, 92)}</span>`; })(); }
 

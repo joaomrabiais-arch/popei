@@ -6,7 +6,6 @@ const BRAND = {
   name: "Brota",                    // nome provisório: confirmar registo de marca antes de lançar
   tagline: "Come bem, mexe-te, sem pressão.",
   mascot: "Abi",                    // o abacate
-  mascot2: "Morango",               // o morango
   storageKey: "brota_v1",
   legacyKeys: ["nutrivida"],        // dados da NutriVida migrados automaticamente
   aiEndpoint: ""                    // URL do servidor grátis com Llama (ver servidor/LEIA-ME.md). Vazio = a IA só funciona dentro do Claude.

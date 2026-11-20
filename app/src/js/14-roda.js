@@ -12,7 +12,7 @@ const nextGolden = () => GOLDEN[Math.min(S.golden, GOLDEN.length-1)];
 function renderRoda(){
   const W = wheelItems(), tot = W.reduce((a, w) => a + w.weight, 0), g = nextGolden();
   const rot = $("#w-rot"); if (!rot.childElementCount) { rot.innerHTML = wheelSegments(false); rot.style.transform = `rotate(${wheelAngle}deg)`; }
-  $("#w-hub").innerHTML = morango({ mood: spinning ? "wow" : "wink", size:50 });
+  $("#w-hub").innerHTML = abi({ mood: spinning ? "wow" : "wink", size:50 });
   $("#w-tries").innerHTML = [0,1,2].map(i => `<i class="${i < S.round ? "on" : ""}"></i>`).join("") + `<span class="gp ${S.round >= 2 ? "lit" : ""}" title="Prémio dourado">${icon("crown","xs")}</span>`;
   $("#w-sub").innerHTML = `Tentativa <b>${Math.min(S.round+1, 3)} de 3</b> desta ronda · Giros disponíveis: <b>${S.spins}</b><br>No fim das 3 tentativas recebes, garantido: <b style="color:var(--gold)">${esc(g.name)}</b>`;
   $("#w-odds").innerHTML = W.map(w => `<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${w.color};margin-right:8px"></span>${esc(w.name)}</td><td>${(w.weight/tot*100).toLocaleString("pt-PT", { maximumFractionDigits:1 })}% por giro</td></tr>`).join("")
@@ -52,7 +52,7 @@ function grant(p, gold, after){
     : p.type === "recipes" ? { label:"Ver receitas", fn:() => { rFilter = "Todas"; go("receitas"); } } : null;
   const desc = dup ? "Repetido: já tinhas este prémio. Continua a jogar para completar a coleção."
     : p.desc + (p.type === "discount" ? ` Código: ${p.code}. Válido até ${p.expires}. ${p.terms || ""}` : "");
-  celebrate({ who:"morango", title: gold ? "Prémio dourado · garantido" : "Saiu na roda", name:p.name, desc, mood:"party", kind: gold ? "gold" : "",
+  celebrate({ who:"abi", title: gold ? "Prémio dourado · garantido" : "Saiu na roda", name:p.name, desc, mood:"party", kind: gold ? "gold" : "",
     action: action && after ? { label:action.label, fn:() => { action.fn(); setTimeout(after, 300); } } : action,
     onClose: after || undefined });
 }

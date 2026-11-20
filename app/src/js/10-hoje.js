@@ -30,10 +30,17 @@ function renderHoje(){
   renderCoach();
 
   // 2) Refeições: nome + kcal (ou porção) e nada mais
-  $("#h-meals").innerHTML = MEALS.map(M => { const it = L.filter(m => m.m === M.id), kc = it.reduce((a,m) => a+(+m.k||0), 0);
-    return `<div class="mealw"><div class="meal"><div class="badge">${icon(M.ic)}</div><div class="lt"><b>${M.id}</b><small>${kcalOn() ? `${kc} / ${Math.round(S.goal * ({ "Pequeno-almoço":.25, "Almoço":.35, "Lanche":.1, "Jantar":.3 }[M.id]) / 10) * 10} kcal` : it.length ? it.length + (it.length > 1 ? " itens" : " item") : "Por registar"}</small></div>
+  // Cada refeição: ilustração (ou a foto do prato do plano), progresso e, se ainda não comeste, o prato planeado com "Comi isto".
+  $("#h-meals").innerHTML = MEALS.map(M => { const it = L.filter(m => m.m === M.id), kc = it.reduce((a,m) => a+(+m.k||0), 0), tg = Math.round(S.goal * ({ "Pequeno-almoço":.25, "Almoço":.35, "Lanche":.1, "Jantar":.3 }[M.id]) / 10) * 10;
+    const pl = S.plan.find(x => x.date === k && x.m === M.id && x.r), pr = pl && RECIPES.find(r => r.id === pl.r);
+    return `<div class="mealw"><div class="meal">${pr && photoOf(pr) ? `<img class="meal-ph" src="${esc(photoOf(pr))}" alt="">` : artTile(MEAL_ART[M.id], 52)}
+      <div class="lt"><b>${M.id}</b><small>${kcalOn() ? `${kc} / ${tg} kcal` : it.length ? it.length + (it.length > 1 ? " itens" : " item") : "Por registar"}</small>${kcalOn() ? `<span class="mbar"><i style="width:${Math.min(100, Math.round(kc / tg * 100))}%"></i></span>` : ""}</div>
       <button class="plus" data-add="${M.id}" aria-label="Adicionar ao ${M.id}">${icon("plus","sm")}</button></div>
+      ${!it.length && pr && k === today() ? `<div class="meal-plan"><span class="small">No plano: <button class="lnk" data-prec="${pr.id}"><b>${esc(pr.n)}</b></button></span><button class="btn soft sm" data-ate="${pl.id}">Comi isto</button></div>` : ""}
       ${it.length ? `<div class="meal-items">${it.map(m => `<button data-edit="${m.id}" aria-label="Editar ${esc(m.n)}"><span>${esc(m.n)}${!kcalOn() && m.q ? ` <span class="q">${esc(m.q)}</span>` : ""}</span><span>${kcalOn() ? m.k + " kcal" : ""}</span></button>`).join("")}</div>` : ""}</div>`; }).join("");
+  $$("#h-meals [data-prec]").forEach(b => b.onclick = () => openRecipe(+b.dataset.prec));
+  $$("#h-meals [data-ate]").forEach(b => b.onclick = () => { const pl = S.plan.find(x => x.id === b.dataset.ate), r = pl && RECIPES.find(q => q.id === pl.r); if (!r) return; const x = pl.x || 1;
+    addEntry(k, { n:r.n, k:Math.round(r.k * x), p:Math.round(r.p * x), c:Math.round(r.h * x), g:Math.round(r.g * x), m:pl.m, q:x === 1 ? "1 porção" : String(x).replace(".", ",") + " porções", src:"plan" }); renderHoje(); toast("Registado do plano"); });
   $$("#h-meals [data-add]").forEach(b => b.onclick = () => openAdd(b.dataset.add));
   $$("#h-meals [data-edit]").forEach(b => b.onclick = () => openEdit(k, b.dataset.edit));
 
@@ -48,7 +55,14 @@ function renderHoje(){
   // 4) Desafios (sempre os de hoje) e giros disponíveis
   renderRewardBanner();
   const tk = today(), CH = todaysChallenges(tk);
-  $("#h-ch").innerHTML = CH.map(c => { const dn = challengeDone(c, tk); return `<button class="challenge ${dn ? "done" : ""}" data-c="${c.id}" aria-pressed="${dn}"><span class="tick">${icon("check","xs")}</span><span class="lt"><b>${esc(c.n)}</b>${c.auto ? `<small>Marca-se sozinho</small>` : ""}</span></button>`; }).join("");
+  // Desafios em cartões: ícone, progresso quando há números, e o prémio (+1 giro) bem à vista.
+  const CH_IC = { agua6:["drop","--water"], peq:["coffee","--sun"], "3ref":["bowl","--brand"], fruta:["apple","--coral"], legume:["leaf","--brand"], calma:["moon","--water"], mexer:["dumbbell","--coral"], planear:["cal","--sun"], nova:["book","--brand"] };
+  const CH_PR = { agua6:() => [S.water[tk] || 0, 6], "3ref":() => [new Set((S.days[tk] || []).map(m => m.m)).size, 3] };
+  $("#h-ch").className = "chcards";
+  $("#h-ch").innerHTML = CH.map(c => { const dn = challengeDone(c, tk), [ic, col] = CH_IC[c.id] || ["star","--brand"], pr = CH_PR[c.id] && CH_PR[c.id]();
+    return `<button class="chc ${dn ? "done" : ""}" data-c="${c.id}" aria-pressed="${dn}" style="--cc:var(${col})"><span class="chc-ic">${icon(dn ? "check" : ic, "sm")}</span><b>${esc(c.n)}</b>
+      ${pr && !dn ? `<span class="chc-bar"><i style="width:${Math.min(100, pr[0] / pr[1] * 100)}%"></i></span><small>${Math.min(pr[0], pr[1])} de ${pr[1]}</small>` : `<small>${dn ? "Feito" : c.auto ? "Marca-se sozinho" : "Toca quando fizeres"}</small>`}
+      <span class="chc-gift">${icon("gift","xs")} +1 giro</span></button>`; }).join("");
   $$("#h-ch [data-c]").forEach(b => b.onclick = () => { const c = CHALLENGES.find(x => x.id === b.dataset.c); if (c.auto) { toast("Este marca-se sozinho quando o fizeres."); return; }
     S.ch[tk] = S.ch[tk] || []; const i = S.ch[tk].indexOf(c.id); if (i >= 0) S.ch[tk].splice(i,1); else S.ch[tk].push(c.id); save(); syncChallenges(); renderHoje(); });
 
@@ -70,15 +84,15 @@ function coach(){
   if (curDay !== k) return { t:"Estás a ver outro dia. Queres voltar a hoje?", b:"Voltar a hoje", fn:() => { curDay = k; renderHoje(); }, m:"think" };
   if (!has("Pequeno-almoço") && hr >= 6 && hr < 11) return { t:"Bom dia! Já tomaste o pequeno-almoço? Regista-o em 10 segundos.", b:"Registar", fn:() => openAdd("Pequeno-almoço"), m:"wave" };
   if (!has("Almoço") && hr >= 12 && hr < 16) return { t:"Hora de almoço. O que vai ser hoje?", b:"Registar almoço", fn:() => openAdd("Almoço"), m:"happy" };
-  if (w < Math.min(S.wg, Math.floor((hr - 7) / 2))) return { who:"morango", t:`Bebeste ${w} copo${w === 1 ? "" : "s"} de água. Que tal mais um agora?`, b:"Bebi um copo", fn:() => setWater(k, w + 1), m:"think" };
+  if (w < Math.min(S.wg, Math.floor((hr - 7) / 2))) return { who:"abi", t:`Bebeste ${w} copo${w === 1 ? "" : "s"} de água. Que tal mais um agora?`, b:"Bebi um copo", fn:() => setWater(k, w + 1), m:"think" };
   if ((u.hard || []).includes("Petiscar entre refeições") && hr >= 15 && hr < 18 && !has("Lanche")) return { t:"Um lanche a horas ajuda a não petiscar ao fim da tarde. Já tens um?", b:"Registar lanche", fn:() => openAdd("Lanche"), m:"think" };
-  if (se && !workoutDone(k)) return { who:"morango", t:`Hoje há treino: ${se.sess.n}, ${se.prog.min} minutos. Vamos?`, b:"Ver treino", fn:() => { planSub = "treino"; go("planos"); }, m:"wave" };
+  if (se && !workoutDone(k)) return { who:"abi", t:`Hoje há treino: ${se.sess.n}, ${se.prog.min} minutos. Vamos?`, b:"Ver treino", fn:() => { planSub = "treino"; go("planos"); }, m:"wave" };
   if (!has("Jantar") && hr >= 19 && hr < 23) return { t:"E o jantar? Regista para fechares o dia.", b:"Registar jantar", fn:() => openAdd("Jantar"), m:"happy" };
   const pj = S.plan.find(x => x.date === k && x.m === "Jantar" && x.r); // o plano já está feito: o Abi lembra o que há para o jantar
   if (pj && !has("Jantar") && hr >= 16 && hr < 20) return { t:`Ao jantar tens ${pj.n} no plano. Queres ver a receita?`, b:"Ver receita", fn:() => openRecipe(pj.r), m:"happy" };
   const lw = Object.keys(S.weights || {}).sort().pop();
   if (kcalOn() && (!lw || lw < addDays(k, -7))) return { t:"Já não registas o peso há algum tempo. Queres atualizar?", b:"Registar peso", fn:openSummary, m:"think" };
-  if (S.spins) return { who:"morango", t:`Tens ${S.spins} giro${S.spins > 1 ? "s" : ""} na roda à tua espera!`, b:"Girar a roda", fn:() => go("roda"), m:"party" };
+  if (S.spins) return { who:"abi", t:`Tens ${S.spins} giro${S.spins > 1 ? "s" : ""} na roda à tua espera!`, b:"Girar a roda", fn:() => go("roda"), m:"party" };
   return { t: L.length >= 3 ? "Dia bem registado. Estou orgulhoso de ti." : "Bom ritmo. Um passo de cada vez.", m:"happy" };
 }
 let lastCoach = "";
@@ -86,9 +100,9 @@ let lastCoach = "";
 function renderCoach(){
   const c = coach(), who = c.who || "abi", el = $("#h-tip");
   el.className = `coach coach-${who}`;
-  el.innerHTML = `<div class="coach-m">${face(who, { mood:c.m, size: who === "morango" ? 104 : 86 })}</div>${bubbleHTML(who, { action:c.b })}`;
+  el.innerHTML = `<div class="coach-m">${face(who, { mood:c.m, size: who === "abi" ? 104 : 86 })}</div>${bubbleHTML(who, { action:c.b })}`;
   if (lastCoach === c.t) $(".bub-t", el).textContent = c.t; else { speak(el, c.t); lastCoach = c.t; }
-  const b = $(".bub-act", el); if (b) b.onclick = () => { burst($(".mwrap", el), who === "morango" ? "spark" : "heart"); c.fn(); };
+  const b = $(".bub-act", el); if (b) b.onclick = () => { burst($(".mwrap", el), who === "abi" ? "spark" : "heart"); c.fn(); };
 }
 
 

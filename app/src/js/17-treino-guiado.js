@@ -14,7 +14,7 @@ function startWorkout(k){
   const markEx = i => { if (!doneEx.includes(i)) doneEx.push(i); save(); };
   const finish = () => { clearInterval(timer); S.wk.done = S.wk.done || {}; S.wk.done[k] = 1; save(); ach("wk1"); snd("win"); confetti();
     const min = Math.max(1, Math.round((Date.now() - t0) / 60000));
-    ov.innerHTML = `<div class="in wk-end"><div class="mascots" style="justify-content:center">${morango({ mood:"party", size:120 })}</div>
+    ov.innerHTML = `<div class="in wk-end"><div class="mascots" style="justify-content:center">${abi({ mood:"party", size:120 })}</div>
       <h1>Treino feito!</h1><p class="muted">${esc(se.sess.n)} · ${E.length} exercícios · ${min} min</p>
       <div class="stat3" style="margin-top:22px"><div><b>${E.reduce((a, e) => a + e.sets, 0)}</b><small>séries</small></div><div><b>${min}</b><small>minutos</small></div><div><b>${DOW.filter((_, i) => workoutDone(addDays(mondayOf(k), i))).length}/${S.wk.days.length}</b><small>esta semana</small></div></div>
       <p class="small muted" style="margin-top:18px">Agora come uma refeição com proteína e bebe água. O teu plano de hoje já conta com o treino.</p>
