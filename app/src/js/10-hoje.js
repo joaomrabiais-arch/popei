@@ -54,6 +54,26 @@ function renderHoje(){
   $$("#h-water .glass").forEach(b => b.onclick = () => { const i = +b.dataset.g; setWater(k, i < w ? i : i+1); });
   $("#w-minus").onclick = () => setWater(k, w-1); $("#w-plus").onclick = () => setWater(k, w+1);
 
+  // Sequência: dias seguidos com algo registado (hoje ainda vazio não quebra a sequência).
+  let st = 0, sd = (S.days[today()] || []).length ? today() : addDays(today(), -1);
+  while ((S.days[sd] || []).length && st < 999) { st++; sd = addDays(sd, -1); }
+  $("#h-streak").hidden = st < 2; $("#h-streak").innerHTML = `${icon("star","xs")} ${st} dias`;
+  $("#h-streak").setAttribute("aria-label", `${st} dias seguidos com registos`);
+
+  // Peso rápido (só adultos): −/+ 0,1 kg e guardar.
+  const wt = $("#h-wt"); wt.parentElement.hidden = isMinor();
+  if (!isMinor()) {
+    const lastW = (S.weights || {})[today()] || S.prof.w || 70; let v = lastW;
+    const draw = () => { $("#wt-v", wt).textContent = v.toFixed(1).replace(".", ",") + " kg"; $("#wt-ok", wt).hidden = v === ((S.weights || {})[today()] || null); };
+    wt.innerHTML = `<div class="water"><span class="wdrop">${icon("chart")}</span><div class="grow"><h3>Peso</h3><p class="small muted">${(S.weights || {})[today()] ? "Guardado" : "Por registar"}</p></div>
+      <button class="iconbtn" id="wt-m" aria-label="Menos 100 gramas">${icon("minus","sm")}</button><b id="wt-v" class="num" style="min-width:74px;text-align:center"></b><button class="iconbtn" id="wt-p" aria-label="Mais 100 gramas">${icon("plus","sm")}</button></div>
+      <button class="btn sm" id="wt-ok" style="margin-top:10px;width:100%">Guardar peso</button>`;
+    $("#wt-m", wt).onclick = () => { v = Math.max(30, Math.round((v - .1) * 10) / 10); draw(); };
+    $("#wt-p", wt).onclick = () => { v = Math.min(250, Math.round((v + .1) * 10) / 10); draw(); };
+    $("#wt-ok", wt).onclick = () => { if (logWeight(v)) { toast("Peso guardado"); renderHoje(); } };
+    draw();
+  }
+
   // 4) Desafios (sempre os de hoje) e giros disponíveis
   renderRewardBanner();
   const tk = today(), CH = todaysChallenges(tk);

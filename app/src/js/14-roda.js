@@ -3,7 +3,7 @@ const wheelItems = () => REWARDS.concat(DISCOUNTS.filter(d => d.code && d.partne
 function wheelSegments(mini){ const W = wheelItems(), n = W.length, a = 360/n;
   return W.map((w, i) => { const rad = deg => (deg - 90) * Math.PI/180, s = rad(i*a - a/2), e = rad(i*a + a/2);
     const x1 = 100+98*Math.cos(s), y1 = 100+98*Math.sin(s), x2 = 100+98*Math.cos(e), y2 = 100+98*Math.sin(e);
-    const ic = { acc:"sparkle", theme:"brush", recipes:"book", badge:"star", discount:"gift" }[w.type] || "gift";
+    const ic = { acc:"sparkle", theme:"brush", recipes:"book", badge:"star", discount:"gift", prodisc:"gift" }[w.type] || "gift";
     return `<path d="M100 100L${x1.toFixed(2)} ${y1.toFixed(2)}A98 98 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)}Z" fill="${w.color}" stroke="#fff" stroke-width="${mini ? 3 : 2}"/>`
       + (mini ? "" : `<g transform="rotate(${i*a} 100 100)"><use href="#i-${ic}" x="89" y="16" width="22" height="22" stroke="#fff" fill="none" style="stroke-width:2.2"/><text x="100" y="52" ${(i*a) > 90 && (i*a) < 270 ? 'transform="rotate(180 100 49)" ' : ""}text-anchor="middle" font-family="DM Sans,sans-serif" font-weight="700" font-size="8.5" fill="#fff">${esc(w.name.split(" ")[0])}</text></g>`); }).join("")
     + `<circle cx="100" cy="100" r="98" fill="none" stroke="#F7F4ED" stroke-width="3"/>`; }
@@ -42,6 +42,8 @@ $("#w-spin").onclick = () => {
   }, lowMotion() ? 250 : 4750);
 };
 function grant(p, gold, after){
+  if (p.type === "prodisc") { const better = p.pct > (S.proDisc || 0); if (better) S.proDisc = p.pct; save();
+    celebrate({ who:"abi", title:"Saiu na roda", name:`${p.pct}% de desconto no ${BRAND.name} Pro`, desc: better ? `Fica guardado: no primeiro ano pagas ${eurPro(PRO.price * (1 - p.pct / 100))} por mês em vez de ${eurPro(PRO.price)} (${PRO.note}). Não expira e não precisas de fazer nada agora.` : `Já tinhas ${S.proDisc}%, que é melhor. Fica esse, porque os descontos não acumulam.`, mood:"party", action:{ label:"Ver o Pro", fn:openPro }, onClose: after || undefined }); return; }
   const repeatable = p.id === "gold_badge" || p.type === "discount";
   const dup = S.owned.includes(p.id) && !repeatable;
   if (!S.owned.includes(p.id)) S.owned.push(p.id);
@@ -57,3 +59,17 @@ function grant(p, gold, after){
     onClose: after || undefined });
 }
 
+
+// AvocoraFit Pro: o que é, quanto vai custar e o desconto ganho. Ainda não há pagamentos: nada aqui finge que se pode comprar.
+const eurPro = v => v.toLocaleString("pt-PT", { minimumFractionDigits:2, maximumFractionDigits:2 }) + " €";
+function openPro(){
+  const d = S.proDisc || 0, p = PRO.price, withD = p * (1 - d / 100);
+  openSheet(`${BRAND.name} Pro`, `<div class="pro-hero">${abi({ mood:"party", size:84, acc:"acc_coroa" })}<div><b>Tudo o que a app faz, sem limites</b><p class="small muted">Para quem quer ir mais longe, ao seu ritmo.</p></div></div>
+    <ul class="pro-list">${[["camera","Análise de fotos sem limite diário"],["dumbbell","Planos de treino avançados com progressão de cargas"],["cal","Planos de refeições para várias semanas"],["chart","Estatísticas e tendências detalhadas"]].map(([i, t]) => `<li>${icon(i,"sm")}<span>${t}</span></li>`).join("")}</ul>
+    <div class="pro-price"><div><small class="muted">Preço por mês</small>${d ? `<s class="muted">${eurPro(p)}</s> <b>${eurPro(withD)}</b>` : `<b>${eurPro(p)}</b>`}</div>${d ? `<span class="pro-tag">-${d}% no 1.º ano</span>` : ""}</div>
+    <p class="tiny muted" style="margin-top:8px">${esc(PRO.note[0].toUpperCase() + PRO.note.slice(1))}. As funções gratuitas continuam gratuitas.</p>
+    <div class="note" style="margin-top:14px">${icon("info","sm")}<span>Ainda não é possível subscrever: o Pro está a ser preparado. ${d ? `O teu desconto de ${d}% fica guardado neste aparelho e não expira.` : "Gira a roda para ganhar um desconto para quando abrir."}</span></div>
+    <button class="btn soft block" id="pro-wheel" style="margin-top:14px">${icon("gift","sm")} Ir à roda de descontos</button>`, b => {
+    $("#pro-wheel", b).onclick = () => { closeSheet(); go("roda"); };
+  });
+}

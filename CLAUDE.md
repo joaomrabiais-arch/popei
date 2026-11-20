@@ -1,6 +1,6 @@
-# Brota: regras do projeto
+# AvocoraFit: regras do projeto
 
-A Brota é uma app de alimentação e treino em português de Portugal, para telemóvel, sem pressão. A mascote é o Abi, um abacate.
+A AvocoraFit é uma app de alimentação e treino em português de Portugal, para telemóvel, sem pressão. A mascote é o Abi, um abacate.
 
 O código-fonte está em `app/src/`. A app final é um só ficheiro, `app/index.html`, gerado a partir dele.
 

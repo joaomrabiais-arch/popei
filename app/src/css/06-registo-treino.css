@@ -108,3 +108,11 @@
 .mr .mr-n{font-size:12px}
 .mr-s{font-size:12px;color:var(--ink-2);font-weight:600}
 .mr-of{font-size:11px;color:var(--muted);margin-top:-4px}
+/* Treino: registo de cargas e progressão */
+.wk-log{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.wk-log input{font:600 22px var(--fd);text-align:center}
+.wk-sug{display:flex;gap:8px;align-items:flex-start;margin-top:10px;padding:10px 12px;border-radius:var(--r-sm);background:var(--brand-soft);color:var(--ink)}
+.wk-sug .ic{color:var(--brand);flex:none;margin-top:2px}
+.wk-last{color:var(--brand);font-weight:600}
+.wk-pr{display:flex;gap:12px;align-items:flex-start;text-align:left;margin-top:14px;padding:14px;border-radius:var(--r-md);background:var(--sun-soft)}
+.wk-pr .ic{color:var(--sun-ink);flex:none}

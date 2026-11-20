@@ -2,7 +2,6 @@
 const RF = ["Todas","Pequeno-almoço","Almoço","Lanche","Jantar","Vegetariano","Vegan","Sem lactose","Sem glúten","Até 15 min","Favoritas"];
 let rFilter = "Todas";
 function recipeAllowed(r){ const u = S.u || {}, al = (u.al||[]).filter(x => x !== "Nenhuma"), dt = u.diet || [];
-  if (r.col_id && !S.owned.includes(r.col_id)) return false;
   if (r.al.some(a => al.includes(a))) return false;
   if (r.pk && dt.includes("Não como carne de porco")) return false;
   const SYN = { "leguminosas":["grão","feijão","lentilha"], "peixe":["salmão","atum","peixe","bacalhau","pescada"], "picante":["caril","malagueta","piri"] };
@@ -16,12 +15,22 @@ function renderReceitas(){
   $("#r-f").innerHTML = RF.map(f => `<button class="chip ${f === rFilter ? "on" : ""}" data-f="${f}" aria-pressed="${f === rFilter}">${f === "Favoritas" ? icon("heart","xs") : ""}${f}</button>`).join("");
   $$("#r-f button").forEach(b => b.onclick = () => { rFilter = b.dataset.f; renderReceitas(); });
   const q = $("#r-q").value.trim().toLowerCase(), ok = RECIPES.filter(recipeAllowed);
-  const hid = RECIPES.filter(r => !r.col_id || S.owned.includes(r.col_id)).length - ok.length;
+  const hid = RECIPES.length - ok.length;
   const L = ok.filter(r => (!q || (r.n + " " + r.ds + " " + r.i.map(x => x[0]).join(" ")).toLowerCase().includes(q)) && ({
     "Todas":true, "Vegetariano":r.d <= 1, "Vegan":r.d === 0, "Sem lactose":!r.al.includes("Lactose"), "Sem glúten":!r.al.includes("Glúten"), "Até 15 min":r.t <= 15, "Favoritas":S.fav.includes(r.id) }[rFilter] ?? r.c === rFilter));
   $("#r-n").textContent = `${L.length} receita${L.length === 1 ? "" : "s"}` + (hid ? ` · ${hid} escondida${hid > 1 ? "s" : ""} pelas tuas alergias ou preferências` : "");
   $("#r-l").innerHTML = L.map(recCard).join("") || `<div class="empty" style="grid-column:1/-1">${abi({ mood:"think", size:80 })}<p>Nada encontrado. Experimenta outro ingrediente ou filtro.</p></div>`;
   bindRecCards($("#r-l"));
+  // Descobrir: filas temáticas por cima da lista completa (só sem pesquisa nem filtro).
+  let disc = $("#r-disc"); if (!disc) { disc = document.createElement("div"); disc.id = "r-disc"; $("#r-n").before(disc); }
+  const rows = !q && rFilter === "Todas" ? [
+    ["Ricas em proteína", ok.filter(r => r.p * 4 / r.k >= .25)], ["Prontas em 15 minutos", ok.filter(r => r.t <= 15)],
+    [kcalOn() ? "Até 400 kcal" : "Leves", ok.filter(r => r.k <= 400 && r.c !== "Lanche")], ["Sopas e caldos", ok.filter(r => artKind(r) === "sopa")],
+    ["Sabores portugueses", ok.filter(r => CUISINE_OF[r.id] === "portuguesa")], ["Para cozinhar em quantidade", ok.filter(r => (r.srv || 1) >= 4 && isMain(r.c))]
+  ].filter(([, R]) => R.length >= 3) : [];
+  disc.innerHTML = rows.map(([t, R]) => `<div class="rrow"><div class="sec-h"><h2>${t}</h2><span class="tiny muted">${R.length}</span></div><div class="rscroll">${R.slice().sort((a, b) => !!photoOf(b) - !!photoOf(a)).slice(0, 10).map(recCard).join("")}</div></div>`).join("")
+    + (rows.length ? `<div class="sec-h" style="margin-top:22px"><h2>Todas as receitas</h2></div>` : "");
+  bindRecCards(disc);
 }
 $("#r-q").oninput = renderReceitas;
 function openRecipe(id){

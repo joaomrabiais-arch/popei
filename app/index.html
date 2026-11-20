@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F7F4ED">
-<title>Brota</title>
+<title>AvocoraFit</title>
 <script src="fotos/fotos.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
@@ -388,6 +388,8 @@ ul.ing li span:last-child{color:var(--muted);text-align:right}
 .exrow{display:flex;align-items:center;border-top:1px solid var(--line)}
 .exrow:first-child{border-top:0}
 .exrow .ex{border-top:0;flex:1}
+/* O toast tem prioridade sobre a bolha do Abi: nunca se sobrepõem */
+body:has(#toast.on) .talk{display:none}
 /* ===== Personalidade: cores com significado, mascotes e balões =====
    Verde (marca) para a estrutura. Cada cor de destaque tem um só significado:
    coral = Morango e energia · sol = prémios · azul = água · macros com cor própria. */
@@ -651,6 +653,14 @@ ul.ing li span:last-child{color:var(--muted);text-align:right}
 .mr .mr-n{font-size:12px}
 .mr-s{font-size:12px;color:var(--ink-2);font-weight:600}
 .mr-of{font-size:11px;color:var(--muted);margin-top:-4px}
+/* Treino: registo de cargas e progressão */
+.wk-log{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.wk-log input{font:600 22px var(--fd);text-align:center}
+.wk-sug{display:flex;gap:8px;align-items:flex-start;margin-top:10px;padding:10px 12px;border-radius:var(--r-sm);background:var(--brand-soft);color:var(--ink)}
+.wk-sug .ic{color:var(--brand);flex:none;margin-top:2px}
+.wk-last{color:var(--brand);font-weight:600}
+.wk-pr{display:flex;gap:12px;align-items:flex-start;text-align:left;margin-top:14px;padding:14px;border-radius:var(--r-md);background:var(--sun-soft)}
+.wk-pr .ic{color:var(--sun-ink);flex:none}
 /* ===== Ilustrações, refeições do dia, desafios e grelha de gosto ===== */
 .art-tile{display:grid;place-items:center;flex:none;border-radius:16px;background:linear-gradient(145deg,var(--a1),var(--a2));box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
 .art{display:block;overflow:visible}
@@ -696,7 +706,27 @@ ul.ing li span:last-child{color:var(--muted);text-align:right}
 .tg.no{opacity:.55}.tg.no .tg-s{color:var(--accent)}
 .wk-hero{background:var(--abi-tint)}
 @media (max-width:360px){.chcards{grid-template-columns:1fr 1fr}}
-/* ===== Guia de estilo da Brota (sobrepõe os tokens antigos; ver DESIGN.md) =====
+/* AvocoraFit Pro */
+.pro-hero{display:flex;align-items:center;gap:14px;padding:16px;border-radius:var(--r-md);background:linear-gradient(145deg,var(--sun-soft),var(--abi-tint))}
+.pro-hero b{font:600 18px var(--fd)}
+.pro-list{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:10px}
+.pro-list li{display:flex;align-items:center;gap:10px;font-weight:500}
+.pro-list .ic{color:var(--brand);flex:none}
+.pro-price{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;padding:14px 16px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line)}
+.pro-price b{font:600 26px var(--fd);margin-left:4px}
+.pro-price small{display:block}
+.pro-tag{padding:4px 9px;border-radius:8px;background:var(--sun-soft);color:var(--sun-ink);font-size:12px;font-weight:700;white-space:nowrap}
+/* Receitas: filas para descobrir */
+.rrow{margin-top:18px}
+.rscroll{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:8px calc(-1 * var(--gut)) 0;padding:0 var(--gut) 6px;scrollbar-width:none}
+.rscroll::-webkit-scrollbar{display:none}
+.rscroll>.rwrap{flex:0 0 46%;scroll-snap-align:start}
+/* Hoje: sequência de dias */
+.top .streak{display:inline-flex;align-items:center;gap:4px;margin-left:auto;margin-right:6px;padding:5px 10px;border-radius:999px;background:var(--sun-soft);color:var(--sun-ink);font-size:13px;font-weight:700}
+.top .streak[hidden]{display:none}
+#h-wt [hidden]{display:none}
+#h-wt .grow{min-width:0}
+/* ===== Guia de estilo da AvocoraFit (sobrepõe os tokens antigos; ver DESIGN.md) =====
    Fundo verde-folha muito claro em vez do creme "de IA"; texto secundário com contraste AA;
    letra do sistema no texto e nos controlos, Bricolage só nos títulos e números. */
 :root{
@@ -758,7 +788,7 @@ button:active:not(:disabled),.btn:active,.li:active,.opt:active,.chip:active{tra
   <section class="view on" id="v-hoje">
     <div class="top">
       <div class="t"><small id="h-date"></small><h1 id="h-hi">Olá</h1></div>
-      <button class="iconbtn" data-go="roda" aria-label="Roda de prémios" id="h-gift"><svg class="ic"><use href="#i-gift"/></svg></button>
+      <span class="streak" id="h-streak" hidden></span><button class="iconbtn" data-go="roda" aria-label="Roda de prémios" id="h-gift"><svg class="ic"><use href="#i-gift"/></svg></button>
     </div>
     <div class="week" id="h-week"></div>
     <div class="card summary" id="h-sum"></div>
@@ -770,6 +800,7 @@ button:active:not(:disabled),.btn:active,.li:active,.opt:active,.chip:active{tra
     </div>
 
     <div class="sec"><div class="card" id="h-water"></div></div>
+    <div class="sec"><div class="card" id="h-wt"></div></div>
 
     <div class="sec">
       <div class="sec-h"><h2>Desafios de hoje</h2><button class="link" data-go="roda" id="h-spins"></button></div>
@@ -820,7 +851,7 @@ button:active:not(:disabled),.btn:active,.li:active,.opt:active,.chip:active{tra
     <div class="sec">
       <div class="card stack">
         <h3>Como funciona</h3>
-        <p class="small muted">Os giros são grátis e nunca se compram. Ganhas giros ao concluir desafios diários (até 3 guardados). Cada ronda tem 3 tentativas e o resultado de cada uma é aleatório, com as probabilidades abaixo. <b style="color:var(--ink)">Quando terminas as 3 tentativas de uma ronda, recebes o prémio dourado. É garantido, não depende da sorte.</b> Podem sair prémios repetidos. Os prémios desta versão são cosméticos e não expiram.</p>
+        <p class="small muted">Os giros são grátis e nunca se compram. Ganhas giros ao concluir desafios diários (até 3 guardados). Cada ronda tem 3 tentativas e o resultado de cada uma é aleatório, com as probabilidades abaixo. <b style="color:var(--ink)">Quando terminas as 3 tentativas de uma ronda, recebes o prémio dourado. É garantido, não depende da sorte.</b> Podem sair prémios repetidos. Os descontos são no primeiro ano do AvocoraFit Pro: fica sempre o melhor que ganhaste (não acumulam) e não expiram. Não há contagens decrescentes nem descontos que desaparecem.</p>
         <table class="odds" id="w-odds"></table>
         <p class="tiny muted" id="w-disc"></p>
       </div>
@@ -894,18 +925,30 @@ button:active:not(:disabled),.btn:active,.li:active,.opt:active,.chip:active{tra
    CONFIGURAÇÃO — nome, mascotes, prémios e descontos.
    ========================================================= */
 const BRAND = {
-  name: "Brota",                    // nome provisório: confirmar registo de marca antes de lançar
+  name: "AvocoraFit",               // confirmar o registo da marca (INPI/EUIPO) antes de lançar
   tagline: "Come bem, mexe-te, sem pressão.",
   mascot: "Abi",                    // o abacate
-  storageKey: "brota_v1",
+  storageKey: "brota_v1",          // não mudar: é onde estão os dados das pessoas
   legacyKeys: ["nutrivida"],        // dados da NutriVida migrados automaticamente
   aiEndpoint: "",                   // URL do servidor grátis com Llama (ver servidor/LEIA-ME.md). Vazio = a IA só funciona dentro do Claude.
   // Conta e cópia na nuvem (Supabase, região UE). A chave "anon" é pública por desenho: a proteção está nas regras RLS de servidor/supabase.sql.
   // Vazio = sem contas; a app funciona só neste aparelho e o Perfil não mostra a opção.
   supabase: { url: "", anonKey: "" }
 };
-// Prémios da roda. weight = peso relativo; a probabilidade real é calculada e mostrada na app.
+// AvocoraFit Pro: preço previsto pelo dono do projeto (por confirmar). Ainda não há pagamentos na app.
+const PRO = { price: 2, note: "preço previsto, por confirmar" };
+// Roda: descontos no primeiro ano do AvocoraFit Pro (produto nosso, sem parceiros). Fica o melhor desconto ganho; não acumulam.
+// weight = peso relativo; a probabilidade real é calculada e mostrada na app.
 const REWARDS = [
+  { id:"pro10", type:"prodisc", pct:10, name:"10% no Pro", weight:30, color:"#56745E" },
+  { id:"pro15", type:"prodisc", pct:15, name:"15% no Pro", weight:24, color:"#2F6B3A" },
+  { id:"pro20", type:"prodisc", pct:20, name:"20% no Pro", weight:20, color:"#6C9471" },
+  { id:"pro25", type:"prodisc", pct:25, name:"25% no Pro", weight:13, color:"#3E5C46" },
+  { id:"pro30", type:"prodisc", pct:30, name:"30% no Pro", weight:8,  color:"#8A7451" },
+  { id:"pro40", type:"prodisc", pct:40, name:"40% no Pro", weight:5,  color:"#B0684E" }
+];
+// Acessórios e temas que já saíram na roda antiga: continuam no armário de quem os ganhou.
+const ACCESSORIES = [
   { id:"acc_chef",    type:"acc",     name:"Chapéu de chef",    desc:"Um chapéu para o Abi usar na cozinha.", weight:18, color:"#56745E" },
   { id:"acc_oculos",  type:"acc",     name:"Óculos de sol",     desc:"O Abi fica pronto para o verão.",       weight:18, color:"#2F6B3A" },
   { id:"acc_banda",   type:"acc",     name:"Fita desportiva",   desc:"Para os dias de treino.",               weight:16, color:"#6C9471" },
@@ -1753,6 +1796,26 @@ function renderHoje(){
   $$("#h-water .glass").forEach(b => b.onclick = () => { const i = +b.dataset.g; setWater(k, i < w ? i : i+1); });
   $("#w-minus").onclick = () => setWater(k, w-1); $("#w-plus").onclick = () => setWater(k, w+1);
 
+  // Sequência: dias seguidos com algo registado (hoje ainda vazio não quebra a sequência).
+  let st = 0, sd = (S.days[today()] || []).length ? today() : addDays(today(), -1);
+  while ((S.days[sd] || []).length && st < 999) { st++; sd = addDays(sd, -1); }
+  $("#h-streak").hidden = st < 2; $("#h-streak").innerHTML = `${icon("star","xs")} ${st} dias`;
+  $("#h-streak").setAttribute("aria-label", `${st} dias seguidos com registos`);
+
+  // Peso rápido (só adultos): −/+ 0,1 kg e guardar.
+  const wt = $("#h-wt"); wt.parentElement.hidden = isMinor();
+  if (!isMinor()) {
+    const lastW = (S.weights || {})[today()] || S.prof.w || 70; let v = lastW;
+    const draw = () => { $("#wt-v", wt).textContent = v.toFixed(1).replace(".", ",") + " kg"; $("#wt-ok", wt).hidden = v === ((S.weights || {})[today()] || null); };
+    wt.innerHTML = `<div class="water"><span class="wdrop">${icon("chart")}</span><div class="grow"><h3>Peso</h3><p class="small muted">${(S.weights || {})[today()] ? "Guardado" : "Por registar"}</p></div>
+      <button class="iconbtn" id="wt-m" aria-label="Menos 100 gramas">${icon("minus","sm")}</button><b id="wt-v" class="num" style="min-width:74px;text-align:center"></b><button class="iconbtn" id="wt-p" aria-label="Mais 100 gramas">${icon("plus","sm")}</button></div>
+      <button class="btn sm" id="wt-ok" style="margin-top:10px;width:100%">Guardar peso</button>`;
+    $("#wt-m", wt).onclick = () => { v = Math.max(30, Math.round((v - .1) * 10) / 10); draw(); };
+    $("#wt-p", wt).onclick = () => { v = Math.min(250, Math.round((v + .1) * 10) / 10); draw(); };
+    $("#wt-ok", wt).onclick = () => { if (logWeight(v)) { toast("Peso guardado"); renderHoje(); } };
+    draw();
+  }
+
   // 4) Desafios (sempre os de hoje) e giros disponíveis
   renderRewardBanner();
   const tk = today(), CH = todaysChallenges(tk);
@@ -2048,7 +2111,6 @@ function remoteAI(url){
 const RF = ["Todas","Pequeno-almoço","Almoço","Lanche","Jantar","Vegetariano","Vegan","Sem lactose","Sem glúten","Até 15 min","Favoritas"];
 let rFilter = "Todas";
 function recipeAllowed(r){ const u = S.u || {}, al = (u.al||[]).filter(x => x !== "Nenhuma"), dt = u.diet || [];
-  if (r.col_id && !S.owned.includes(r.col_id)) return false;
   if (r.al.some(a => al.includes(a))) return false;
   if (r.pk && dt.includes("Não como carne de porco")) return false;
   const SYN = { "leguminosas":["grão","feijão","lentilha"], "peixe":["salmão","atum","peixe","bacalhau","pescada"], "picante":["caril","malagueta","piri"] };
@@ -2062,12 +2124,22 @@ function renderReceitas(){
   $("#r-f").innerHTML = RF.map(f => `<button class="chip ${f === rFilter ? "on" : ""}" data-f="${f}" aria-pressed="${f === rFilter}">${f === "Favoritas" ? icon("heart","xs") : ""}${f}</button>`).join("");
   $$("#r-f button").forEach(b => b.onclick = () => { rFilter = b.dataset.f; renderReceitas(); });
   const q = $("#r-q").value.trim().toLowerCase(), ok = RECIPES.filter(recipeAllowed);
-  const hid = RECIPES.filter(r => !r.col_id || S.owned.includes(r.col_id)).length - ok.length;
+  const hid = RECIPES.length - ok.length;
   const L = ok.filter(r => (!q || (r.n + " " + r.ds + " " + r.i.map(x => x[0]).join(" ")).toLowerCase().includes(q)) && ({
     "Todas":true, "Vegetariano":r.d <= 1, "Vegan":r.d === 0, "Sem lactose":!r.al.includes("Lactose"), "Sem glúten":!r.al.includes("Glúten"), "Até 15 min":r.t <= 15, "Favoritas":S.fav.includes(r.id) }[rFilter] ?? r.c === rFilter));
   $("#r-n").textContent = `${L.length} receita${L.length === 1 ? "" : "s"}` + (hid ? ` · ${hid} escondida${hid > 1 ? "s" : ""} pelas tuas alergias ou preferências` : "");
   $("#r-l").innerHTML = L.map(recCard).join("") || `<div class="empty" style="grid-column:1/-1">${abi({ mood:"think", size:80 })}<p>Nada encontrado. Experimenta outro ingrediente ou filtro.</p></div>`;
   bindRecCards($("#r-l"));
+  // Descobrir: filas temáticas por cima da lista completa (só sem pesquisa nem filtro).
+  let disc = $("#r-disc"); if (!disc) { disc = document.createElement("div"); disc.id = "r-disc"; $("#r-n").before(disc); }
+  const rows = !q && rFilter === "Todas" ? [
+    ["Ricas em proteína", ok.filter(r => r.p * 4 / r.k >= .25)], ["Prontas em 15 minutos", ok.filter(r => r.t <= 15)],
+    [kcalOn() ? "Até 400 kcal" : "Leves", ok.filter(r => r.k <= 400 && r.c !== "Lanche")], ["Sopas e caldos", ok.filter(r => artKind(r) === "sopa")],
+    ["Sabores portugueses", ok.filter(r => CUISINE_OF[r.id] === "portuguesa")], ["Para cozinhar em quantidade", ok.filter(r => (r.srv || 1) >= 4 && isMain(r.c))]
+  ].filter(([, R]) => R.length >= 3) : [];
+  disc.innerHTML = rows.map(([t, R]) => `<div class="rrow"><div class="sec-h"><h2>${t}</h2><span class="tiny muted">${R.length}</span></div><div class="rscroll">${R.slice().sort((a, b) => !!photoOf(b) - !!photoOf(a)).slice(0, 10).map(recCard).join("")}</div></div>`).join("")
+    + (rows.length ? `<div class="sec-h" style="margin-top:22px"><h2>Todas as receitas</h2></div>` : "");
+  bindRecCards(disc);
 }
 $("#r-q").oninput = renderReceitas;
 function openRecipe(id){
@@ -2188,7 +2260,7 @@ function wkHero(k, se){ const st = (S.wk.ex && S.wk.ex[k]) || [], dn = workoutDo
 function sessionCard(k, se){ const st = (S.wk.ex && S.wk.ex[k]) || [], dn = workoutDone(k);
   return `<div class="card"><div class="row between"><div><b>${esc(se.sess.n)}</b><p class="small muted">${k === today() ? "Hoje" : esc(fmtDay(k))} · ${se.prog.min} min</p></div>${dn ? `<span class="conf alta">${icon("check","xs")} Feito</span>` : ""}</div>
     ${(() => { const ph = S.wk.prog === "custom" ? weekPhase(k) : null; return ph ? `<div class="note" style="margin-top:12px">${icon("chart","sm")}<span><b>${esc(ph.n)}.</b> ${esc(ph.t)}</span></div>` : ""; })()}
-    <div style="margin-top:8px">${se.sess.e.map((e, i) => `<div class="exrow"><button class="ex ${st.includes(i) || dn ? "done" : ""}" data-ex="${k}|${i}" aria-pressed="${st.includes(i) || dn}"><span class="tick">${icon("check","xs")}</span><span class="lt"><b>${esc(exName(k, se, i))}</b><small>${esc(e[1])}${e[2] ? " · descanso " + esc(e[2]) : ""}</small></span></button>${i ? `<button class="iconbtn" data-exi="${k}|${i}" aria-label="Como fazer ${esc(exName(k, se, i))}">${icon("info","sm")}</button>` : ""}</div>`).join("")}</div>
+    <div style="margin-top:8px">${se.sess.e.map((e, i) => `<div class="exrow"><button class="ex ${st.includes(i) || dn ? "done" : ""}" data-ex="${k}|${i}" aria-pressed="${st.includes(i) || dn}"><span class="tick">${icon("check","xs")}</span><span class="lt"><b>${esc(exName(k, se, i))}</b><small>${esc(e[1])}${e[2] ? " · descanso " + esc(e[2]) : ""}${lastTxt(exName(k, se, i)) ? `<br><span class="wk-last">${esc(lastTxt(exName(k, se, i)))}</span>` : ""}</small></span></button>${i ? `<button class="iconbtn" data-exi="${k}|${i}" aria-label="Como fazer ${esc(exName(k, se, i))}">${icon("info","sm")}</button>` : ""}</div>`).join("")}</div>
     ${k <= today() ? `<button class="btn ${dn ? "ghost" : ""} block" data-fin="${k}" style="margin-top:12px">${dn ? "Desmarcar treino" : "Concluir treino"}</button>` : `<p class="tiny muted" style="margin-top:10px">Podes marcar este treino no próprio dia.</p>`}</div>`; }
 function openProgram(id){
   const p = PROGRAMS.find(x => x.id === id); let days = p.days.slice();
@@ -2275,7 +2347,7 @@ const wheelItems = () => REWARDS.concat(DISCOUNTS.filter(d => d.code && d.partne
 function wheelSegments(mini){ const W = wheelItems(), n = W.length, a = 360/n;
   return W.map((w, i) => { const rad = deg => (deg - 90) * Math.PI/180, s = rad(i*a - a/2), e = rad(i*a + a/2);
     const x1 = 100+98*Math.cos(s), y1 = 100+98*Math.sin(s), x2 = 100+98*Math.cos(e), y2 = 100+98*Math.sin(e);
-    const ic = { acc:"sparkle", theme:"brush", recipes:"book", badge:"star", discount:"gift" }[w.type] || "gift";
+    const ic = { acc:"sparkle", theme:"brush", recipes:"book", badge:"star", discount:"gift", prodisc:"gift" }[w.type] || "gift";
     return `<path d="M100 100L${x1.toFixed(2)} ${y1.toFixed(2)}A98 98 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)}Z" fill="${w.color}" stroke="#fff" stroke-width="${mini ? 3 : 2}"/>`
       + (mini ? "" : `<g transform="rotate(${i*a} 100 100)"><use href="#i-${ic}" x="89" y="16" width="22" height="22" stroke="#fff" fill="none" style="stroke-width:2.2"/><text x="100" y="52" ${(i*a) > 90 && (i*a) < 270 ? 'transform="rotate(180 100 49)" ' : ""}text-anchor="middle" font-family="DM Sans,sans-serif" font-weight="700" font-size="8.5" fill="#fff">${esc(w.name.split(" ")[0])}</text></g>`); }).join("")
     + `<circle cx="100" cy="100" r="98" fill="none" stroke="#F7F4ED" stroke-width="3"/>`; }
@@ -2314,6 +2386,8 @@ $("#w-spin").onclick = () => {
   }, lowMotion() ? 250 : 4750);
 };
 function grant(p, gold, after){
+  if (p.type === "prodisc") { const better = p.pct > (S.proDisc || 0); if (better) S.proDisc = p.pct; save();
+    celebrate({ who:"abi", title:"Saiu na roda", name:`${p.pct}% de desconto no ${BRAND.name} Pro`, desc: better ? `Fica guardado: no primeiro ano pagas ${eurPro(PRO.price * (1 - p.pct / 100))} por mês em vez de ${eurPro(PRO.price)} (${PRO.note}). Não expira e não precisas de fazer nada agora.` : `Já tinhas ${S.proDisc}%, que é melhor. Fica esse, porque os descontos não acumulam.`, mood:"party", action:{ label:"Ver o Pro", fn:openPro }, onClose: after || undefined }); return; }
   const repeatable = p.id === "gold_badge" || p.type === "discount";
   const dup = S.owned.includes(p.id) && !repeatable;
   if (!S.owned.includes(p.id)) S.owned.push(p.id);
@@ -2328,6 +2402,21 @@ function grant(p, gold, after){
     action: action && after ? { label:action.label, fn:() => { action.fn(); setTimeout(after, 300); } } : action,
     onClose: after || undefined });
 }
+
+
+// AvocoraFit Pro: o que é, quanto vai custar e o desconto ganho. Ainda não há pagamentos: nada aqui finge que se pode comprar.
+const eurPro = v => v.toLocaleString("pt-PT", { minimumFractionDigits:2, maximumFractionDigits:2 }) + " €";
+function openPro(){
+  const d = S.proDisc || 0, p = PRO.price, withD = p * (1 - d / 100);
+  openSheet(`${BRAND.name} Pro`, `<div class="pro-hero">${abi({ mood:"party", size:84, acc:"acc_coroa" })}<div><b>Tudo o que a app faz, sem limites</b><p class="small muted">Para quem quer ir mais longe, ao seu ritmo.</p></div></div>
+    <ul class="pro-list">${[["camera","Análise de fotos sem limite diário"],["dumbbell","Planos de treino avançados com progressão de cargas"],["cal","Planos de refeições para várias semanas"],["chart","Estatísticas e tendências detalhadas"]].map(([i, t]) => `<li>${icon(i,"sm")}<span>${t}</span></li>`).join("")}</ul>
+    <div class="pro-price"><div><small class="muted">Preço por mês</small>${d ? `<s class="muted">${eurPro(p)}</s> <b>${eurPro(withD)}</b>` : `<b>${eurPro(p)}</b>`}</div>${d ? `<span class="pro-tag">-${d}% no 1.º ano</span>` : ""}</div>
+    <p class="tiny muted" style="margin-top:8px">${esc(PRO.note[0].toUpperCase() + PRO.note.slice(1))}. As funções gratuitas continuam gratuitas.</p>
+    <div class="note" style="margin-top:14px">${icon("info","sm")}<span>Ainda não é possível subscrever: o Pro está a ser preparado. ${d ? `O teu desconto de ${d}% fica guardado neste aparelho e não expira.` : "Gira a roda para ganhar um desconto para quando abrir."}</span></div>
+    <button class="btn soft block" id="pro-wheel" style="margin-top:14px">${icon("gift","sm")} Ir à roda de descontos</button>`, b => {
+    $("#pro-wheel", b).onclick = () => { closeSheet(); go("roda"); };
+  });
+}
 /* ========================== PERFIL ========================== */
 function renderPerfil(){
   const u = S.u || {}, days = Object.keys(S.days).filter(k => (S.days[k]||[]).length).length;
@@ -2335,7 +2424,8 @@ function renderPerfil(){
   $("#pf-head").innerHTML = `${abi({ mood:"happy", size:84 })}<div class="grow"><h2>${esc(u.name || "Olá!")}</h2><p class="small muted">${esc(u.obj || "Sem objetivo definido")}</p>
     <div class="row" style="margin-top:8px;gap:14px;flex-wrap:wrap"><span class="small"><b class="num">${days}</b> <span class="muted">${days===1?"dia":"dias"}</span></span><span class="small"><b class="num">${wks}</b> <span class="muted">${wks===1?"treino":"treinos"}</span></span><span class="small"><b class="num">${Object.keys(S.ach).length}</b> <span class="muted">conquistas</span></span></div></div>`;
   const M = [
-    ["gift","gold","Roda de prémios",`${S.spins} giro(s) · ronda ${S.round}/3`, () => go("roda")],
+    ["crown","gold",`${BRAND.name} Pro`, S.proDisc ? `Tens ${S.proDisc}% de desconto guardado` : "Gira a roda e ganha desconto", openPro],
+    ["gift","gold","Roda de descontos",`${S.spins} giro(s) · ronda ${S.round}/3`, () => go("roda")],
     ["sparkle","","Armário do " + BRAND.mascot, `${S.owned.filter(id => id.startsWith("acc_")).length} acessório(s) ganho(s)`, openCloset],
     ["chart","sky","Progresso","Peso, energia, água e treinos", openSummary],
     ["trophy","gold","Conquistas",`${Object.keys(S.ach).length} de ${ACH.length}`, openAch],
@@ -2352,7 +2442,7 @@ function renderPerfil(){
   $$("#pf-menu [data-m]").forEach(b => b.onclick = () => M[+b.dataset.m][4]());
 }
 function openCloset(){
-  const accs = REWARDS.filter(r => r.type === "acc").concat(GOLDEN.filter(g => g.type === "acc"));
+  const accs = ACCESSORIES.filter(r => r.type === "acc").concat(GOLDEN.filter(g => g.type === "acc"));
   openSheet("Armário do " + BRAND.mascot, `<div style="display:grid;place-items:center">${abi({ mood:"wave", size:120 })}</div>
     <div class="closet" style="margin-top:14px"><button class="${!S.equip ? "on" : ""}" data-a="">${abi({ size:40, acc:null })}Nada</button>
     ${accs.map(a => { const own = S.owned.includes(a.id); return `<button class="${S.equip === a.id ? "on" : ""} ${own ? "" : "locked"}" data-a="${a.id}">${abi({ size:40, acc:a.id })}${esc(a.name)}${own ? "" : "<small class='muted'>Por ganhar</small>"}</button>`; }).join("")}</div>
@@ -2464,7 +2554,7 @@ function openCalc(){
 }
 function openLook(){
   const COL = { pessego:"#C4563A", mar:"#1F6F86", ouro:"#9A6A12" };
-  const ACC = [["", "Abacate", "#2F6B3A", true]].concat(REWARDS.concat(GOLDEN).filter(t => t.type === "theme").map(t => [t.accent, t.name.replace("Tema ",""), COL[t.accent], S.owned.includes(t.id)]));
+  const ACC = [["", "Abacate", "#2F6B3A", true]].concat(ACCESSORIES.concat(GOLDEN).filter(t => t.type === "theme").map(t => [t.accent, t.name.replace("Tema ",""), COL[t.accent], S.owned.includes(t.id)]));
   openSheet("Aparência e som", `<div class="stack"><div class="field"><span>Tema</span><div class="seg" id="lk-t">${[["","Automático"],["light","Claro"],["dark","Escuro"]].map(([v,l]) => `<button data-v="${v}" class="${(S.theme || "") === v ? "on" : ""}">${l}</button>`).join("")}</div></div>
     <div class="field"><span>Cor principal</span><div class="row" style="flex-wrap:wrap;gap:8px" id="lk-a">${ACC.map(([v, l, c, own]) => `<button class="chip ${(S.accent || "") === v ? "on" : ""}" data-v="${v}" data-own="${own ? 1 : 0}" style="${own ? "" : "opacity:.5"}"><span style="width:14px;height:14px;border-radius:50%;background:${c}"></span>${esc(l)}${own ? "" : " · por ganhar"}</button>`).join("")}</div><p class="tiny muted" style="margin-top:6px">Mais cores ganham-se na roda de prémios.</p></div>
     <div class="card stack"><label class="row between"><span>Sons</span><input type="checkbox" id="lk-s" ${S.snd ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label><label class="row between"><span>O ${esc(BRAND.mascot)} fala comigo</span><input type="checkbox" id="lk-tk" ${S.talk !== false ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label><label class="row between"><span>Animações reduzidas</span><input type="checkbox" id="lk-m" ${S.mot ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label></div></div>`, b => {
@@ -2759,20 +2849,43 @@ function endTour(){ const o = $("#tour"); if (o) o.remove(); S.tourDone = 1; sav
    Usa o plano já feito a partir das respostas iniciais; não pergunta nada. */
 const setsOf = s => { const m = /^(\d+)\s*×/.exec(String(s)); return m ? +m[1] : 1; };
 const restOf = s => { const m = /(\d+)\s*(s|min)/.exec(String(s || "")); return m ? +m[1] * (m[2] === "min" ? 60 : 1) : 0; };
+// Progressão de cargas: o que fizeste da última vez e quanto tentar hoje (dupla progressão: primeiro repetições, depois peso).
+const repsTop = s => { const m = /×\s*(\d+)(?:\s*[–-]\s*(\d+))?(?!\s*(s|min)\b)/.exec(String(s)); return m ? +(m[2] || m[1]) : 0; };
+const isTimed = s => /\d+\s*(s|min)\b/.test(String(s)) && !repsTop(s);
+const lastLog = n => { const L = ((S.wk && S.wk.log) || {})[n]; return L && L.length ? L[L.length - 1] : null; };
+const fmtKg = v => String(v).replace(".", ",");
+function lastTxt(n){ const l = lastLog(n); if (!l || !l.sets.length) return ""; const s = l.sets[0]; return s.kg ? `Última vez: ${fmtKg(s.kg)} kg × ${s.reps}` : `Última vez: ${l.sets.map(x => x.reps).join(" · ")} repetições`; }
+function suggestLoad(n, reps, sets){
+  const top = repsTop(reps), l = lastLog(n);
+  if (!l || !l.sets.length) return { kg:"", reps:top || "", txt:"Primeira vez: escolhe um peso com que faças todas as repetições com boa técnica." };
+  const kg = Math.max(...l.sets.map(s => +s.kg || 0)), allTop = top && l.sets.length >= sets && l.sets.every(s => s.reps >= top);
+  if (kg > 0) return allTop ? { kg: kg + 2.5, reps: top, txt:`Da última vez fizeste tudo com ${fmtKg(kg)} kg. Hoje sobe para ${fmtKg(kg + 2.5)} kg.` }
+    : { kg, reps: top, txt:`Mantém ${fmtKg(kg)} kg e tenta mais uma repetição do que da última vez.` };
+  return allTop ? { kg:"", reps: top + 2, txt:"Peso do corpo: da última vez chegaste ao topo. Tenta mais 2 repetições ou a variante mais difícil." }
+    : { kg:"", reps: top, txt:"Peso do corpo: tenta mais uma repetição do que da última vez." };
+}
 function startWorkout(k){
   const se = sessionFor(k); if (!se) return;
   const E = se.sess.e.map((e, i) => ({ i, n:exName(k, se, i), reps:e[1], rest:restOf(e[2]), sets:setsOf(e[1]), info:EXINFO[exName(k, se, i)] }));
   S.wk.ex = S.wk.ex || {}; const doneEx = S.wk.ex[k] = S.wk.ex[k] || [];
   let cur = Math.max(0, E.findIndex(e => !doneEx.includes(e.i))), set = 0, timer = null, restLeft = 0, t0 = Date.now();
   if (cur < 0 || cur >= E.length) cur = 0;
+  const todayLog = {}, prs = []; // séries de hoje por exercício e recordes batidos
   const ov = document.createElement("div"); ov.className = "full wk-play"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-label", "Treino guiado"); document.body.appendChild(ov);
   const close = () => { clearInterval(timer); ov.remove(); renderTreino(); };
-  const markEx = i => { if (!doneEx.includes(i)) doneEx.push(i); save(); };
+  const markEx = i => { if (!doneEx.includes(i)) doneEx.push(i); const ex = E.find(x => x.i === i), sets = ex && todayLog[ex.n];
+    if (sets && sets.length) { S.wk.log = S.wk.log || {}; const L = (S.wk.log[ex.n] = (S.wk.log[ex.n] || []).filter(x => x.d !== k));
+      const prev = Math.max(0, ...L.map(x => Math.max(0, ...x.sets.map(s => +s.kg || 0)))), now = Math.max(0, ...sets.map(s => +s.kg || 0));
+      if (prev > 0 && now > prev) prs.push(`${ex.n}: ${fmtKg(now)} kg`);
+      L.push({ d:k, sets: sets.filter(Boolean) }); S.wk.log[ex.n] = L.slice(-12); }
+    save(); };
   const finish = () => { clearInterval(timer); S.wk.done = S.wk.done || {}; S.wk.done[k] = 1; save(); ach("wk1"); snd("win"); confetti();
     const min = Math.max(1, Math.round((Date.now() - t0) / 60000));
     ov.innerHTML = `<div class="in wk-end"><div class="mascots" style="justify-content:center">${abi({ mood:"party", size:120 })}</div>
       <h1>Treino feito!</h1><p class="muted">${esc(se.sess.n)} · ${E.length} exercícios · ${min} min</p>
       <div class="stat3" style="margin-top:22px"><div><b>${E.reduce((a, e) => a + e.sets, 0)}</b><small>séries</small></div><div><b>${min}</b><small>minutos</small></div><div><b>${DOW.filter((_, i) => workoutDone(addDays(mondayOf(k), i))).length}/${S.wk.days.length}</b><small>esta semana</small></div></div>
+      ${(() => { const vol = Object.values(todayLog).flat().filter(Boolean).reduce((a, s) => a + (+s.kg || 0) * (+s.reps || 0), 0); return vol ? `<p class="small" style="margin-top:16px">Levantaste <b>${Math.round(vol).toLocaleString("pt-PT")} kg</b> no total hoje.</p>` : ""; })()}
+      ${prs.length ? `<div class="wk-pr">${icon("trophy","sm")}<div><b>Recorde novo!</b><p class="small">${prs.map(esc).join("<br>")}</p></div></div>` : ""}
       <p class="small muted" style="margin-top:18px">Agora come uma refeição com proteína e bebe água. O teu plano de hoje já conta com o treino.</p>
       <div style="flex:1"></div><button class="btn block" id="wk-ok" style="height:54px">Fechar</button></div>`;
     $("#wk-ok", ov).onclick = () => { close(); say("workout", true); }; };
@@ -2789,6 +2902,10 @@ function startWorkout(k){
           <div class="rv"><b class="num" id="wk-t">${restLeft}</b><small>descanso</small></div></div>
           <div class="row" style="justify-content:center;gap:10px;margin-top:14px"><button class="btn ghost sm" id="wk-p15">+15 s</button><button class="btn soft sm" id="wk-skip">Já descansei</button></div></div>`
         : `<div class="wk-sets">${Array.from({ length:e.sets }, (_, i) => `<span class="${i < set ? "dn" : i === set ? "on" : ""}">${i < set ? icon("check","xs") : i + 1}</span>`).join("")}</div>
+          ${isTimed(e.reps) ? "" : (() => { const sug = suggestLoad(e.n, e.reps, e.sets), cs = (todayLog[e.n] || [])[set] || (todayLog[e.n] || [])[set - 1] || sug;
+            return `<div class="wk-log"><label class="field"><span>Peso (kg)</span><input id="wk-kg" type="number" inputmode="decimal" step="0.5" min="0" max="400" value="${cs.kg ?? ""}" placeholder="peso do corpo"></label>
+              <label class="field"><span>Repetições</span><input id="wk-rp" type="number" inputmode="numeric" min="0" max="100" value="${cs.reps ?? ""}"></label></div>
+              <p class="small wk-sug">${icon("chart","xs")} ${esc(sug.txt)}</p>`; })()}
           ${e.info ? `<ol class="steps wk-tips">${e.info[1].map(x => `<li>${esc(x)}</li>`).join("")}</ol>` : `<p class="small muted" style="margin-top:14px">Movimento devagar e com controlo, sem dor.</p>`}`}
       <div style="flex:1;min-height:16px"></div>
       ${nx ? `<p class="small muted wk-next">A seguir: <b>${esc(nx.n)}</b> · ${esc(nx.reps)}</p>` : `<p class="small muted wk-next">Último exercício. Força!</p>`}
@@ -2802,6 +2919,9 @@ function startWorkout(k){
     const sk = $("#wk-skip", ov); if (sk) sk.onclick = () => { clearInterval(timer); restLeft = 0; draw(); };
     const p15 = $("#wk-p15", ov); if (p15) p15.onclick = () => { restLeft += 15; e.rest = Math.max(e.rest, restLeft); draw(); };
     $("#wk-go", ov).onclick = () => { snd("ok");
+      const kgI = $("#wk-kg", ov), rpI = $("#wk-rp", ov);
+      if (kgI && rpI) { const kg = clamp(Math.round((+kgI.value || 0) * 2) / 2, 0, 400), rp = clamp(Math.round(+rpI.value || 0), 0, 100);
+        if (rp) (todayLog[e.n] = todayLog[e.n] || [])[set] = { kg, reps:rp }; }
       if (set + 1 < e.sets) { set++; if (e.rest) rest(e.rest); else draw(); return; }
       markEx(e.i); if (!nx) { finish(); return; } cur++; set = 0; if (e.rest) rest(e.rest); else draw(); };
   };

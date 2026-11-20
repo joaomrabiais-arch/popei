@@ -1,4 +1,4 @@
-# Brota: guia de estilo
+# AvocoraFit: guia de estilo
 
 Este é o guia único de design da app. Todas as alterações visuais seguem isto. Os valores vivem em `app/src/css/08-guia-estilo.css` (tokens) e `app/src/css/06-registo-treino.css` (macros).
 

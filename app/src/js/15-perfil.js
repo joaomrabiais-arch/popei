@@ -5,7 +5,8 @@ function renderPerfil(){
   $("#pf-head").innerHTML = `${abi({ mood:"happy", size:84 })}<div class="grow"><h2>${esc(u.name || "Olá!")}</h2><p class="small muted">${esc(u.obj || "Sem objetivo definido")}</p>
     <div class="row" style="margin-top:8px;gap:14px;flex-wrap:wrap"><span class="small"><b class="num">${days}</b> <span class="muted">${days===1?"dia":"dias"}</span></span><span class="small"><b class="num">${wks}</b> <span class="muted">${wks===1?"treino":"treinos"}</span></span><span class="small"><b class="num">${Object.keys(S.ach).length}</b> <span class="muted">conquistas</span></span></div></div>`;
   const M = [
-    ["gift","gold","Roda de prémios",`${S.spins} giro(s) · ronda ${S.round}/3`, () => go("roda")],
+    ["crown","gold",`${BRAND.name} Pro`, S.proDisc ? `Tens ${S.proDisc}% de desconto guardado` : "Gira a roda e ganha desconto", openPro],
+    ["gift","gold","Roda de descontos",`${S.spins} giro(s) · ronda ${S.round}/3`, () => go("roda")],
     ["sparkle","","Armário do " + BRAND.mascot, `${S.owned.filter(id => id.startsWith("acc_")).length} acessório(s) ganho(s)`, openCloset],
     ["chart","sky","Progresso","Peso, energia, água e treinos", openSummary],
     ["trophy","gold","Conquistas",`${Object.keys(S.ach).length} de ${ACH.length}`, openAch],
@@ -22,7 +23,7 @@ function renderPerfil(){
   $$("#pf-menu [data-m]").forEach(b => b.onclick = () => M[+b.dataset.m][4]());
 }
 function openCloset(){
-  const accs = REWARDS.filter(r => r.type === "acc").concat(GOLDEN.filter(g => g.type === "acc"));
+  const accs = ACCESSORIES.filter(r => r.type === "acc").concat(GOLDEN.filter(g => g.type === "acc"));
   openSheet("Armário do " + BRAND.mascot, `<div style="display:grid;place-items:center">${abi({ mood:"wave", size:120 })}</div>
     <div class="closet" style="margin-top:14px"><button class="${!S.equip ? "on" : ""}" data-a="">${abi({ size:40, acc:null })}Nada</button>
     ${accs.map(a => { const own = S.owned.includes(a.id); return `<button class="${S.equip === a.id ? "on" : ""} ${own ? "" : "locked"}" data-a="${a.id}">${abi({ size:40, acc:a.id })}${esc(a.name)}${own ? "" : "<small class='muted'>Por ganhar</small>"}</button>`; }).join("")}</div>
@@ -134,7 +135,7 @@ function openCalc(){
 }
 function openLook(){
   const COL = { pessego:"#C4563A", mar:"#1F6F86", ouro:"#9A6A12" };
-  const ACC = [["", "Abacate", "#2F6B3A", true]].concat(REWARDS.concat(GOLDEN).filter(t => t.type === "theme").map(t => [t.accent, t.name.replace("Tema ",""), COL[t.accent], S.owned.includes(t.id)]));
+  const ACC = [["", "Abacate", "#2F6B3A", true]].concat(ACCESSORIES.concat(GOLDEN).filter(t => t.type === "theme").map(t => [t.accent, t.name.replace("Tema ",""), COL[t.accent], S.owned.includes(t.id)]));
   openSheet("Aparência e som", `<div class="stack"><div class="field"><span>Tema</span><div class="seg" id="lk-t">${[["","Automático"],["light","Claro"],["dark","Escuro"]].map(([v,l]) => `<button data-v="${v}" class="${(S.theme || "") === v ? "on" : ""}">${l}</button>`).join("")}</div></div>
     <div class="field"><span>Cor principal</span><div class="row" style="flex-wrap:wrap;gap:8px" id="lk-a">${ACC.map(([v, l, c, own]) => `<button class="chip ${(S.accent || "") === v ? "on" : ""}" data-v="${v}" data-own="${own ? 1 : 0}" style="${own ? "" : "opacity:.5"}"><span style="width:14px;height:14px;border-radius:50%;background:${c}"></span>${esc(l)}${own ? "" : " · por ganhar"}</button>`).join("")}</div><p class="tiny muted" style="margin-top:6px">Mais cores ganham-se na roda de prémios.</p></div>
     <div class="card stack"><label class="row between"><span>Sons</span><input type="checkbox" id="lk-s" ${S.snd ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label><label class="row between"><span>O ${esc(BRAND.mascot)} fala comigo</span><input type="checkbox" id="lk-tk" ${S.talk !== false ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label><label class="row between"><span>Animações reduzidas</span><input type="checkbox" id="lk-m" ${S.mot ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label></div></div>`, b => {

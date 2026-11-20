@@ -154,10 +154,28 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   for (let i = 0; i < 80 && await page.isVisible("#wk-go"); i++) { if (await page.isVisible("#wk-skip")) await page.click("#wk-skip"); else await page.click("#wk-go"); await page.waitForTimeout(40); }
   await page.waitForTimeout(400); await shot("11e-treino-fim");
   ok(await page.evaluate(() => !!S.wk.done[today()]), "treino guiado termina e fica concluído");
+  ok(await page.evaluate(() => Object.keys(S.wk.log || {}).length > 0), "o treino guiado regista as séries feitas");
+  ok(await page.evaluate(() => { S.wk.log = Object.assign(S.wk.log || {}, { "Teste": [{ d:"2026-01-01", sets:[{ kg:20, reps:12 }, { kg:20, reps:12 }] }] }); const a = suggestLoad("Teste", "2 × 10–12", 2);
+    S.wk.log.Teste2 = [{ d:"2026-01-01", sets:[{ kg:20, reps:12 }, { kg:20, reps:9 }] }]; const b = suggestLoad("Teste2", "2 × 10–12", 2); return a.kg === 22.5 && b.kg === 20 && /Última vez: 20 kg × 12/.test(lastTxt("Teste")); }), "progressão: sobe o peso só quando fizeste todas as repetições");
   await page.click("#wk-ok"); await page.waitForTimeout(300); await closeCel();
   await shot("11-treino");
   await page.click('#p-seg [data-s="compras"]'); await page.waitForTimeout(300); await shot("12-compras");
   ok((await page.$$(".shop-item")).length >= 3, "lista de compras com ingredientes da receita");
+
+  // 7b. Receitas com filas para descobrir; Hoje com sequência e peso rápido
+  await page.click('.nav [data-tab="receitas"]'); await page.waitForTimeout(400); await shot("12b-receitas-descobrir");
+  ok((await page.$$("#r-disc .rrow")).length >= 3 && (await page.$$("#r-disc .rrow .rcard")).length >= 9, "receitas: filas temáticas para descobrir");
+  await page.fill("#r-q", "frango"); await page.waitForTimeout(200);
+  ok((await page.$$("#r-disc .rrow")).length === 0, "com pesquisa, as filas desaparecem"); await page.fill("#r-q", ""); await page.waitForTimeout(100);
+  await page.evaluate(() => { for (const n of [1, 2]) { const d = addDays(today(), -n); S.days[d] = S.days[d] && S.days[d].length ? S.days[d] : [{ m:"Lanche", it:[{ n:"Maçã", k:52, p:0, c:14, g:0 }] }]; } save(); });
+  await page.click('.nav [data-tab="hoje"]'); await page.waitForTimeout(400);
+  ok(/\d+ dias/.test(await page.textContent("#h-streak")) && await page.isVisible("#h-streak"), "Hoje: sequência de dias seguidos (" + await page.textContent("#h-streak") + ")");
+  if (await page.evaluate(() => !isMinor())) {
+    const w0 = await page.evaluate(() => (S.weights || {})[today()] || S.prof.w || 70);
+    await page.click("#wt-p"); await page.click("#wt-p"); await page.click("#wt-ok"); await page.waitForTimeout(200);
+    ok(Math.abs(await page.evaluate(() => S.weights[today()]) - (w0 + .2)) < .01, "Hoje: peso rápido com −/+ e guardar");
+    await page.locator("#h-wt").scrollIntoViewIfNeeded(); await shot("04f-hoje-peso");
+  } else ok(await page.evaluate(() => $("#h-wt").parentElement.hidden), "menores: sem cartão de peso");
 
   // 7c. O dia em detalhe
   await page.click('.nav [data-tab="hoje"]'); await page.waitForTimeout(300); await page.click("#h-detail"); await page.waitForTimeout(400); await shot("04b-dia-detalhe");
@@ -176,15 +194,18 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   }
   st = await state();
   ok(st.spins === 0 && st.round === 0 && st.golden === 1 && st.owned.includes("acc_coroa"), "3 giros gastos, coroa dourada atribuída (" + JSON.stringify({ s:st.spins, r:st.round, g:st.golden, o:st.owned }) + ")");
+  ok(st.proDisc >= 10 && st.proDisc <= 40 && !("expires" in st), "a roda dá desconto no Pro e guarda o melhor (" + st.proDisc + "%)");
+  await page.click('.nav [data-tab="perfil"]'); await page.waitForTimeout(300); await page.click('#pf-menu [data-m="0"]'); await page.waitForTimeout(400); await shot("16b-pro");
+  ok(/Ainda não é possível subscrever/.test(await page.textContent("#sheet-b")) && !(await page.$("#sheet-b input[type=submit], #sheet-b [data-buy]")), "ecrã do Pro honesto: sem compra falsa"); await sheetClose();
 
   // 9. Perfil e armário
   await page.click('.nav [data-tab="perfil"]'); await page.waitForTimeout(300); await shot("15-perfil");
-  await page.click('#pf-menu [data-m="1"]'); await page.waitForTimeout(400);
+  await page.click('#pf-menu [data-m="2"]'); await page.waitForTimeout(400);
   await page.click('.closet [data-a="acc_coroa"]'); await page.waitForTimeout(300); await shot("16-armario");
   ok(await page.evaluate(() => S.equip === "acc_coroa"), "coroa vestida no Abi"); await sheetClose();
-  await page.click('#pf-menu [data-m="2"]'); await page.waitForTimeout(400); await shot("17-resumo"); await sheetClose();
+  await page.click('#pf-menu [data-m="3"]'); await page.waitForTimeout(400); await shot("17-resumo"); await sheetClose();
 
-  await page.click('#pf-menu [data-m="6"]'); await page.waitForTimeout(400); await shot("17b-preferencias-plano");
+  await page.click('#pf-menu [data-m="7"]'); await page.waitForTimeout(400); await shot("17b-preferencias-plano");
   await page.click('[data-ek="cstyle"]'); await page.waitForTimeout(400); await page.click('.opt[data-o="batch"]'); await page.click("#ob-n2"); await page.waitForTimeout(400);
   st = await state();
   ok(st.u.cstyle === "batch" && st.plan.some(x => x.bt), "editar a forma de cozinhar no Perfil refaz o plano");

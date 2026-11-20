@@ -156,3 +156,5 @@
 .exrow{display:flex;align-items:center;border-top:1px solid var(--line)}
 .exrow:first-child{border-top:0}
 .exrow .ex{border-top:0;flex:1}
+/* O toast tem prioridade sobre a bolha do Abi: nunca se sobrepõem */
+body:has(#toast.on) .talk{display:none}
