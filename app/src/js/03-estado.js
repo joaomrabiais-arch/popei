@@ -1,6 +1,6 @@
 /* ========================== Estado ========================== */
 const DEFAULT = { v:1, ob:0, u:null, goal:2000, showKcal:true, wg:8, days:{}, water:{}, favM:[], fav:[], plan:[], shop:[], shopH:[],
-  wk:null, wkHist:{}, ch:{}, chPaid:{}, spins:0, round:0, golden:0, owned:[], equip:null, accent:"", theme:"", snd:false, mot:false,
+  wk:null, wkHist:{}, ch:{}, chPaid:{}, spins:0, round:0, golden:0, owned:[], equip:null, accent:"", theme:"", snd:true, mot:false,
   ach:{}, well:{}, ropen:[], macro:null, prof:{ sex:"f", age:30, h:165, w:65, act:"1.375" } };
 let S = structuredClone(DEFAULT);
 

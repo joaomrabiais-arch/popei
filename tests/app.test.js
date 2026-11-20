@@ -23,7 +23,8 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   await page.goto(URL); await page.waitForTimeout(500); await shot("01-abertura");
   await page.waitForTimeout(1500);
   ok(await page.isVisible("#ob"), "onboarding visível na primeira abertura");
-  await page.fill("#ob-n", "Joana"); await shot("02-onboarding");
+  await shot("02-onboarding"); await page.click("#ob-n2"); // primeiro ecrã: a dor e a promessa
+  await page.fill("#ob-n", "Joana");
   await page.click("#ob-n2");
   await page.fill("#ob-age", "30"); await page.click("#ob-n2");
   await page.click('.opt[data-o="manter"]'); await page.click("#ob-n2");
@@ -206,7 +207,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   const p3 = await browser.newPage({ viewport: { width: 390, height: 844 } });
   p3.on("pageerror", e => errors.push("menor: " + e.message));
   await p3.goto(URL); await p3.evaluate(() => localStorage.clear()); await p3.reload(); await p3.waitForTimeout(2200);
-  await p3.fill("#ob-n", "Tó"); await p3.click("#ob-n2"); await p3.fill("#ob-age", "15"); await p3.click("#ob-n2");
+  await p3.click("#ob-n2"); await p3.fill("#ob-n", "Tó"); await p3.click("#ob-n2"); await p3.fill("#ob-age", "15"); await p3.click("#ob-n2");
   ok(!(await p3.isVisible('.opt[data-o="perder"]')), "menor: sem opção de perder peso");
   await p3.click('.opt[data-o="manter"]'); await p3.click("#ob-n2");
   ok(!(await p3.isVisible("#ob-w")) && /sem contar calorias/i.test(await p3.textContent(".ob-week")), "menor: não pede peso nem mostra calorias");

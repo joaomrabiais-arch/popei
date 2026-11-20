@@ -68,13 +68,11 @@ function renderHoje(){
     S.ch[tk] = S.ch[tk] || []; const i = S.ch[tk].indexOf(c.id); if (i >= 0) S.ch[tk].splice(i,1); else S.ch[tk].push(c.id); save(); syncChallenges(); renderHoje(); });
 
   // 5) Secundário: treino e receitas numa só lista discreta
-  const se = sessionFor(k), rec = suggestRecipes()[0];
+  const se = sessionFor(k);
   const wkRow = !S.wk ? ["Treino", "Escolher um plano"] : !se ? ["Treino", "Hoje é dia de descanso"] : [se.sess.n, `${se.prog.min} min · ${workoutDone(k) ? "concluído" : se.sess.e.length + " exercícios"}`];
-  $("#h-more").innerHTML = `<button class="li" data-tab="planos" data-sub="treino"><span class="badge">${icon("dumbbell")}</span><span class="lt"><b>${esc(wkRow[0])}</b><small>${esc(wkRow[1])}</small></span>${icon("right","sm")}</button>`
-    + (rec ? `<button class="li" data-rec="${rec.id}"><span class="badge">${icon("book")}</span><span class="lt"><b>${esc(rec.n)}</b><small>Receita sugerida · ${rec.t} min</small></span>${icon("right","sm")}</button>` : "")
-    + `<button class="li" id="h-prog"><span class="badge">${icon("chart")}</span><span class="lt"><b>Progresso</b><small>Peso, energia, água e treinos</small></span>${icon("right","sm")}</button>`
-    + `<button class="li" data-tab="receitas"><span class="badge">${icon("search")}</span><span class="lt"><b>Ver receitas</b><small>${RECIPES.filter(recipeAllowed).length} compatíveis contigo</small></span>${icon("right","sm")}</button>`;
-  const rb = $("#h-more [data-rec]"); if (rb) rb.onclick = () => openRecipe(+rb.dataset.rec); $("#h-prog").onclick = openSummary;
+  // Menos é mais: só o treino de hoje, se houver. Receitas e progresso já têm o seu lugar (separador e "Ver o dia em detalhe").
+  const moreSec = $("#h-more").closest(".sec"); moreSec.classList.toggle("hide", !se); if (moreSec.querySelector("h2")) moreSec.querySelector("h2").textContent = "Treino de hoje";
+  $("#h-more").innerHTML = se ? `<button class="li" data-tab="planos" data-sub="treino"><span class="badge">${icon("dumbbell")}</span><span class="lt"><b>${esc(wkRow[0])}</b><small>${esc(wkRow[1])}</small></span>${icon("right","sm")}</button>` : "";
 }
 function setWater(k, v){ const before = S.water[k] || 0; S.water[k] = clamp(v, 0, 20); save(); if (S.water[k] > before) { ach("water"); snd("ok"); if (S.water[k] >= S.wg && before < S.wg) say("waterGoal", true); else say("water"); } syncChallenges(); renderHoje(); }
 function renderRewardBanner(){ const b = $("#h-spins"); if (!b) return; b.textContent = S.spins ? `${S.spins} giro${S.spins > 1 ? "s" : ""} na roda` : `Roda · ronda ${S.round}/3`; }

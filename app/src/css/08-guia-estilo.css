@@ -1,0 +1,25 @@
+/* ===== Guia de estilo da Brota (sobrepõe os tokens antigos; ver DESIGN.md) =====
+   Fundo verde-folha muito claro em vez do creme "de IA"; texto secundário com contraste AA;
+   letra do sistema no texto e nos controlos, Bricolage só nos títulos e números. */
+:root{
+  --bg:#F4F6F3;--surface:#FFFFFF;--surface-2:#EEF2EC;--line:#E2E7E0;
+  --ink:#142019;--ink-2:#34423A;--muted:#56635A;--faint:#646F68;
+  --brand:#2F6B3A;--brand-soft:#E5EEE1;--brand-2:#6E9A70;--brand-3:#B9D1B4;
+  --water:#2F78B8;--water-soft:#E3EEF8;
+  --abi-tint:#E8F0E3;
+  --f:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"DM Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1411;--surface:#171D19;--surface-2:#1F2722;--line:#28312B;--ink:#EEF2EE;--ink-2:#C9D2CB;--muted:#9AA89F;--faint:#86948B;--water:#6CB1E6;--water-soft:#14283A}}
+:root[data-theme="dark"]{--bg:#0F1411;--surface:#171D19;--surface-2:#1F2722;--line:#28312B;--ink:#EEF2EE;--ink-2:#C9D2CB;--muted:#9AA89F;--faint:#86948B;--water:#6CB1E6;--water-soft:#14283A}
+body{font-family:var(--f);font-size:16px;-webkit-font-smoothing:antialiased}
+/* Hierarquia: títulos mais contidos, um só tamanho grande por ecrã */
+h1{font-family:var(--fd);font-size:26px}
+.sec-h h2{font:600 18px var(--fd);letter-spacing:-.01em}
+/* Microinteração: tudo o que se toca responde */
+button,.btn,.li,.opt,.chip,label[for]{transition:transform .12s var(--ease,ease),background-color .15s,border-color .15s}
+button:active:not(:disabled),.btn:active,.li:active,.opt:active,.chip:active{transform:scale(.97)}
+@media (prefers-reduced-motion:reduce){button:active,.btn:active,.li:active,.opt:active,.chip:active{transform:none}}
+/* Primeiro ecrã das perguntas: a dor e a promessa */
+.hook{list-style:none;padding:0;margin:4px 0 0;display:grid;gap:12px}
+.hook li{display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);font-weight:500}
+.hook li span{width:36px;height:36px;flex:none;border-radius:12px;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand)}

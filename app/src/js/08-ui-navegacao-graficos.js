@@ -33,7 +33,8 @@ function celebrate({ title, name, desc, mood="party", action, kind, onClose, who
   d.onclick = e => { if (e.target.closest("[data-a]")) { close(); action.fn(); } else if (e.target.closest("[data-x]") || e.target === d) close(); };
 }
 let ax;
-function snd(kind){ if (!S.snd) return; try { ax = ax || new (window.AudioContext||window.webkitAudioContext)(); const t = ax.currentTime;
+function snd(kind){ if (navigator.vibrate && !lowMotion()) try { navigator.vibrate(kind === "win" || kind === "gold" ? [12, 40, 12] : 8); } catch(e) {} // microvibração nos toques (Android)
+  if (!S.snd) return; try { ax = ax || new (window.AudioContext||window.webkitAudioContext)(); const t = ax.currentTime;
   const notes = { tick:[[1200,.03]], win:[[660,.12],[880,.2]], gold:[[660,.1],[880,.1],[1320,.3]], ok:[[700,.12]] }[kind] || [[600,.1]];
   let at = t; for (const [f, d] of notes) { const o = ax.createOscillator(), g = ax.createGain(); o.type = "sine"; o.frequency.value = f;
     g.gain.setValueAtTime(.0001, at); g.gain.exponentialRampToValueAtTime(kind === "tick" ? .03 : .08, at+.01); g.gain.exponentialRampToValueAtTime(.0001, at+d);

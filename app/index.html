@@ -696,6 +696,31 @@ ul.ing li span:last-child{color:var(--muted);text-align:right}
 .tg.no{opacity:.55}.tg.no .tg-s{color:var(--accent)}
 .wk-hero{background:var(--abi-tint)}
 @media (max-width:360px){.chcards{grid-template-columns:1fr 1fr}}
+/* ===== Guia de estilo da Brota (sobrepõe os tokens antigos; ver DESIGN.md) =====
+   Fundo verde-folha muito claro em vez do creme "de IA"; texto secundário com contraste AA;
+   letra do sistema no texto e nos controlos, Bricolage só nos títulos e números. */
+:root{
+  --bg:#F4F6F3;--surface:#FFFFFF;--surface-2:#EEF2EC;--line:#E2E7E0;
+  --ink:#142019;--ink-2:#34423A;--muted:#56635A;--faint:#646F68;
+  --brand:#2F6B3A;--brand-soft:#E5EEE1;--brand-2:#6E9A70;--brand-3:#B9D1B4;
+  --water:#2F78B8;--water-soft:#E3EEF8;
+  --abi-tint:#E8F0E3;
+  --f:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"DM Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1411;--surface:#171D19;--surface-2:#1F2722;--line:#28312B;--ink:#EEF2EE;--ink-2:#C9D2CB;--muted:#9AA89F;--faint:#86948B;--water:#6CB1E6;--water-soft:#14283A}}
+:root[data-theme="dark"]{--bg:#0F1411;--surface:#171D19;--surface-2:#1F2722;--line:#28312B;--ink:#EEF2EE;--ink-2:#C9D2CB;--muted:#9AA89F;--faint:#86948B;--water:#6CB1E6;--water-soft:#14283A}
+body{font-family:var(--f);font-size:16px;-webkit-font-smoothing:antialiased}
+/* Hierarquia: títulos mais contidos, um só tamanho grande por ecrã */
+h1{font-family:var(--fd);font-size:26px}
+.sec-h h2{font:600 18px var(--fd);letter-spacing:-.01em}
+/* Microinteração: tudo o que se toca responde */
+button,.btn,.li,.opt,.chip,label[for]{transition:transform .12s var(--ease,ease),background-color .15s,border-color .15s}
+button:active:not(:disabled),.btn:active,.li:active,.opt:active,.chip:active{transform:scale(.97)}
+@media (prefers-reduced-motion:reduce){button:active,.btn:active,.li:active,.opt:active,.chip:active{transform:none}}
+/* Primeiro ecrã das perguntas: a dor e a promessa */
+.hook{list-style:none;padding:0;margin:4px 0 0;display:grid;gap:12px}
+.hook li{display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);font-weight:500}
+.hook li span{width:36px;height:36px;flex:none;border-radius:12px;display:grid;place-items:center;background:var(--brand-soft);color:var(--brand)}
 </style>
 </head>
 <body>
@@ -892,7 +917,7 @@ const rnd = () => { const a = new Uint32Array(1); crypto.getRandomValues(a); ret
 const lowMotion = () => S.mot || matchMedia("(prefers-reduced-motion:reduce)").matches;
 /* ========================== Estado ========================== */
 const DEFAULT = { v:1, ob:0, u:null, goal:2000, showKcal:true, wg:8, days:{}, water:{}, favM:[], fav:[], plan:[], shop:[], shopH:[],
-  wk:null, wkHist:{}, ch:{}, chPaid:{}, spins:0, round:0, golden:0, owned:[], equip:null, accent:"", theme:"", snd:false, mot:false,
+  wk:null, wkHist:{}, ch:{}, chPaid:{}, spins:0, round:0, golden:0, owned:[], equip:null, accent:"", theme:"", snd:true, mot:false,
   ach:{}, well:{}, ropen:[], macro:null, prof:{ sex:"f", age:30, h:165, w:65, act:"1.375" } };
 let S = structuredClone(DEFAULT);
 
@@ -1402,7 +1427,8 @@ function celebrate({ title, name, desc, mood="party", action, kind, onClose, who
   d.onclick = e => { if (e.target.closest("[data-a]")) { close(); action.fn(); } else if (e.target.closest("[data-x]") || e.target === d) close(); };
 }
 let ax;
-function snd(kind){ if (!S.snd) return; try { ax = ax || new (window.AudioContext||window.webkitAudioContext)(); const t = ax.currentTime;
+function snd(kind){ if (navigator.vibrate && !lowMotion()) try { navigator.vibrate(kind === "win" || kind === "gold" ? [12, 40, 12] : 8); } catch(e) {} // microvibração nos toques (Android)
+  if (!S.snd) return; try { ax = ax || new (window.AudioContext||window.webkitAudioContext)(); const t = ax.currentTime;
   const notes = { tick:[[1200,.03]], win:[[660,.12],[880,.2]], gold:[[660,.1],[880,.1],[1320,.3]], ok:[[700,.12]] }[kind] || [[600,.1]];
   let at = t; for (const [f, d] of notes) { const o = ax.createOscillator(), g = ax.createGain(); o.type = "sine"; o.frequency.value = f;
     g.gain.setValueAtTime(.0001, at); g.gain.exponentialRampToValueAtTime(kind === "tick" ? .03 : .08, at+.01); g.gain.exponentialRampToValueAtTime(.0001, at+d);
@@ -1709,13 +1735,11 @@ function renderHoje(){
     S.ch[tk] = S.ch[tk] || []; const i = S.ch[tk].indexOf(c.id); if (i >= 0) S.ch[tk].splice(i,1); else S.ch[tk].push(c.id); save(); syncChallenges(); renderHoje(); });
 
   // 5) Secundário: treino e receitas numa só lista discreta
-  const se = sessionFor(k), rec = suggestRecipes()[0];
+  const se = sessionFor(k);
   const wkRow = !S.wk ? ["Treino", "Escolher um plano"] : !se ? ["Treino", "Hoje é dia de descanso"] : [se.sess.n, `${se.prog.min} min · ${workoutDone(k) ? "concluído" : se.sess.e.length + " exercícios"}`];
-  $("#h-more").innerHTML = `<button class="li" data-tab="planos" data-sub="treino"><span class="badge">${icon("dumbbell")}</span><span class="lt"><b>${esc(wkRow[0])}</b><small>${esc(wkRow[1])}</small></span>${icon("right","sm")}</button>`
-    + (rec ? `<button class="li" data-rec="${rec.id}"><span class="badge">${icon("book")}</span><span class="lt"><b>${esc(rec.n)}</b><small>Receita sugerida · ${rec.t} min</small></span>${icon("right","sm")}</button>` : "")
-    + `<button class="li" id="h-prog"><span class="badge">${icon("chart")}</span><span class="lt"><b>Progresso</b><small>Peso, energia, água e treinos</small></span>${icon("right","sm")}</button>`
-    + `<button class="li" data-tab="receitas"><span class="badge">${icon("search")}</span><span class="lt"><b>Ver receitas</b><small>${RECIPES.filter(recipeAllowed).length} compatíveis contigo</small></span>${icon("right","sm")}</button>`;
-  const rb = $("#h-more [data-rec]"); if (rb) rb.onclick = () => openRecipe(+rb.dataset.rec); $("#h-prog").onclick = openSummary;
+  // Menos é mais: só o treino de hoje, se houver. Receitas e progresso já têm o seu lugar (separador e "Ver o dia em detalhe").
+  const moreSec = $("#h-more").closest(".sec"); moreSec.classList.toggle("hide", !se); if (moreSec.querySelector("h2")) moreSec.querySelector("h2").textContent = "Treino de hoje";
+  $("#h-more").innerHTML = se ? `<button class="li" data-tab="planos" data-sub="treino"><span class="badge">${icon("dumbbell")}</span><span class="lt"><b>${esc(wkRow[0])}</b><small>${esc(wkRow[1])}</small></span>${icon("right","sm")}</button>` : "";
 }
 function setWater(k, v){ const before = S.water[k] || 0; S.water[k] = clamp(v, 0, 20); save(); if (S.water[k] > before) { ach("water"); snd("ok"); if (S.water[k] >= S.wg && before < S.wg) say("waterGoal", true); else say("water"); } syncChallenges(); renderHoje(); }
 function renderRewardBanner(){ const b = $("#h-spins"); if (!b) return; b.textContent = S.spins ? `${S.spins} giro${S.spins > 1 ? "s" : ""} na roda` : `Roda · ronda ${S.round}/3`; }
@@ -2440,7 +2464,8 @@ const OB_SECS = ["Sobre ti","A tua casa","Segurança","A tua semana","O teu gost
 const GOAL_D = { perder:"Devagar e sem dietas restritivas.", manter:"Comer bem e manter o peso.", musculo:"Mais proteína e um pequeno excedente.", rendimento:"Energia para treinar e recuperar.", livre:"Sem números: só refeições equilibradas." };
 const DISLIKES = ["Cogumelos","Coentros","Cebola","Pimento","Peixe","Marisco","Leguminosas","Picante","Tofu","Ovos","Abacate","Beringela","Courgette","Brócolos","Espinafres","Azeitonas","Nada em especial"];
 const OB = [
-  { k:"name", sec:0, who:"abi", m:"wave", type:"text", q:() => `Olá! Eu sou o ${BRAND.mascot}. Vamos montar a tua semana.`, s:"São cerca de 3 minutos e depois não tens de responder a mais nada. Podes saltar qualquer pergunta. Como te chamo?" },
+  { k:"hook", sec:0, who:"abi", m:"wave", type:"hook", q:() => "Comer bem não devia ser uma luta.", s:"Dietas que duram duas semanas, contas a cada refeição, culpa ao fim de semana. Já passámos todos por isso." },
+  { k:"name", sec:0, type:"text", q:() => `Olá! Eu sou o ${BRAND.mascot}. Como te chamo?`, s:"São cerca de 3 minutos e depois não tens de responder a mais nada. Podes saltar qualquer pergunta." },
   { k:"agep", sec:0, type:"age", q:A => `Que idade tens${nm(A)}?`, s:"Abaixo dos 18 anos a app não mostra calorias nem metas de peso." },
   { k:"goal", sec:0, one:1, q:() => "Qual é o teu objetivo neste momento?", s:"Podes mudar quando quiseres.", o:A => GOALS.filter(g => g[0] !== "perder" || isAdultA(A)).map(g => [g[0], g[1], GOAL_D[g[0]]]),
     after:(A, pv) => pv.r ? `<div class="ob-hint">${icon("bowl","sm")}<span>O teu jantar, assim: <b>≈ ${Math.round(pv.r.p * (mealShares(pv.P).Jantar || .3))} g de proteína</b></span></div>` : "" },
@@ -2507,7 +2532,7 @@ function openOnboarding(edit, startKey, single){
   const validTarget = () => { const t = +A.tw, minW = 18.5 * (B.h / 100) ** 2; if (!(t >= 35 && t <= 250) || !A.pace) return false; return A.goal === "perder" ? (t < B.w && t >= minW) : t > B.w; };
   const twMsg = () => { const el = $("#ob-twn", inn); if (!el) return; const t = +A.tw, minW = Math.ceil(18.5 * (B.h / 100) ** 2);
     el.textContent = !t ? "" : A.goal === "perder" && t >= B.w ? "Para perder peso, escolhe um valor abaixo do atual." : A.goal === "perder" && t < minW ? `Esse peso fica abaixo de um IMC saudável. Escolhe ${minW} kg ou mais.` : A.goal === "musculo" && t <= B.w ? "Para ganhar músculo, escolhe um valor acima do atual." : ""; };
-  const valid = s => ({ text:1, result:1, tdays:Array.isArray(A.tdays), age:ageOk(), body:validBody(Object.assign({}, B, { age:A.ageN })), target:validTarget(), days:gymDaysOk(A.gdaysSel),
+  const valid = s => ({ hook:1, text:1, result:1, tdays:Array.isArray(A.tdays), age:ageOk(), body:validBody(Object.assign({}, B, { age:A.ageN })), target:validTarget(), days:gymDaysOk(A.gdaysSel),
     budget:+A.budget >= 10 && +A.budget <= 1000, people:1, taste:Object.keys(A.taste || {}).length >= 3 })[s.type] ?? (s.one ? !!A[s.k] : (A[s.k] || []).length > 0 || (s.other && !!(A.dislikesOther || "").trim()));
   const readIn = s => { const v = id => { const e = $(id, inn); return e ? e.value : ""; };
     if (s.type === "text") A.name = v("#ob-n").trim().slice(0, 40);
@@ -2558,7 +2583,8 @@ function openOnboarding(edit, startKey, single){
 
   const draw = () => { const V = vis(); n = Math.min(n, V.length - 1); const s = V[n], pv = preview();
     let body = "", q = s.q ? s.q(A) : "", sub = typeof s.s === "function" ? s.s(A) : s.s || "", head = s.who ? face(s.who, { mood: mood || s.m, size: s.who === "abi" ? 96 : 84 }) : "";
-    if (s.type === "text") body = `<input id="ob-n" maxlength="40" autocomplete="given-name" placeholder="O teu nome" value="${esc(A.name)}" aria-label="Nome">`;
+    if (s.type === "hook") body = `<ul class="hook">${[["cal","A tua semana de refeições feita por ti, à tua medida"],["cart","A lista de compras sai sozinha do plano"],["leaf","Sem dietas restritivas nem culpa: um passo de cada vez"]].map(([i, t]) => `<li><span>${icon(i,"sm")}</span>${t}</li>`).join("")}</ul>`;
+    else if (s.type === "text") body = `<input id="ob-n" maxlength="40" autocomplete="given-name" placeholder="O teu nome" value="${esc(A.name)}" aria-label="Nome">`;
     else if (s.type === "age") body = `<label class="field"><span>Idade</span><input id="ob-age" type="number" inputmode="numeric" min="10" max="100" value="${A.ageN || ""}"></label><p class="small" id="ob-agen" style="margin-top:8px;color:var(--muted)"></p>`;
     else if (s.type === "body") body = `<div class="ob-form"><div class="seg" id="ob-sex"><button data-v="f" class="${B.sex === "f" ? "on" : ""}">Feminino</button><button data-v="m" class="${B.sex === "m" ? "on" : ""}">Masculino</button></div>
       <div class="g2"><label class="field"><span>Altura (cm)</span><input id="ob-h" type="number" inputmode="numeric" min="120" max="230" value="${A._noBody ? "" : B.h || ""}"></label><label class="field"><span>Peso atual (kg)</span><input id="ob-w" type="number" inputmode="decimal" step="0.1" min="30" max="250" value="${A._noBody ? "" : B.w || ""}"></label></div></div>`;
@@ -2605,8 +2631,8 @@ function openOnboarding(edit, startKey, single){
       ${s.type !== "result" && n > 0 ? weekStrip(pv) + chosen() : ""}
       <div class="ob-q ${s.who ? "" : "plain"}">${head}<div class="speech ${s.who ? "bub-" + s.who : ""}"><b>${esc(q)}</b><span>${esc(sub)}</span></div></div>
       ${body}${s.after ? s.after(A, pv) : ""}<div style="flex:1;min-height:20px"></div>
-      <button class="btn block" id="ob-n2" ${valid(s) ? "" : "disabled"} style="height:54px">${s.type === "result" ? "Ver o meu plano" : single ? "Guardar" : "Continuar"}</button>
-      ${s.type !== "result" && s.type !== "text" ? `<button class="skip" id="ob-skip">${single ? "Cancelar" : "Saltar esta pergunta"}</button>` : ""}`;
+      <button class="btn block" id="ob-n2" ${valid(s) ? "" : "disabled"} style="height:54px">${s.type === "result" ? "Ver o meu plano" : s.type === "hook" ? "Começar o meu plano" : single ? "Guardar" : "Continuar"}</button>
+      ${s.type !== "result" && s.type !== "text" && s.type !== "hook" ? `<button class="skip" id="ob-skip">${single ? "Cancelar" : "Saltar esta pergunta"}</button>` : ""}`;
     const nextBtn = $("#ob-n2", inn), recheck = () => { nextBtn.disabled = !valid(s); };
     $$(".opts .opt", inn).forEach(b => b.onclick = () => { readIn(s); tog(s, b.dataset.o); A._note = b.textContent.trim().slice(0, 40); mood = s.who === "abi" ? (b.dataset.o === "nao" ? "think" : "party") : "happy"; draw(); });
     $$("#ob-sex button", inn).forEach(x => x.onclick = () => { readIn(s); B.sex = x.dataset.v; draw(); });

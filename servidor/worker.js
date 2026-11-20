@@ -1,6 +1,7 @@
 // Servidor de IA grátis da Brota: Cloudflare Worker com Llama 3.2 11B Vision (Workers AI).
 // Recebe { prompt, image? (JPEG em base64) } e devolve { text }. A chave nunca sai da Cloudflare.
 const MODEL = "@cf/meta/llama-3.2-11b-vision-instruct";
+const HITS = new Map(), WINDOW_MS = 10 * 60 * 1000, MAX_HITS = 20; // até 20 pedidos por IP a cada 10 minutos
 
 export default {
   async fetch(req, env) {
@@ -10,8 +11,16 @@ export default {
     if (req.method === "OPTIONS") return new Response(null, { headers: cors });
     if (req.method !== "POST") return json({ error: "Usa POST" }, 405);
 
+    // Limite de pedidos por IP: sem isto, alguém chama o servidor 10 000 vezes e gasta a quota de todos.
+    // shortcut: memória de cada instância do Worker (não é partilhada entre regiões); com contas, passar para Rate Limiting da Cloudflare ou KV por utilizador.
+    const ip = req.headers.get("CF-Connecting-IP") || "?", now = Date.now(), win = HITS.get(ip) || [];
+    const recent = win.filter(t => now - t < WINDOW_MS); if (recent.length >= MAX_HITS) return json({ error: "Muitos pedidos. Tenta daqui a uns minutos." }, 429);
+    recent.push(now); HITS.set(ip, recent); if (HITS.size > 5000) HITS.clear();
+    if (!/application\/json/i.test(req.headers.get("Content-Type") || "")) return json({ error: "Usa JSON" }, 415);
+
     let body;
     try { body = await req.json(); } catch { return json({ error: "JSON inválido" }, 400); }
+    if (!body || typeof body !== "object" || Array.isArray(body)) return json({ error: "Pedido inválido" }, 400);
     const prompt = String(body.prompt || "").slice(0, 6000);
     if (!prompt) return json({ error: "Falta o prompt" }, 400);
 

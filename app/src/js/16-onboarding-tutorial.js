@@ -7,7 +7,8 @@ const OB_SECS = ["Sobre ti","A tua casa","Segurança","A tua semana","O teu gost
 const GOAL_D = { perder:"Devagar e sem dietas restritivas.", manter:"Comer bem e manter o peso.", musculo:"Mais proteína e um pequeno excedente.", rendimento:"Energia para treinar e recuperar.", livre:"Sem números: só refeições equilibradas." };
 const DISLIKES = ["Cogumelos","Coentros","Cebola","Pimento","Peixe","Marisco","Leguminosas","Picante","Tofu","Ovos","Abacate","Beringela","Courgette","Brócolos","Espinafres","Azeitonas","Nada em especial"];
 const OB = [
-  { k:"name", sec:0, who:"abi", m:"wave", type:"text", q:() => `Olá! Eu sou o ${BRAND.mascot}. Vamos montar a tua semana.`, s:"São cerca de 3 minutos e depois não tens de responder a mais nada. Podes saltar qualquer pergunta. Como te chamo?" },
+  { k:"hook", sec:0, who:"abi", m:"wave", type:"hook", q:() => "Comer bem não devia ser uma luta.", s:"Dietas que duram duas semanas, contas a cada refeição, culpa ao fim de semana. Já passámos todos por isso." },
+  { k:"name", sec:0, type:"text", q:() => `Olá! Eu sou o ${BRAND.mascot}. Como te chamo?`, s:"São cerca de 3 minutos e depois não tens de responder a mais nada. Podes saltar qualquer pergunta." },
   { k:"agep", sec:0, type:"age", q:A => `Que idade tens${nm(A)}?`, s:"Abaixo dos 18 anos a app não mostra calorias nem metas de peso." },
   { k:"goal", sec:0, one:1, q:() => "Qual é o teu objetivo neste momento?", s:"Podes mudar quando quiseres.", o:A => GOALS.filter(g => g[0] !== "perder" || isAdultA(A)).map(g => [g[0], g[1], GOAL_D[g[0]]]),
     after:(A, pv) => pv.r ? `<div class="ob-hint">${icon("bowl","sm")}<span>O teu jantar, assim: <b>≈ ${Math.round(pv.r.p * (mealShares(pv.P).Jantar || .3))} g de proteína</b></span></div>` : "" },
@@ -74,7 +75,7 @@ function openOnboarding(edit, startKey, single){
   const validTarget = () => { const t = +A.tw, minW = 18.5 * (B.h / 100) ** 2; if (!(t >= 35 && t <= 250) || !A.pace) return false; return A.goal === "perder" ? (t < B.w && t >= minW) : t > B.w; };
   const twMsg = () => { const el = $("#ob-twn", inn); if (!el) return; const t = +A.tw, minW = Math.ceil(18.5 * (B.h / 100) ** 2);
     el.textContent = !t ? "" : A.goal === "perder" && t >= B.w ? "Para perder peso, escolhe um valor abaixo do atual." : A.goal === "perder" && t < minW ? `Esse peso fica abaixo de um IMC saudável. Escolhe ${minW} kg ou mais.` : A.goal === "musculo" && t <= B.w ? "Para ganhar músculo, escolhe um valor acima do atual." : ""; };
-  const valid = s => ({ text:1, result:1, tdays:Array.isArray(A.tdays), age:ageOk(), body:validBody(Object.assign({}, B, { age:A.ageN })), target:validTarget(), days:gymDaysOk(A.gdaysSel),
+  const valid = s => ({ hook:1, text:1, result:1, tdays:Array.isArray(A.tdays), age:ageOk(), body:validBody(Object.assign({}, B, { age:A.ageN })), target:validTarget(), days:gymDaysOk(A.gdaysSel),
     budget:+A.budget >= 10 && +A.budget <= 1000, people:1, taste:Object.keys(A.taste || {}).length >= 3 })[s.type] ?? (s.one ? !!A[s.k] : (A[s.k] || []).length > 0 || (s.other && !!(A.dislikesOther || "").trim()));
   const readIn = s => { const v = id => { const e = $(id, inn); return e ? e.value : ""; };
     if (s.type === "text") A.name = v("#ob-n").trim().slice(0, 40);
@@ -125,7 +126,8 @@ function openOnboarding(edit, startKey, single){
 
   const draw = () => { const V = vis(); n = Math.min(n, V.length - 1); const s = V[n], pv = preview();
     let body = "", q = s.q ? s.q(A) : "", sub = typeof s.s === "function" ? s.s(A) : s.s || "", head = s.who ? face(s.who, { mood: mood || s.m, size: s.who === "abi" ? 96 : 84 }) : "";
-    if (s.type === "text") body = `<input id="ob-n" maxlength="40" autocomplete="given-name" placeholder="O teu nome" value="${esc(A.name)}" aria-label="Nome">`;
+    if (s.type === "hook") body = `<ul class="hook">${[["cal","A tua semana de refeições feita por ti, à tua medida"],["cart","A lista de compras sai sozinha do plano"],["leaf","Sem dietas restritivas nem culpa: um passo de cada vez"]].map(([i, t]) => `<li><span>${icon(i,"sm")}</span>${t}</li>`).join("")}</ul>`;
+    else if (s.type === "text") body = `<input id="ob-n" maxlength="40" autocomplete="given-name" placeholder="O teu nome" value="${esc(A.name)}" aria-label="Nome">`;
     else if (s.type === "age") body = `<label class="field"><span>Idade</span><input id="ob-age" type="number" inputmode="numeric" min="10" max="100" value="${A.ageN || ""}"></label><p class="small" id="ob-agen" style="margin-top:8px;color:var(--muted)"></p>`;
     else if (s.type === "body") body = `<div class="ob-form"><div class="seg" id="ob-sex"><button data-v="f" class="${B.sex === "f" ? "on" : ""}">Feminino</button><button data-v="m" class="${B.sex === "m" ? "on" : ""}">Masculino</button></div>
       <div class="g2"><label class="field"><span>Altura (cm)</span><input id="ob-h" type="number" inputmode="numeric" min="120" max="230" value="${A._noBody ? "" : B.h || ""}"></label><label class="field"><span>Peso atual (kg)</span><input id="ob-w" type="number" inputmode="decimal" step="0.1" min="30" max="250" value="${A._noBody ? "" : B.w || ""}"></label></div></div>`;
@@ -172,8 +174,8 @@ function openOnboarding(edit, startKey, single){
       ${s.type !== "result" && n > 0 ? weekStrip(pv) + chosen() : ""}
       <div class="ob-q ${s.who ? "" : "plain"}">${head}<div class="speech ${s.who ? "bub-" + s.who : ""}"><b>${esc(q)}</b><span>${esc(sub)}</span></div></div>
       ${body}${s.after ? s.after(A, pv) : ""}<div style="flex:1;min-height:20px"></div>
-      <button class="btn block" id="ob-n2" ${valid(s) ? "" : "disabled"} style="height:54px">${s.type === "result" ? "Ver o meu plano" : single ? "Guardar" : "Continuar"}</button>
-      ${s.type !== "result" && s.type !== "text" ? `<button class="skip" id="ob-skip">${single ? "Cancelar" : "Saltar esta pergunta"}</button>` : ""}`;
+      <button class="btn block" id="ob-n2" ${valid(s) ? "" : "disabled"} style="height:54px">${s.type === "result" ? "Ver o meu plano" : s.type === "hook" ? "Começar o meu plano" : single ? "Guardar" : "Continuar"}</button>
+      ${s.type !== "result" && s.type !== "text" && s.type !== "hook" ? `<button class="skip" id="ob-skip">${single ? "Cancelar" : "Saltar esta pergunta"}</button>` : ""}`;
     const nextBtn = $("#ob-n2", inn), recheck = () => { nextBtn.disabled = !valid(s); };
     $$(".opts .opt", inn).forEach(b => b.onclick = () => { readIn(s); tog(s, b.dataset.o); A._note = b.textContent.trim().slice(0, 40); mood = s.who === "abi" ? (b.dataset.o === "nao" ? "think" : "party") : "happy"; draw(); });
     $$("#ob-sex button", inn).forEach(x => x.onclick = () => { readIn(s); B.sex = x.dataset.v; draw(); });

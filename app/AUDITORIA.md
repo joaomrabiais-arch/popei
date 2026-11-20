@@ -155,3 +155,31 @@ App ──HTTPS──▶ Função no servidor (Supabase Edge Function ou Cloudfl
   - os custos usam preços de referência escritos à mão (por verificar);
   - o supermercado só fica guardado;
   - continua a haver só 45 receitas, por isso há pouca variedade quando há muitas restrições.
+
+## Dicas dos vídeos de desenvolvimento (20/11/2026)
+
+Vídeos de @pedromppinto, @maxcarrau.ia e @fabianocarvalhojr (lidos através das legendas automáticas).
+
+**Aplicado:**
+- **Guia de estilo único:** `DESIGN.md` e `app/src/css/08-guia-estilo.css`.
+- **Menos "cara de IA":** sem fundo creme, letra do sistema no texto e títulos mais contidos.
+- **Contraste AA (resolve o C5):**
+  - texto secundário: 5,8:1;
+  - texto discreto: pelo menos 4,5:1;
+  - branco sobre azul da água: 4,7:1.
+- **Hierarquia e simplicidade:** o ecrã Hoje perdeu a lista "Mais", que repetia os separadores.
+- **Microinterações:** toques que encolhem, microvibração no Android e sons ligados por omissão.
+- **Primeiro ecrã emocional:** a dor e a promessa antes das perguntas, com o plano personalizado no fim (já existia).
+- **Segurança do servidor de IA:**
+  - limite de 20 pedidos por IP a cada 10 minutos;
+  - só aceita JSON e valida o pedido;
+  - as chaves já ficavam no servidor.
+- **`CLAUDE.md` com regras e critérios de "feito"**, para trabalhar sempre da mesma forma.
+
+**Por fazer, e porquê:**
+- **Pôr a app nas mãos de pessoas reais e testar se pagam.** O vídeo diz para lançar cedo em vez de juntar funcionalidades. É a próxima coisa a fazer.
+- **Contas e base de dados (Supabase)**, com autenticação pronta: precisa de uma conta do dono do projeto.
+- **Pagamentos:** testar um plano semanal com teste grátis (o vídeo cita um relatório da Adapty: mais receita por cliente; não verificado). Precisa de pagamentos reais; não há botões falsos.
+- **Pentest com o Strix** antes de ir ao ar: corre no computador do dono e precisa de instalação.
+- **Plugins de iPhone (simulador, Expo, Swift):** não se aplicam a uma app web.
+- **Apagar marcas de IA dos ficheiros:** não se faz. As imagens geradas dizem que são ilustrativas.
