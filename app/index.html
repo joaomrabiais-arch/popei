@@ -761,6 +761,14 @@ body:has(#toast.on) .talk{display:none}
 .mealchips .mc.on{box-shadow:0 0 0 2.5px var(--brand),0 8px 18px rgba(30,70,40,.25)}
 .mealchips .mc.on .mc-ok .ic,.mc-ok .ic{color:#fff}
 .mc-l{font-size:11.5px;letter-spacing:-.01em;left:3px;right:3px}
+.cam-soon{position:absolute;top:14px;left:50%;transform:translateX(-50%);display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.14);color:#F2F5F1;font-size:12px;font-weight:600;white-space:nowrap;backdrop-filter:blur(6px)}
+.cam.off .cam-vf{opacity:1}.cam.off .cam-vf>*:not(.cam-soon){opacity:.45}
+.alt2{display:grid;gap:10px}
+.alt{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);text-align:left;box-shadow:var(--sh-1);transition:transform .15s}
+.alt:active{transform:scale(.98)}
+.alt span{flex:1;display:flex;flex-direction:column;gap:2px}.alt b{font:600 16px var(--fd)}.alt small{color:var(--muted);font-size:13px}
+.alt>.ic{color:var(--brand)}
+.alt .th,.alt .art-tile{border-radius:14px}
 /* ===== Ilustrações, refeições do dia, desafios e grelha de gosto ===== */
 .art-tile{display:grid;place-items:center;flex:none;border-radius:16px;background:linear-gradient(145deg,var(--a1),var(--a2));box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
 .art{display:block;overflow:visible}
@@ -2117,7 +2125,12 @@ const ADD = {
       aiReady.then(() => { if (sample || !el.isConnected) return; const st = $("#a-st", el); if (!st) return;
         st.innerHTML = `<div class="note warn" style="margin-bottom:12px">${icon("info","sm")}<span>A análise de fotos ainda não está ligada nesta versão, por isso não analisamos a imagem. Podes pesquisar o alimento ou registar à mão.</span></div>
           <div class="row" style="gap:8px;margin-bottom:14px"><button class="btn soft grow sm" id="a-gopq">${icon("search","sm")} Pesquisar</button><button class="btn soft grow sm" id="a-goman">Registar à mão</button></div>`;
-        const pk = $("#a-pick", el); if (pk) pk.classList.add("off");
+        // Sem IA: o aviso vai para dentro do visor e as alternativas ficam em cartões grandes por baixo.
+        const pk = $("#a-pick", el); if (pk) { pk.classList.add("off"); st.innerHTML = "";
+          $(".cam-vf", pk).insertAdjacentHTML("beforeend", `<span class="cam-soon">${icon("clock","xs")} Análise por foto em breve</span>`);
+          pk.insertAdjacentHTML("afterend", `<p class="small muted" style="margin:14px 2px 8px">A análise de fotos ainda não está ligada nesta versão. Entretanto, regista assim:</p>
+            <div class="alt2"><button class="alt" id="a-gopq">${thumb("Papas de aveia com banana", mealSel(), 56)}<span><b>Pesquisar</b><small>${RECIPES.length + FOODS.length} pratos e alimentos</small></span>${icon("right","sm")}</button>
+            <button class="alt" id="a-goman">${artTile(MEAL_ART[mealSel()] || "almoco", 56)}<span><b>Registar à mão</b><small>Só o nome já conta</small></span>${icon("right","sm")}</button></div>`); }
         $("#a-gopq", el).onclick = () => addTab("pesq"); $("#a-goman", el).onclick = () => addTab("manual"); }); };
     const picked = () => { el.classList.remove("busy", "has-res"); el.innerHTML = `<div class="shot"><img id="a-prev" alt="Fotografia da refeição" src="${URL.createObjectURL(blob)}"><div class="scan hide" id="a-scan"><i></i></div>
         <label class="shot-re" for="f-gal">${icon("image","xs")} Trocar</label></div>

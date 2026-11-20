@@ -56,7 +56,12 @@ const ADD = {
       aiReady.then(() => { if (sample || !el.isConnected) return; const st = $("#a-st", el); if (!st) return;
         st.innerHTML = `<div class="note warn" style="margin-bottom:12px">${icon("info","sm")}<span>A análise de fotos ainda não está ligada nesta versão, por isso não analisamos a imagem. Podes pesquisar o alimento ou registar à mão.</span></div>
           <div class="row" style="gap:8px;margin-bottom:14px"><button class="btn soft grow sm" id="a-gopq">${icon("search","sm")} Pesquisar</button><button class="btn soft grow sm" id="a-goman">Registar à mão</button></div>`;
-        const pk = $("#a-pick", el); if (pk) pk.classList.add("off");
+        // Sem IA: o aviso vai para dentro do visor e as alternativas ficam em cartões grandes por baixo.
+        const pk = $("#a-pick", el); if (pk) { pk.classList.add("off"); st.innerHTML = "";
+          $(".cam-vf", pk).insertAdjacentHTML("beforeend", `<span class="cam-soon">${icon("clock","xs")} Análise por foto em breve</span>`);
+          pk.insertAdjacentHTML("afterend", `<p class="small muted" style="margin:14px 2px 8px">A análise de fotos ainda não está ligada nesta versão. Entretanto, regista assim:</p>
+            <div class="alt2"><button class="alt" id="a-gopq">${thumb("Papas de aveia com banana", mealSel(), 56)}<span><b>Pesquisar</b><small>${RECIPES.length + FOODS.length} pratos e alimentos</small></span>${icon("right","sm")}</button>
+            <button class="alt" id="a-goman">${artTile(MEAL_ART[mealSel()] || "almoco", 56)}<span><b>Registar à mão</b><small>Só o nome já conta</small></span>${icon("right","sm")}</button></div>`); }
         $("#a-gopq", el).onclick = () => addTab("pesq"); $("#a-goman", el).onclick = () => addTab("manual"); }); };
     const picked = () => { el.classList.remove("busy", "has-res"); el.innerHTML = `<div class="shot"><img id="a-prev" alt="Fotografia da refeição" src="${URL.createObjectURL(blob)}"><div class="scan hide" id="a-scan"><i></i></div>
         <label class="shot-re" for="f-gal">${icon("image","xs")} Trocar</label></div>
