@@ -13,4 +13,5 @@ ensurePlans(); syncChallenges(); renderHoje();
   const t = setTimeout(end, lowMotion() ? 200 : 1400); sp.onclick = () => { clearTimeout(t); end(); }; })();
 // Se a app ficar aberta de um dia para o outro, passa para o dia novo.
 let lastToday = today();
-setInterval(() => { const t = today(); if (t !== lastToday) { if (curDay === lastToday) curDay = t; lastToday = t; syncChallenges(); refreshAll(); } }, 60000);
+setInterval(() => { const t = today(); if (t !== lastToday) { if (curDay === lastToday) curDay = t; lastToday = t; syncChallenges(); refreshAll(); } }, 60000);// Instalar como app e abrir sem internet (só em http/https; no ficheiro local não há service worker).
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register("sw.js").catch(() => {});

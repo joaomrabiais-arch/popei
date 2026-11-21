@@ -37,7 +37,9 @@ function openAccount(){
         <p class="small muted" style="margin-top:8px">Os teus dados ficam guardados neste aparelho e numa cópia na nuvem (servidores na UE). Só tu os vês.</p></div>
         <div class="stack" style="margin-top:12px"><button class="btn block" id="ac-sync">${icon("upload","sm")} Sincronizar agora</button><button class="btn ghost block" id="ac-out">Terminar sessão</button>
         <button class="btn ghost block" id="ac-del" style="color:var(--accent)">Apagar a cópia na nuvem</button></div>
-        <p class="tiny muted" style="margin-top:10px">Apagar a cópia não apaga os dados deste aparelho.</p>`
+        <p class="tiny muted" style="margin-top:10px">Apagar a cópia não apaga os dados deste aparelho.</p>
+        <button class="btn ghost block" id="ac-kill" style="margin-top:14px;color:var(--accent)">Apagar a minha conta</button>
+        <p class="tiny muted" style="margin-top:6px">Apaga a conta e a cópia na nuvem para sempre. Os dados deste aparelho ficam até os apagares em Dados e privacidade.</p>`
       : `<p class="small">Entra com o teu e-mail para guardares os dados e os usares noutro aparelho. Enviamos-te uma ligação; não há palavra-passe.</p>
         <label class="field" style="margin-top:12px"><span>E-mail</span><input id="ac-mail" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="nome@exemplo.pt"></label>
         <label class="row" style="gap:10px;margin-top:12px;align-items:flex-start"><input type="checkbox" id="ac-ok" style="width:22px;height:22px;flex:none;accent-color:var(--brand)"><span class="small">Aceito que os meus dados de alimentação, peso e treino sejam guardados na nuvem (UE) para os poder recuperar. Posso apagá-los quando quiser.</span></label>
@@ -52,6 +54,9 @@ function openAccount(){
       const out = $("#ac-out", b); if (out) out.onclick = async () => { await cloud.auth.signOut(); cloudUser = null; closeSheet(); renderPerfil(); toast("Sessão terminada. Os dados ficam neste aparelho."); };
       const del = $("#ac-del", b); if (del) del.onclick = async () => { if (!await confirmDlg("Apagar a cópia dos teus dados na nuvem? Os dados deste aparelho ficam.", "Apagar")) return;
         const { error } = await cloud.from("brota_state").delete().eq("user_id", cloudUser.id); toast(error ? "Não foi possível apagar. Tenta outra vez." : "Cópia na nuvem apagada"); };
+      const kill = $("#ac-kill", b); if (kill) kill.onclick = async () => { if (!await confirmDlg("Apagar a tua conta para sempre? Não dá para desfazer.", "Apagar conta")) return;
+        const { error } = await cloud.rpc("delete_my_account"); if (error) { toast("Não foi possível apagar a conta. Tenta outra vez."); return; }
+        await cloud.auth.signOut(); cloudUser = null; closeSheet(); renderPerfil(); toast("Conta apagada"); };
     });
   }).catch(() => toast("Sem ligação. A conta precisa de internet."));
 }

@@ -1,0 +1,18 @@
+{
+  "name": "AvocoraFit",
+  "short_name": "AvocoraFit",
+  "description": "Plano de refeições, lista de compras e treino, sem pressão.",
+  "lang": "pt-PT",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F3F4F1",
+  "theme_color": "#1E3527",
+  "categories": ["health", "fitness", "food"],
+  "icons": [
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icone-mascara-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

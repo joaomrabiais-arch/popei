@@ -71,7 +71,8 @@ function openPro(){
   const cell = v => v === 1 ? icon("check","sm") : v === 0 ? `<span class="muted">—</span>` : v;
   openSheet(`${BRAND.name} Pro`, `<div class="pw2-hero"><div class="pw2-pics">${pics.map(src => `<img src="${esc(src)}" alt="">`).join("")}</div>
       <span class="pw2-badge">${icon("crown","xs")} PRO</span><h2>Mais tempo para comer bem, menos tempo a planear</h2><p>O plano grátis continua grátis. O Pro junta mais análises, planos mais longos e os teus dados na nuvem.</p></div>
-    <ul class="pw2-ben">${BEN.map(([i, t, s]) => `<li><span class="pw2-ic">${icon(i,"sm")}</span><div><b>${t}</b><small>${s}</small></div></li>`).join("")}</ul>
+    <ul class="pw2-ben">${BEN.map(([i, t, s], k) => { const ph = k < 2 ? mealPic(k ? "Jantar" : "Almoço") : "";
+      return `<li>${ph ? `<span class="pw2-ph"><img src="${esc(ph)}" alt=""><i>${icon(i,"xs")}</i></span>` : `<span class="pw2-ic">${icon(i,"sm")}</span>`}<div><b>${t}</b><small>${s}</small></div></li>`; }).join("")}</ul>
     <div class="pw2-plan"><div class="pw2-radio"><i></i></div><div class="grow"><b>Mensal</b><small>${esc(PRO.note[0].toUpperCase() + PRO.note.slice(1))}</small></div>
       <div class="pw2-pr">${d ? `<s>${eurPro(p)}</s>` : ""}<b>${eurPro(d ? withD : p)}</b><small>por mês</small></div>${d ? `<span class="pw2-tag">-${d}% no 1.º ano</span>` : ""}</div>
     <button class="btn block pw2-cta" disabled aria-disabled="true">Disponível em breve</button>

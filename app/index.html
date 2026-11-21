@@ -3,7 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#F7F4ED">
+<meta name="theme-color" content="#1E3527">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icone-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AvocoraFit">
 <title>AvocoraFit</title>
 <script src="fotos/fotos.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1224,6 +1229,16 @@ body{background:var(--bg)}
 #p-treino .card.row .mwrap img,#p-treino .card.row .mwrap svg{width:56px!important;height:auto!important}
 #p-treino .card.row .mwrap{width:56px;flex:none}
 .wstrip div.td b{background:var(--surface)}.wstrip div.td.pl b{border-color:var(--brand)}
+/* Idioma no fundo do Perfil */
+.pf-lang{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px;padding:12px 14px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line)}
+.pf-lang>span{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.pf-lang .seg{flex:none}.pf-lang .seg button{font-size:13px;padding:0 12px}
+.pf-ver{text-align:center;margin:14px 0 4px}.pf-ver a{color:var(--muted)}
+/* Pro: benefícios principais com foto */
+.pw2-ph{position:relative;width:52px;height:52px;flex:none}
+.pw2-ph img{width:52px;height:52px;border-radius:14px;object-fit:cover}
+.pw2-ph i{position:absolute;right:-5px;bottom:-5px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--deep);color:var(--deep-ink);border:2px solid var(--bg)}
+.pw2-ic{width:52px;height:52px;border-radius:14px}
 </style>
 </head>
 <body>
@@ -2954,7 +2969,8 @@ function openPro(){
   const cell = v => v === 1 ? icon("check","sm") : v === 0 ? `<span class="muted">—</span>` : v;
   openSheet(`${BRAND.name} Pro`, `<div class="pw2-hero"><div class="pw2-pics">${pics.map(src => `<img src="${esc(src)}" alt="">`).join("")}</div>
       <span class="pw2-badge">${icon("crown","xs")} PRO</span><h2>Mais tempo para comer bem, menos tempo a planear</h2><p>O plano grátis continua grátis. O Pro junta mais análises, planos mais longos e os teus dados na nuvem.</p></div>
-    <ul class="pw2-ben">${BEN.map(([i, t, s]) => `<li><span class="pw2-ic">${icon(i,"sm")}</span><div><b>${t}</b><small>${s}</small></div></li>`).join("")}</ul>
+    <ul class="pw2-ben">${BEN.map(([i, t, s], k) => { const ph = k < 2 ? mealPic(k ? "Jantar" : "Almoço") : "";
+      return `<li>${ph ? `<span class="pw2-ph"><img src="${esc(ph)}" alt=""><i>${icon(i,"xs")}</i></span>` : `<span class="pw2-ic">${icon(i,"sm")}</span>`}<div><b>${t}</b><small>${s}</small></div></li>`; }).join("")}</ul>
     <div class="pw2-plan"><div class="pw2-radio"><i></i></div><div class="grow"><b>Mensal</b><small>${esc(PRO.note[0].toUpperCase() + PRO.note.slice(1))}</small></div>
       <div class="pw2-pr">${d ? `<s>${eurPro(p)}</s>` : ""}<b>${eurPro(d ? withD : p)}</b><small>por mês</small></div>${d ? `<span class="pw2-tag">-${d}% no 1.º ano</span>` : ""}</div>
     <button class="btn block pw2-cta" disabled aria-disabled="true">Disponível em breve</button>
@@ -2994,7 +3010,10 @@ function renderPerfil(){
     + grp("O teu plano", [at("Plano alimentar"), at("Preferências"), at(`Falar com o ${BRAND.mascot}`)])
     + grp("Progresso", [at("Progresso"), at("Conquistas"), at("Bem-estar")])
     + grp("Recompensas", [1, 2])
-    + grp("Definições", [at("Aparência e som"), at("Como funciona a app"), cloudI, dataI]);
+    + grp("Definições", [at("Aparência e som"), at("Como funciona a app"), cloudI, dataI])
+    + `<div class="pf-lang"><span>${icon("chat","xs")} Idioma · Language</span><div class="seg">${[["pt","Português"],["en","English"]].map(([v, l]) => `<button data-pl="${v}" class="${LANG() === v ? "on" : ""}">${l}</button>`).join("")}</div></div>
+       <p class="tiny muted pf-ver">${esc(BRAND.name)} · versão de teste · <a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="termos.html" target="_blank" rel="noopener">Termos</a></p>`;
+  $$("#pf-menu [data-pl]").forEach(b => b.onclick = () => { if (b.dataset.pl !== LANG()) setLang(b.dataset.pl); });
   $$("#pf-menu [data-m]").forEach(b => b.onclick = () => M[+b.dataset.m][4]());
 }
 function openCloset(){
@@ -3537,7 +3556,9 @@ function openAccount(){
         <p class="small muted" style="margin-top:8px">Os teus dados ficam guardados neste aparelho e numa cópia na nuvem (servidores na UE). Só tu os vês.</p></div>
         <div class="stack" style="margin-top:12px"><button class="btn block" id="ac-sync">${icon("upload","sm")} Sincronizar agora</button><button class="btn ghost block" id="ac-out">Terminar sessão</button>
         <button class="btn ghost block" id="ac-del" style="color:var(--accent)">Apagar a cópia na nuvem</button></div>
-        <p class="tiny muted" style="margin-top:10px">Apagar a cópia não apaga os dados deste aparelho.</p>`
+        <p class="tiny muted" style="margin-top:10px">Apagar a cópia não apaga os dados deste aparelho.</p>
+        <button class="btn ghost block" id="ac-kill" style="margin-top:14px;color:var(--accent)">Apagar a minha conta</button>
+        <p class="tiny muted" style="margin-top:6px">Apaga a conta e a cópia na nuvem para sempre. Os dados deste aparelho ficam até os apagares em Dados e privacidade.</p>`
       : `<p class="small">Entra com o teu e-mail para guardares os dados e os usares noutro aparelho. Enviamos-te uma ligação; não há palavra-passe.</p>
         <label class="field" style="margin-top:12px"><span>E-mail</span><input id="ac-mail" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="nome@exemplo.pt"></label>
         <label class="row" style="gap:10px;margin-top:12px;align-items:flex-start"><input type="checkbox" id="ac-ok" style="width:22px;height:22px;flex:none;accent-color:var(--brand)"><span class="small">Aceito que os meus dados de alimentação, peso e treino sejam guardados na nuvem (UE) para os poder recuperar. Posso apagá-los quando quiser.</span></label>
@@ -3552,6 +3573,9 @@ function openAccount(){
       const out = $("#ac-out", b); if (out) out.onclick = async () => { await cloud.auth.signOut(); cloudUser = null; closeSheet(); renderPerfil(); toast("Sessão terminada. Os dados ficam neste aparelho."); };
       const del = $("#ac-del", b); if (del) del.onclick = async () => { if (!await confirmDlg("Apagar a cópia dos teus dados na nuvem? Os dados deste aparelho ficam.", "Apagar")) return;
         const { error } = await cloud.from("brota_state").delete().eq("user_id", cloudUser.id); toast(error ? "Não foi possível apagar. Tenta outra vez." : "Cópia na nuvem apagada"); };
+      const kill = $("#ac-kill", b); if (kill) kill.onclick = async () => { if (!await confirmDlg("Apagar a tua conta para sempre? Não dá para desfazer.", "Apagar conta")) return;
+        const { error } = await cloud.rpc("delete_my_account"); if (error) { toast("Não foi possível apagar a conta. Tenta outra vez."); return; }
+        await cloud.auth.signOut(); cloudUser = null; closeSheet(); renderPerfil(); toast("Conta apagada"); };
     });
   }).catch(() => toast("Sem ligação. A conta precisa de internet."));
 }
@@ -3668,7 +3692,8 @@ ensurePlans(); syncChallenges(); renderHoje();
   const t = setTimeout(end, lowMotion() ? 200 : 1400); sp.onclick = () => { clearTimeout(t); end(); }; })();
 // Se a app ficar aberta de um dia para o outro, passa para o dia novo.
 let lastToday = today();
-setInterval(() => { const t = today(); if (t !== lastToday) { if (curDay === lastToday) curDay = t; lastToday = t; syncChallenges(); refreshAll(); } }, 60000);
+setInterval(() => { const t = today(); if (t !== lastToday) { if (curDay === lastToday) curDay = t; lastToday = t; syncChallenges(); refreshAll(); } }, 60000);// Instalar como app e abrir sem internet (só em http/https; no ficheiro local não há service worker).
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register("sw.js").catch(() => {});
 
 </script>
 </body>

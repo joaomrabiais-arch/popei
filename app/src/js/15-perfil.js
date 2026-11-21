@@ -26,7 +26,10 @@ function renderPerfil(){
     + grp("O teu plano", [at("Plano alimentar"), at("Preferências"), at(`Falar com o ${BRAND.mascot}`)])
     + grp("Progresso", [at("Progresso"), at("Conquistas"), at("Bem-estar")])
     + grp("Recompensas", [1, 2])
-    + grp("Definições", [at("Aparência e som"), at("Como funciona a app"), cloudI, dataI]);
+    + grp("Definições", [at("Aparência e som"), at("Como funciona a app"), cloudI, dataI])
+    + `<div class="pf-lang"><span>${icon("chat","xs")} Idioma · Language</span><div class="seg">${[["pt","Português"],["en","English"]].map(([v, l]) => `<button data-pl="${v}" class="${LANG() === v ? "on" : ""}">${l}</button>`).join("")}</div></div>
+       <p class="tiny muted pf-ver">${esc(BRAND.name)} · versão de teste · <a href="privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="termos.html" target="_blank" rel="noopener">Termos</a></p>`;
+  $$("#pf-menu [data-pl]").forEach(b => b.onclick = () => { if (b.dataset.pl !== LANG()) setLang(b.dataset.pl); });
   $$("#pf-menu [data-m]").forEach(b => b.onclick = () => M[+b.dataset.m][4]());
 }
 function openCloset(){

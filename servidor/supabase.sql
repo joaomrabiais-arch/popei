@@ -19,3 +19,13 @@ create policy "apagar os meus dados"  on public.brota_state for delete using (au
 -- Autenticação: em Authentication > Providers, deixar só "Email" (ligação mágica).
 -- Em Authentication > URL Configuration, pôr em "Site URL" e "Redirect URLs" o endereço da app (o da Vercel).
 -- Em Authentication > Rate Limits, manter os limites de envio de e-mail (protege contra abuso).
+
+-- Apagar a conta (a App Store e o Google Play exigem que a pessoa o possa fazer dentro da app).
+-- Corre com os direitos do dono da função, mas só apaga a conta de quem a chama (auth.uid()).
+-- Os dados em brota_state desaparecem também, por causa do "on delete cascade".
+create or replace function public.delete_my_account() returns void
+language sql security definer set search_path = public as $$
+  delete from auth.users where id = auth.uid();
+$$;
+revoke all on function public.delete_my_account() from public, anon;
+grant execute on function public.delete_my_account() to authenticated;
