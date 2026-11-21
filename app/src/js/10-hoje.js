@@ -20,14 +20,12 @@ function renderHoje(){
       <div class="ring big"><svg viewBox="0 0 156 156" aria-hidden="true"><circle class="tr" cx="78" cy="78" r="${R}"/><circle class="fg" cx="78" cy="78" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${C.toFixed(1)}" id="ringfg"/></svg>
         <div class="rv"><b class="num">${on ? (over ? over : left) : md}</b><small>${on ? (over ? "kcal acima" : "kcal restam") : "de 4 refeições"}</small></div></div>
       <div class="sum-side"><b>${on ? S.goal : 4}</b><small>${on ? "objetivo" : "refeições"}</small></div></div>
-    <div class="mrings">${MACROS.map(([n, x, col]) => { const tg = on && S.macro ? S.macro[x] : 0, v = Math.round(T[x]), f = tg ? Math.min(1, v / tg) : v / mTot, r = 19, c = 2 * Math.PI * r;
-      const st = !tg ? `${Math.round(v / mTot * 100)}% do dia` : v < tg ? `faltam ${tg - v} g` : v > tg * 1.15 ? `+${v - tg} g` : "na meta";
-      return `<div class="mr" aria-label="${n}: ${v} g${tg ? ` de ${tg} g` : ""}"><div class="mr-ring"><svg viewBox="0 0 48 48" aria-hidden="true"><circle class="tr" cx="24" cy="24" r="${r}"/><circle cx="24" cy="24" r="${r}" fill="none" stroke="${col}" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c * (1 - f)).toFixed(1)}" transform="rotate(-90 24 24)"/></svg><b class="num">${v}<small>g</small></b></div>
-        <span class="mr-n"><i style="background:${col}"></i>${n}</span><small class="mr-s">${st}</small>${tg ? `<small class="mr-of">de ${tg} g</small>` : ""}</div>`; }).join("")}</div>
+    <div class="mbars">${MACROS.map(([n, x, col]) => { const tg = on && S.macro ? S.macro[x] : 0, v = Math.round(T[x]), f = tg ? Math.min(1, v / tg) : v / mTot;
+      return `<div class="mb" aria-label="${n}: ${v} g${tg ? ` de ${tg} g` : ""}"><div class="mb-h"><span>${n}</span><b class="num">${v}${tg ? `<small> / ${tg} g</small>` : "<small> g</small>"}</b></div><span class="mb-bar"><i style="width:${(f * 100).toFixed(1)}%;background:${col}"></i></span></div>`; }).join("")}</div>
     ${L.length ? `<button class="sum-more" id="h-detail">Ver o dia em detalhe ${icon("right","xs")}</button>` : ""}`;
   const hd = $("#h-detail"); if (hd) hd.onclick = () => openDayDetail(k);
   requestAnimationFrame(() => requestAnimationFrame(() => { const f = $("#ringfg"); if (f) f.style.strokeDashoffset = (C*(1-frac)).toFixed(1); }));
-  countTo($("#h-sum .rv b"), "ring"); $$("#h-sum .mr-ring b").forEach((b, i) => countTo(b, "mac" + i));
+  countTo($("#h-sum .rv b"), "ring");
   renderCoach();
 
   // 2) Refeições: nome + kcal (ou porção) e nada mais
@@ -50,12 +48,12 @@ function renderHoje(){
   // 3) Água
   const w = S.water[k] || 0, Lt = v => (v*0.25).toLocaleString("pt-PT", { maximumFractionDigits:2 });
   const wp = Math.min(100, Math.round(w / Math.max(1, S.wg) * 100)), wleft = Math.max(0, S.wg - w);
-  $("#h-water").className = "card wcard";
-  $("#h-water").innerHTML = `<div class="wat"><div class="wat-b" role="img" aria-label="${wp}% do objetivo de água"><i style="height:${wp}%"><s></s></i><b class="num">${wp}%</b></div>
-      <div class="grow wat-t"><h3>Água</h3><p class="wat-v"><b class="num">${Lt(w)}</b> <span>de ${Lt(S.wg)} L</span></p>
-        <p class="small wat-m">${w >= S.wg ? "Objetivo cumprido. Boa!" : w ? `Faltam ${wleft} copo${wleft > 1 ? "s" : ""} de 250 ml` : "Começa com um copo agora"}</p>
-        <div class="wat-a"><button class="iconbtn" id="w-minus" aria-label="Tirar um copo" ${w ? "" : "disabled"}>${icon("minus","sm")}</button><button class="btn wplus" id="w-plus" aria-label="Mais um copo">${icon("plus","sm")} 1 copo</button></div></div></div>
-    <div class="glasses">${Array.from({ length:S.wg }, (_, i) => `<button class="glass ${i < w ? "drunk" : ""}" data-g="${i}" aria-label="Copo ${i+1} de 250 ml${i < w ? ", bebido" : ""}"><i></i></button>`).join("")}</div>`;
+  $("#h-water").className = "card wcard2";
+  const cup = i => `<button class="glass cup ${i < w ? "drunk" : ""}" data-g="${i}" aria-label="Copo ${i+1} de 250 ml${i < w ? ", bebido" : ""}"><svg viewBox="0 0 24 30" aria-hidden="true"><path class="cup-f" d="M4.6 11h14.8l-1.4 15.2a1.6 1.6 0 0 1-1.6 1.5H7.6a1.6 1.6 0 0 1-1.6-1.5z"/><path class="cup-o" d="M3 3h18l-2.3 23.4a2.2 2.2 0 0 1-2.2 2H7.5a2.2 2.2 0 0 1-2.2-2z"/></svg></button>`;
+  $("#h-water").innerHTML = `<div class="w2-h"><div><h3>Água</h3><p class="w2-v"><b class="num">${Lt(w)}</b> de ${Lt(S.wg)} L</p></div>
+      <div class="w2-a"><button class="iconbtn" id="w-minus" aria-label="Tirar um copo" ${w ? "" : "disabled"}>${icon("minus","sm")}</button><button class="btn sm" id="w-plus" aria-label="Mais um copo">${icon("plus","sm")} 250 ml</button></div></div>
+    <div class="cups">${Array.from({ length:S.wg }, (_, i) => cup(i)).join("")}</div>
+    <p class="tiny muted" style="margin-top:10px">${w >= S.wg ? "Objetivo cumprido. Boa!" : w ? `Faltam ${wleft} copo${wleft > 1 ? "s" : ""} de 250 ml` : "Toca num copo para o marcar"}</p>`;
   $$("#h-water .glass").forEach(b => b.onclick = () => { const i = +b.dataset.g; setWater(k, i < w ? i : i+1); });
   $("#w-minus").onclick = () => setWater(k, w-1); $("#w-plus").onclick = () => setWater(k, w+1);
 
@@ -124,10 +122,10 @@ let lastCoach = "";
 // O coach: a mascote certa para o momento, num balão com o próximo passo e um botão para o fazer.
 function renderCoach(){
   const c = coach(), who = c.who || "abi", el = $("#h-tip");
-  el.className = `coach coach-${who}`;
-  el.innerHTML = `<div class="coach-m">${face(who, { mood:c.m, size: who === "abi" ? 104 : 86 })}</div>${bubbleHTML(who, { action:c.b })}`;
-  if (lastCoach === c.t) $(".bub-t", el).textContent = c.t; else { speak(el, c.t); lastCoach = c.t; }
-  const b = $(".bub-act", el); if (b) b.onclick = () => { burst($(".mwrap", el), who === "abi" ? "spark" : "heart"); c.fn(); };
+  el.className = "tip2";
+  el.innerHTML = `<span class="tip2-m">${face(who, { mood:c.m, size:46 })}</span><p class="tip2-t">${esc(c.t)}</p>${c.b ? `<button class="btn sm tip2-b">${esc(c.b)}</button>` : ""}`;
+  lastCoach = c.t;
+  const b = $(".tip2-b", el); if (b) b.onclick = () => c.fn();
 }
 
 

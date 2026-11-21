@@ -177,7 +177,7 @@ function openOnboarding(edit, startKey, single){
       <button class="btn block" id="ob-n2" ${valid(s) ? "" : "disabled"} style="height:54px">${s.type === "result" ? "Ver o meu plano" : s.type === "hook" ? "Começar o meu plano" : single ? "Guardar" : "Continuar"}</button>
       ${s.type !== "result" && s.type !== "text" && s.type !== "hook" ? `<button class="skip" id="ob-skip">${single ? "Cancelar" : "Saltar esta pergunta"}</button>` : ""}`;
     const nextBtn = $("#ob-n2", inn), recheck = () => { nextBtn.disabled = !valid(s); };
-    $$(".opts .opt", inn).forEach(b => b.onclick = () => { readIn(s); tog(s, b.dataset.o); A._note = b.textContent.trim().slice(0, 40); mood = s.who === "abi" ? (b.dataset.o === "nao" ? "think" : "party") : "happy"; draw(); });
+    $$(".opts .opt", inn).forEach(b => b.onclick = () => { readIn(s); tog(s, b.dataset.o); A._note = (b.querySelector("b") || b).textContent.trim().slice(0, 40); mood = s.who === "abi" ? (b.dataset.o === "nao" ? "think" : "party") : "happy"; draw(); });
     $$("#ob-sex button", inn).forEach(x => x.onclick = () => { readIn(s); B.sex = x.dataset.v; draw(); });
     $$("#ob-h,#ob-w", inn).forEach(x => x.oninput = () => { readIn(s); A._noBody = false; recheck(); });
     const ag = $("#ob-age", inn); if (ag) { const msg = () => { $("#ob-agen", inn).textContent = A.ageN && A.ageN < 18 && A.ageN >= 10 ? "Combinado: sem calorias nem metas de peso. Vamos focar-nos em refeições regulares e variadas." : ""; };

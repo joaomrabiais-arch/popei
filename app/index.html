@@ -1152,6 +1152,78 @@ body{background:var(--bg)}
 .a-kc{font-size:13px;font-weight:600;color:var(--ink-2);white-space:nowrap}
 .a-add{width:30px;height:30px;flex:none;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--brand);color:var(--brand)}
 .food.rfood>.ic{display:none}
+
+/* ===== Hoje: resumo com barras, dica fina, copos ===== */
+.mbars{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.mb-h{display:flex;flex-direction:column;gap:2px}
+.mb-h span{font-size:12px;font-weight:600;color:var(--muted)}
+.mb-h b{font:600 16px var(--fd)}.mb-h b small{font:500 12px var(--f);color:var(--muted)}
+.mb-bar{display:block;height:6px;border-radius:3px;background:var(--surface-2);margin-top:8px;overflow:hidden}
+.mb-bar i{display:block;height:100%;border-radius:3px;transition:width .6s var(--ease)}
+.summary2 .ring.big .fg{stroke:var(--brand)}
+.tip2{display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 14px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line)}
+.tip2-m{flex:none;width:46px;height:46px;border-radius:50%;background:var(--brand-soft);display:grid;place-items:center;overflow:hidden}
+.tip2-m .mwrap,.tip2-m svg,.tip2-m img{max-width:46px;max-height:46px}
+.tip2-t{flex:1;min-width:0;font-size:14px;line-height:1.4;color:var(--ink-2)}
+.tip2-b{flex:none}
+#h-water.wcard2{background:var(--surface);border:1px solid var(--line)}
+.w2-h{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.w2-h h3{font:600 17px var(--fd)}
+.w2-v{font-size:14px;color:var(--muted);margin-top:2px}.w2-v b{font:600 22px var(--fd);color:var(--ink)}
+.w2-a{display:flex;gap:8px;align-items:center}
+.w2-a .iconbtn{width:40px;height:40px;border-radius:12px;background:var(--surface-2)}
+.cups{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:14px}
+.cup{height:auto;background:none!important;padding:2px;border-radius:8px;display:grid;place-items:center}
+.cup svg{width:100%;max-width:30px;height:auto;overflow:visible}
+.cup .cup-o{fill:none;stroke:var(--line);stroke-width:1.8;stroke-linejoin:round}
+.cup .cup-f{fill:var(--water);opacity:0;transform:scaleY(0);transform-origin:50% 100%;transition:opacity .2s,transform .35s cubic-bezier(.3,1.3,.5,1)}
+.cup.drunk .cup-f{opacity:1;transform:scaleY(1)}
+.cup.drunk .cup-o{stroke:var(--water)}
+.cup:active{transform:scale(.9)}
+@media (prefers-reduced-motion:reduce){.cup .cup-f{transition:none}}
+#w-plus.btn,#wt-ok.btn{background:var(--surface-2);color:var(--ink);border:1px solid var(--line)}
+/* Plano alimentar: cada prato numa linha legível */
+.daycol{padding:16px}
+.daycol .dh b{font:600 16px var(--fd)}
+.pitem{display:grid;grid-template-columns:52px 1fr auto auto;grid-template-areas:"th mt sw del" "th nm sw del" "th kc sw del";column-gap:12px;row-gap:1px;align-items:center;padding:10px 0;border-top:1px solid var(--line);margin:0}
+.daycol .dh+.pitem{border-top:0}
+.pitem>.th,.pitem>.art-tile{grid-area:th;width:52px!important;height:52px!important;border-radius:14px;align-self:center}
+.pitem .mt{grid-area:mt;width:auto;padding:0;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pitem .nm{grid-area:nm;font-size:15px;font-weight:600;line-height:1.3;white-space:normal}
+.pitem .nm .lnk{font-weight:600;text-decoration:none;color:var(--ink);text-align:left}
+.pitem>.num{grid-area:kc;padding:0;font-size:12px}
+.pitem>.num::after{content:" kcal"}
+.pitem [data-psw]{grid-area:sw}.pitem [data-pdel]{grid-area:del}
+.pitem .iconbtn{width:34px;height:34px;margin:0;border-radius:10px;background:var(--surface-2);color:var(--ink-2)}
+/* Perguntas iniciais: progresso numa linha, cartão da semana mais leve */
+.obsecs{display:flex!important;flex-wrap:nowrap!important;gap:4px;width:100%}
+.obsecs>*{flex:1 1 0!important;min-width:0!important;width:auto!important}
+.ob-week{padding:12px 14px;box-shadow:none;border:1px solid var(--line)}
+.ob-week .ow-d i{width:30px;height:30px}
+.ob-q{display:flex;align-items:flex-start;gap:14px;margin:26px 0 20px}
+.ob-q>.mwrap,.ob-q>.mascots{flex:none;width:60px;margin:2px 0 0!important}
+.ob-q>.mwrap img,.ob-q>.mwrap svg,.ob-q>.mascots img,.ob-q>.mascots svg{width:60px!important;height:auto!important}
+.ob-q .speech{background:none!important;padding:0!important;border-radius:0;flex:1;min-width:0}
+.ob-q .speech::before,.ob-q .speech::after{display:none!important}
+.ob-q .speech b{font-size:24px}
+/* Treino de hoje: cartão de destaque em verde-escuro, sem mascote */
+.wk-hero{background:var(--deep)!important;color:var(--deep-ink);border:0;padding:18px}
+.wk-hero .mwrap,.wk-hero .mascots{display:none}
+.wk-hero .wk-hero-t{color:var(--deep-ink);font:600 20px var(--fd)}
+.wk-hero p.small{color:var(--deep-muted)}
+.wk-hero .ring .tr{stroke:rgba(255,255,255,.16)}.wk-hero .ring .fg{stroke:#8FD3A0}.wk-hero .ring .rv b{color:var(--deep-ink)}
+.wk-hero .wk-start{background:var(--deep-ink);color:var(--deep)}
+/* Semana de treino: dias de treino, feitos e hoje bem visíveis */
+.wstrip div{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 0 10px;font-weight:600;color:var(--muted)}
+.wstrip div b{width:30px;height:30px;margin:0;border-radius:50%;display:grid;place-items:center;background:var(--surface-2)}
+.wstrip div b:after{display:none!important}
+.wstrip div.pl b{background:var(--surface);border:2px solid var(--brand)}
+.wstrip div.dn b{background:var(--brand)}
+.wstrip div.dn b::before{content:"";width:6px;height:11px;border:solid var(--brand-ink);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
+.wstrip div.td{background:var(--surface-2);color:var(--ink)}
+#p-treino .card.row .mwrap img,#p-treino .card.row .mwrap svg{width:56px!important;height:auto!important}
+#p-treino .card.row .mwrap{width:56px;flex:none}
+.wstrip div.td b{background:var(--surface)}.wstrip div.td.pl b{border-color:var(--brand)}
 </style>
 </head>
 <body>
@@ -2160,14 +2232,12 @@ function renderHoje(){
       <div class="ring big"><svg viewBox="0 0 156 156" aria-hidden="true"><circle class="tr" cx="78" cy="78" r="${R}"/><circle class="fg" cx="78" cy="78" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${C.toFixed(1)}" id="ringfg"/></svg>
         <div class="rv"><b class="num">${on ? (over ? over : left) : md}</b><small>${on ? (over ? "kcal acima" : "kcal restam") : "de 4 refeições"}</small></div></div>
       <div class="sum-side"><b>${on ? S.goal : 4}</b><small>${on ? "objetivo" : "refeições"}</small></div></div>
-    <div class="mrings">${MACROS.map(([n, x, col]) => { const tg = on && S.macro ? S.macro[x] : 0, v = Math.round(T[x]), f = tg ? Math.min(1, v / tg) : v / mTot, r = 19, c = 2 * Math.PI * r;
-      const st = !tg ? `${Math.round(v / mTot * 100)}% do dia` : v < tg ? `faltam ${tg - v} g` : v > tg * 1.15 ? `+${v - tg} g` : "na meta";
-      return `<div class="mr" aria-label="${n}: ${v} g${tg ? ` de ${tg} g` : ""}"><div class="mr-ring"><svg viewBox="0 0 48 48" aria-hidden="true"><circle class="tr" cx="24" cy="24" r="${r}"/><circle cx="24" cy="24" r="${r}" fill="none" stroke="${col}" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c * (1 - f)).toFixed(1)}" transform="rotate(-90 24 24)"/></svg><b class="num">${v}<small>g</small></b></div>
-        <span class="mr-n"><i style="background:${col}"></i>${n}</span><small class="mr-s">${st}</small>${tg ? `<small class="mr-of">de ${tg} g</small>` : ""}</div>`; }).join("")}</div>
+    <div class="mbars">${MACROS.map(([n, x, col]) => { const tg = on && S.macro ? S.macro[x] : 0, v = Math.round(T[x]), f = tg ? Math.min(1, v / tg) : v / mTot;
+      return `<div class="mb" aria-label="${n}: ${v} g${tg ? ` de ${tg} g` : ""}"><div class="mb-h"><span>${n}</span><b class="num">${v}${tg ? `<small> / ${tg} g</small>` : "<small> g</small>"}</b></div><span class="mb-bar"><i style="width:${(f * 100).toFixed(1)}%;background:${col}"></i></span></div>`; }).join("")}</div>
     ${L.length ? `<button class="sum-more" id="h-detail">Ver o dia em detalhe ${icon("right","xs")}</button>` : ""}`;
   const hd = $("#h-detail"); if (hd) hd.onclick = () => openDayDetail(k);
   requestAnimationFrame(() => requestAnimationFrame(() => { const f = $("#ringfg"); if (f) f.style.strokeDashoffset = (C*(1-frac)).toFixed(1); }));
-  countTo($("#h-sum .rv b"), "ring"); $$("#h-sum .mr-ring b").forEach((b, i) => countTo(b, "mac" + i));
+  countTo($("#h-sum .rv b"), "ring");
   renderCoach();
 
   // 2) Refeições: nome + kcal (ou porção) e nada mais
@@ -2190,12 +2260,12 @@ function renderHoje(){
   // 3) Água
   const w = S.water[k] || 0, Lt = v => (v*0.25).toLocaleString("pt-PT", { maximumFractionDigits:2 });
   const wp = Math.min(100, Math.round(w / Math.max(1, S.wg) * 100)), wleft = Math.max(0, S.wg - w);
-  $("#h-water").className = "card wcard";
-  $("#h-water").innerHTML = `<div class="wat"><div class="wat-b" role="img" aria-label="${wp}% do objetivo de água"><i style="height:${wp}%"><s></s></i><b class="num">${wp}%</b></div>
-      <div class="grow wat-t"><h3>Água</h3><p class="wat-v"><b class="num">${Lt(w)}</b> <span>de ${Lt(S.wg)} L</span></p>
-        <p class="small wat-m">${w >= S.wg ? "Objetivo cumprido. Boa!" : w ? `Faltam ${wleft} copo${wleft > 1 ? "s" : ""} de 250 ml` : "Começa com um copo agora"}</p>
-        <div class="wat-a"><button class="iconbtn" id="w-minus" aria-label="Tirar um copo" ${w ? "" : "disabled"}>${icon("minus","sm")}</button><button class="btn wplus" id="w-plus" aria-label="Mais um copo">${icon("plus","sm")} 1 copo</button></div></div></div>
-    <div class="glasses">${Array.from({ length:S.wg }, (_, i) => `<button class="glass ${i < w ? "drunk" : ""}" data-g="${i}" aria-label="Copo ${i+1} de 250 ml${i < w ? ", bebido" : ""}"><i></i></button>`).join("")}</div>`;
+  $("#h-water").className = "card wcard2";
+  const cup = i => `<button class="glass cup ${i < w ? "drunk" : ""}" data-g="${i}" aria-label="Copo ${i+1} de 250 ml${i < w ? ", bebido" : ""}"><svg viewBox="0 0 24 30" aria-hidden="true"><path class="cup-f" d="M4.6 11h14.8l-1.4 15.2a1.6 1.6 0 0 1-1.6 1.5H7.6a1.6 1.6 0 0 1-1.6-1.5z"/><path class="cup-o" d="M3 3h18l-2.3 23.4a2.2 2.2 0 0 1-2.2 2H7.5a2.2 2.2 0 0 1-2.2-2z"/></svg></button>`;
+  $("#h-water").innerHTML = `<div class="w2-h"><div><h3>Água</h3><p class="w2-v"><b class="num">${Lt(w)}</b> de ${Lt(S.wg)} L</p></div>
+      <div class="w2-a"><button class="iconbtn" id="w-minus" aria-label="Tirar um copo" ${w ? "" : "disabled"}>${icon("minus","sm")}</button><button class="btn sm" id="w-plus" aria-label="Mais um copo">${icon("plus","sm")} 250 ml</button></div></div>
+    <div class="cups">${Array.from({ length:S.wg }, (_, i) => cup(i)).join("")}</div>
+    <p class="tiny muted" style="margin-top:10px">${w >= S.wg ? "Objetivo cumprido. Boa!" : w ? `Faltam ${wleft} copo${wleft > 1 ? "s" : ""} de 250 ml` : "Toca num copo para o marcar"}</p>`;
   $$("#h-water .glass").forEach(b => b.onclick = () => { const i = +b.dataset.g; setWater(k, i < w ? i : i+1); });
   $("#w-minus").onclick = () => setWater(k, w-1); $("#w-plus").onclick = () => setWater(k, w+1);
 
@@ -2264,10 +2334,10 @@ let lastCoach = "";
 // O coach: a mascote certa para o momento, num balão com o próximo passo e um botão para o fazer.
 function renderCoach(){
   const c = coach(), who = c.who || "abi", el = $("#h-tip");
-  el.className = `coach coach-${who}`;
-  el.innerHTML = `<div class="coach-m">${face(who, { mood:c.m, size: who === "abi" ? 104 : 86 })}</div>${bubbleHTML(who, { action:c.b })}`;
-  if (lastCoach === c.t) $(".bub-t", el).textContent = c.t; else { speak(el, c.t); lastCoach = c.t; }
-  const b = $(".bub-act", el); if (b) b.onclick = () => { burst($(".mwrap", el), who === "abi" ? "spark" : "heart"); c.fn(); };
+  el.className = "tip2";
+  el.innerHTML = `<span class="tip2-m">${face(who, { mood:c.m, size:46 })}</span><p class="tip2-t">${esc(c.t)}</p>${c.b ? `<button class="btn sm tip2-b">${esc(c.b)}</button>` : ""}`;
+  lastCoach = c.t;
+  const b = $(".tip2-b", el); if (b) b.onclick = () => c.fn();
 }
 
 
@@ -3253,7 +3323,7 @@ function openOnboarding(edit, startKey, single){
       <button class="btn block" id="ob-n2" ${valid(s) ? "" : "disabled"} style="height:54px">${s.type === "result" ? "Ver o meu plano" : s.type === "hook" ? "Começar o meu plano" : single ? "Guardar" : "Continuar"}</button>
       ${s.type !== "result" && s.type !== "text" && s.type !== "hook" ? `<button class="skip" id="ob-skip">${single ? "Cancelar" : "Saltar esta pergunta"}</button>` : ""}`;
     const nextBtn = $("#ob-n2", inn), recheck = () => { nextBtn.disabled = !valid(s); };
-    $$(".opts .opt", inn).forEach(b => b.onclick = () => { readIn(s); tog(s, b.dataset.o); A._note = b.textContent.trim().slice(0, 40); mood = s.who === "abi" ? (b.dataset.o === "nao" ? "think" : "party") : "happy"; draw(); });
+    $$(".opts .opt", inn).forEach(b => b.onclick = () => { readIn(s); tog(s, b.dataset.o); A._note = (b.querySelector("b") || b).textContent.trim().slice(0, 40); mood = s.who === "abi" ? (b.dataset.o === "nao" ? "think" : "party") : "happy"; draw(); });
     $$("#ob-sex button", inn).forEach(x => x.onclick = () => { readIn(s); B.sex = x.dataset.v; draw(); });
     $$("#ob-h,#ob-w", inn).forEach(x => x.oninput = () => { readIn(s); A._noBody = false; recheck(); });
     const ag = $("#ob-age", inn); if (ag) { const msg = () => { $("#ob-agen", inn).textContent = A.ageN && A.ageN < 18 && A.ageN >= 10 ? "Combinado: sem calorias nem metas de peso. Vamos focar-nos em refeições regulares e variadas." : ""; };
@@ -3504,7 +3574,7 @@ const EN = {
   "Peso":"Weight", "Por registar":"Not logged", "Guardado":"Saved", "Guardar peso":"Save weight", "Desafios de hoje":"Today's challenges", "Marca-se sozinho":"Ticks itself", "Toca quando fizeres":"Tap when done", "Feito":"Done",
   "Regista o pequeno-almoço":"Log your breakfast", "Planeia uma refeição de amanhã":"Plan a meal for tomorrow", "Regista 3 refeições":"Log 3 meals", "Treino de hoje":"Today's workout", "Ver o dia em detalhe":"See the day in detail",
   "Bebe 6 copos de água":"Drink 6 glasses of water", "Come uma peça de fruta":"Eat a piece of fruit", "Come legumes a uma refeição":"Have vegetables with a meal", "Experimenta uma receita nova":"Try a new recipe", "Mexe-te 20 minutos":"Move for 20 minutes",
-  "Tirar um copo":"Remove a glass", "Mais um copo":"One more glass", "Menos 100 gramas":"100 grams less", "Mais 100 gramas":"100 grams more", "Adicionar refeição":"Add meal",
+  "Toca num copo para o marcar":"Tap a glass to mark it", "Hoje é dia de descanso":"Today is a rest day", "O teu plano":"Your plan", "Tirar um copo":"Remove a glass", "Mais um copo":"One more glass", "Menos 100 gramas":"100 grams less", "Mais 100 gramas":"100 grams more", "Adicionar refeição":"Add meal",
   // Registar
   "Pesquisar":"Search", "Foto":"Photo", "Manual":"Manual", "Repetir":"Repeat", "Alimentos simples":"Basic foods", "Pesquisar alimento ou receita":"Search food or recipe",
   "Valores médios aproximados. Confirma sempre no rótulo.":"Approximate average values. Always check the label.", "Enquadra o prato inteiro":"Fit the whole plate", "De cima, com boa luz":"From above, in good light",

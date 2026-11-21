@@ -16,7 +16,7 @@ const EN = {
   "Peso":"Weight", "Por registar":"Not logged", "Guardado":"Saved", "Guardar peso":"Save weight", "Desafios de hoje":"Today's challenges", "Marca-se sozinho":"Ticks itself", "Toca quando fizeres":"Tap when done", "Feito":"Done",
   "Regista o pequeno-almoço":"Log your breakfast", "Planeia uma refeição de amanhã":"Plan a meal for tomorrow", "Regista 3 refeições":"Log 3 meals", "Treino de hoje":"Today's workout", "Ver o dia em detalhe":"See the day in detail",
   "Bebe 6 copos de água":"Drink 6 glasses of water", "Come uma peça de fruta":"Eat a piece of fruit", "Come legumes a uma refeição":"Have vegetables with a meal", "Experimenta uma receita nova":"Try a new recipe", "Mexe-te 20 minutos":"Move for 20 minutes",
-  "Tirar um copo":"Remove a glass", "Mais um copo":"One more glass", "Menos 100 gramas":"100 grams less", "Mais 100 gramas":"100 grams more", "Adicionar refeição":"Add meal",
+  "Toca num copo para o marcar":"Tap a glass to mark it", "Hoje é dia de descanso":"Today is a rest day", "O teu plano":"Your plan", "Tirar um copo":"Remove a glass", "Mais um copo":"One more glass", "Menos 100 gramas":"100 grams less", "Mais 100 gramas":"100 grams more", "Adicionar refeição":"Add meal",
   // Registar
   "Pesquisar":"Search", "Foto":"Photo", "Manual":"Manual", "Repetir":"Repeat", "Alimentos simples":"Basic foods", "Pesquisar alimento ou receita":"Search food or recipe",
   "Valores médios aproximados. Confirma sempre no rótulo.":"Approximate average values. Always check the label.", "Enquadra o prato inteiro":"Fit the whole plate", "De cima, com boa luz":"From above, in good light",
