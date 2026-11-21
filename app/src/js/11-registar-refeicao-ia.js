@@ -11,13 +11,12 @@ const recByName = n => { const k = norm(n).trim(); return RECIPES.find(r => norm
 const picOf = (name, meal) => { const r = recByName(name); return (r && photoOf(r)) || (typeof PHOTO_FOOD !== "undefined" && PHOTO_FOOD[name]) || ""; };
 const thumb = (name, meal, size = 48) => { const src = picOf(name, meal); return src ? `<img class="th" src="${esc(src)}" alt="" loading="lazy" style="width:${size}px;height:${size}px">` : artTile(MEAL_ART[meal] || "almoco", size, "th"); };
 const mealPic = m => { const r = recByName(MEAL_PIC[m] || "") || RECIPES.find(x => x.c === m && photoOf(x)); return r ? photoOf(r) : ""; };
-function openAdd(meal, tab="foto"){
+function openAdd(meal, tab="pesq"){
   let cur = MEALS.some(m => m.id === meal) ? meal : defMeal();
-  openSheet("Registar", `<div class="mealchips" id="a-meals" role="radiogroup" aria-label="Refeição">${MEALS.map(m => { const src = mealPic(m.id), [c1, c2] = ART_BG[MEAL_ART[m.id]] || ART_BG.almoco;
-      return `<button role="radio" data-m="${m.id}" aria-checked="${m.id === cur}" class="mc ${m.id === cur ? "on" : ""}" style="--a1:${c1};--a2:${c2}">${src ? `<img src="${esc(src)}" alt="">` : `<span class="mc-art">${artSVG(MEAL_ART[m.id], 40)}</span>`}<span class="mc-l">${m.id === "Pequeno-almoço" ? "Peq.-almoço" : m.id}</span><i class="mc-ok">${icon("check","xs")}</i></button>`; }).join("")}</div>
+  openSheet("Registar", `<div class="seg a-mseg" id="a-meals" role="radiogroup" aria-label="Refeição">${MEALS.map(m => `<button role="radio" data-m="${m.id}" aria-checked="${m.id === cur}" class="${m.id === cur ? "on" : ""}">${m.id === "Pequeno-almoço" ? "Peq.-almoço" : m.id}</button>`).join("")}</div>
     <select id="a-meal" class="hide" aria-hidden="true" tabindex="-1">${MEALS.map(m => `<option ${m.id === cur ? "selected" : ""}>${m.id}</option>`).join("")}</select>
     <p class="tiny muted" style="margin-top:8px">${esc(fmtDay(curDay))}</p>
-    <div class="seg" id="a-tabs" style="margin-top:12px" role="tablist"><button data-t="foto" role="tab">${icon("camera","xs")} Foto</button><button data-t="pesq" role="tab">${icon("search","xs")} Pesquisar</button><button data-t="manual" role="tab">${icon("brush","xs")} Manual</button><button data-t="rec" role="tab">${icon("copy","xs")} Repetir</button></div>
+    <div class="a-modes" id="a-tabs" role="tablist">${[["pesq","search","Pesquisar"],["foto","camera","Foto"],["manual","brush","Manual"],["rec","copy","Repetir"]].map(([t, i, l]) => `<button data-t="${t}" role="tab"><span>${icon(i)}</span>${l}</button>`).join("")}</div>
     <div id="a-body" style="margin-top:16px"></div>`, body => {
     $$("#a-meals button", body).forEach(b => b.onclick = () => { cur = b.dataset.m; $("#a-meal", body).value = cur; $$("#a-meals button", body).forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); }); });
     const show = (t, arg) => { $$("#a-tabs button", body).forEach(b => { b.classList.toggle("on", b.dataset.t === t); b.setAttribute("aria-selected", b.dataset.t === t); }); const el = $("#a-body", body); el.onclick = null; el.oninput = null; ADD[t](el, arg); };
@@ -149,8 +148,8 @@ const ADD = {
     const list = () => { const raw = $("#a-q", el).value.trim(), q = norm(raw), words = q.split(/\s+/).filter(Boolean), hit = n => words.every(w => norm(n).includes(w));
       const R = RECIPES.filter(r => recipeAllowed(r) && (!q ? r.c === m || (isMain(m) && isMain(r.c)) : hit(r.n))).slice(0, q ? 8 : 6);
       const F = FOODS.filter(f => !q || hit(f.n)).slice(0, 30);
-      $("#a-fl", el).innerHTML = (R.length ? `<p class="shop-cat">${q ? "Receitas" : "Receitas para " + m.toLowerCase()}</p>${R.map(r => `<button class="food rfood" data-r="${r.id}">${thumb(r.n, r.c, 52)}<span class="lt"><b>${esc(r.n)}</b><small>${kcalOn() ? r.k + " kcal · " : ""}P ${r.p} · H ${r.h} · G ${r.g} por porção</small></span>${icon("plus","sm")}</button>`).join("")}` : "")
-        + (F.length ? `<p class="shop-cat">Alimentos simples</p>${F.map(f => `<button class="food rfood" data-f="${esc(f.n)}">${thumb(f.n, m, 52)}<span class="lt"><b>${esc(f.n)}</b><small>${kcalOn() ? f.k + " kcal · " : ""}P ${f.p} · H ${f.c} · G ${f.g} por 100 g</small></span>${icon("plus","sm")}</button>`).join("")}` : "")
+      $("#a-fl", el).innerHTML = (R.length ? `<p class="shop-cat">${q ? "Receitas" : "Receitas para " + m.toLowerCase()}</p>${R.map(r => `<button class="food rfood" data-r="${r.id}">${thumb(r.n, r.c, 52)}<span class="lt"><b>${esc(r.n)}</b><small>1 porção · ${r.p} g proteína</small></span>${kcalOn() ? `<span class="a-kc">${r.k} kcal</span>` : ""}<span class="a-add">${icon("plus","sm")}</span></button>`).join("")}` : "")
+        + (F.length ? `<p class="shop-cat">Alimentos simples</p>${F.map(f => `<button class="food rfood" data-f="${esc(f.n)}">${thumb(f.n, m, 52)}<span class="lt"><b>${esc(f.n)}</b><small>100 g · ${f.p} g proteína</small></span>${kcalOn() ? `<span class="a-kc">${f.k} kcal</span>` : ""}<span class="a-add">${icon("plus","sm")}</span></button>`).join("")}` : "")
         || `<div class="empty">Sem resultados para "${esc(raw)}". <button class="lnk" id="a-toman">Regista à mão</button>.</div>`;
       const tm = $("#a-toman", el); if (tm) tm.onclick = () => addTab("manual", { n:raw }); };
     $("#a-q", el).oninput = list; list();

@@ -92,11 +92,11 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   ok(st.days[k].some(m => m.k === 200), "edição de refeição guardada");
 
   // 5. Foto sem IA: mostra aviso honesto
-  await page.click("#nav-add"); await page.waitForTimeout(600);
+  await page.click("#nav-add"); await page.waitForTimeout(600); await page.click('#a-tabs [data-t="foto"]'); await page.waitForTimeout(300);
   ok(/ainda não está ligada/.test(await page.textContent("#a-body")), "aviso de IA indisponível fora do Claude");
   // 5b. Foto com IA simulada: números em texto, porções, estado de espera e tempo limite
   await shot("05-adicionar-foto"); await sheetClose();
-  const foto = async impl => page.evaluate(async impl => { sample = eval(impl); document.querySelectorAll(".dialog,.celebrate").forEach(x => x.remove()); openAdd("Almoço"); await new Promise(r => setTimeout(r, 150));
+  const foto = async impl => page.evaluate(async impl => { sample = eval(impl); document.querySelectorAll(".dialog,.celebrate").forEach(x => x.remove()); openAdd("Almoço", "foto"); await new Promise(r => setTimeout(r, 150));
     const b = await (await fetch(PHOTO_AI[1])).blob(); const dt = new DataTransfer(); dt.items.add(new File([b], "x.jpg", { type:"image/jpeg" }));
     const f = document.getElementById("f-gal"); f.files = dt.files; f.dispatchEvent(new Event("change")); await new Promise(r => setTimeout(r, 300)); document.getElementById("a-go").click(); }, impl);
   await foto(`(() => { const f = async () => ({ text:"" }); f.json = async () => ({ refeicao:"Arroz com frango", clara:true, itens:[{ nome:"Arroz", porcao:"150 g", kcal:"195 kcal", proteina_g:"4 g", carbo_g:"42", gordura_g:"0,5", confianca:"alta" }, { nome:"Frango", porcao:"120 g", kcal:198, proteina_g:37, carbo_g:0, gordura_g:4, confianca:"media" }] }); return f; })()`);
@@ -246,6 +246,8 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   ok(!ms.kc && ms.goal === "manter" && ms.later && ms.plan > 0 && ms.age === "Menos de 18", "menor: terminar depois cria plano sem calorias (" + JSON.stringify(ms) + ")");
   await p3.evaluate(() => { document.querySelectorAll(".celebrate").forEach(x => x.remove()); openSummary(); });
   ok(!(await p3.isVisible("#pw-in")), "menor: sem registo de peso no Progresso");
+  ok(await page.evaluate(() => { const was = S.lang; S.lang = "en"; const d = document.createElement("div"); d.innerHTML = '<b>Hoje</b><span>Faltam 3 produtos</span><input placeholder="Pesquisar alimento ou receita">'; translateTree(d); S.lang = was;
+    return d.querySelector("b").textContent === "Today" && d.querySelector("span").textContent === "3 items left" && d.querySelector("input").placeholder === "Search food or recipe" && trText("Sábado, 21 de novembro") === "Saturday, November 21"; }), "idioma: inglês traduz textos, frases com números e datas");
   await p3.close();
 
   // 12. Migração a partir da NutriVida
