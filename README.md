@@ -29,3 +29,7 @@ Abrir os `.html` diretamente no browser; não há dependências.
    - copia o URL e a chave "anon" para `BRAND.supabase` em `app/src/js/01-config.js`;
    - em Authentication, põe o endereço da Vercel como Site URL.
 3. A opção "Conta e cópia na nuvem" só aparece no Perfil depois do passo 2.
+
+## Lançar nas lojas
+
+O guia está em [LANCAR.md](LANCAR.md): o que está pronto, o que falta, custos, Capacitor e o plano Pro.
