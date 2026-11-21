@@ -26,7 +26,7 @@ Registar (pesquisa, manual, repetir, foto com IA simulada), Hoje (anel, macros, 
 3. **Inglês** — interface traduzida; receitas, ingredientes e parte das perguntas continuam em português.
 4. **Notificações** e **e-mails** — ver abaixo. Não implementados.
 5. **Visita guiada** — funciona e aponta para elementos reais, mas falta torná-la mais visual.
-6. **Treino** — falta trocar um exercício por uma alternativa mais fácil ou mais difícil dentro do treino.
+6. **Treino** — feito: perguntas só de treino (objetivo, nível, sítio, material, dias, tempo, preferência), semana com estado por dia, ecrã do exercício com demonstração ilustrativa, versão mais fácil e mais difícil conforme o material, troca, outra versão do plano. Falta: demonstrações reais (vídeo ou fotos) e testar com pessoas.
 7. **Conquistas** — falta uma celebração grande ao ganhar (hoje é um aviso discreto).
 
 ## Notificações e e-mails: o que é possível com esta arquitetura

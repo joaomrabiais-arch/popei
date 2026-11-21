@@ -87,17 +87,21 @@ const EXINFO = {
 };
 const PAT_OF = name => Object.keys(EXL).find(k => Object.values(EXL[k]).some(arr => arr.includes(name)));
 const CARDIO_N = { caminhar:"Caminhada rápida", correr:"Corrida leve", bicicleta:"Bicicleta", nadar:"Natação", nenhum:"Mobilidade suave" };
-function generatePlan({ place="casa", dayIdx, days, min=30, lvl="zero", goal="manter", lim=[], bmi=22, age=30, equip=[], focus="todo", cardio="caminhar" }){
+function generatePlan({ place="casa", dayIdx, days, min=30, lvl="zero", goal="manter", lim=[], bmi=22, age=30, equip=[], focus="todo", cardio="caminhar", tobj="", tstyle="", vr=0, minor=false }){
+  const obj = TOBJ[tobj] ? tobj : goal === "musculo" ? "forca" : "geral"; /* o objetivo de peso já não decide o treino */
+  if (minor && lvl === "regular") lvl = "algum"; /* menores: no máximo nível intermédio */
+  const mob = obj === "mobilidade" || tstyle === "mobilidade";
   dayIdx = (Array.isArray(dayIdx) && dayIdx.length >= 2 ? dayIdx : ({ 2:[1,4], 3:[0,2,4], 4:[0,1,3,4], 5:[0,1,2,4,5], 6:[0,1,2,3,4,5] })[clamp(+days || 3, 2, 6)]).map(Number).sort((a,b) => a-b);
   const nd = dayIdx.length; min = +min || 30;
   const knee = lim.includes("Joelhos"), back = lim.includes("Costas"), shoulder = lim.includes("Ombros");
   const low = knee || bmi >= 30 || age >= 60;
-  const kit = place === "casa" && equip.some(e => ["Halteres","Elásticos","Kettlebell"].includes(e)) ? "equip" : place;
+  const kit = tstyle === "corpo" ? (place === "rua" ? "rua" : "casa") : place === "casa" && equip.some(e => ["Halteres","Elásticos","Kettlebell"].includes(e)) ? "equip" : place;
   const hasBar = equip.includes("Barra de elevações");
-  const n = { 20:4, 30:5, 45:6, 60:7 }[min] || 5;
-  const sets = { zero:2, algum:3, regular:4 }[lvl] || 2;
-  const reps = goal === "musculo" && lvl !== "zero" ? "8–10" : "10–12";
-  const rest = goal === "musculo" && lvl !== "zero" ? "90 s" : "60 s";
+  const heavy = obj === "forca" && lvl !== "zero" && !minor;
+  const n = Math.max(3, ({ 20:4, 30:5, 45:6, 60:7 }[min] || 5) - (obj === "habito" ? 2 : 0) - (mob ? 1 : 0));
+  const sets = Math.min(obj === "habito" ? 2 : 9, { zero:2, algum:3, regular:4 }[lvl] || 2);
+  const reps = heavy ? "6–8" : obj === "forca" || obj === "habito" ? "8–10" : obj === "resistencia" ? "12–15" : "10–12";
+  const rest = heavy ? "2 min" : obj === "forca" ? "90 s" : obj === "resistencia" ? "45 s" : "60 s";
   const hold = { zero:"20 s", algum:"30 s", regular:"45 s" }[lvl] || "20 s";
   const order = nd === 2 ? ["A","B"] : nd === 3 ? ["A","B","C"] : nd === 4 ? ["U","L","U","L"] : nd === 5 ? ["U","L","X","U","L"] : ["U","L","X","U","L","X"];
   const extra = { pernas:["lunge","hinge"], cima:["push","pull"], core:["core"], cardio:[], todo:[] }[focus] || [];
@@ -114,10 +118,12 @@ function generatePlan({ place="casa", dayIdx, days, min=30, lvl="zero", goal="ma
     if (key === "X") return { n:"Cardio e mobilidade", e:[["Aquecimento articular","5 min",""],[cardioName(), lvl === "zero" ? "20 min, ritmo em que consegues falar" : "25–30 min, ritmo moderado",""],["Mobilidade de anca, costas e ombros","10 min",""]] };
     const seen = {}, e = [[cardio === "nenhum" ? "Aquecimento: mobilidade articular" : `Aquecimento: ${cardioName().toLowerCase()} leve`, "5 min", ""]];
     const pats = SPLITS[key].slice(0, n).concat(extra.filter(x => (key === "U" ? ["push","pull","press","core"] : key === "L" ? ["squat","hinge","lunge","core"] : Object.keys(EXL)).includes(x)));
-    pats.forEach(pat => { seen[pat] = seen[pat] === undefined ? si : seen[pat] + 1;
+    pats.forEach(pat => { seen[pat] = seen[pat] === undefined ? si + vr : seen[pat] + 1;
       const name = pick(pat, seen[pat]); if (e.some(x => x[0] === name)) return;
       e.push([name, pat === "core" ? (/Prancha/.test(name) ? `${sets} × ${hold}` : `${sets} × 10`) : `${sets} × ${reps}${pat === "lunge" || /uma perna/.test(name) ? " por perna" : ""}`, pat === "core" ? "45 s" : rest]); });
-    if ((goal === "perder" || focus === "cardio" || min >= 45) && cardio !== "nenhum") e.push([cardioName(), goal === "perder" || focus === "cardio" ? "10–15 min" : "10 min", ""]);
+    const cardioMore = obj === "resistencia" || focus === "cardio" || tstyle === "cardio";
+    if ((cardioMore || min >= 45) && cardio !== "nenhum") e.push([cardioName(), cardioMore ? "10–15 min" : "10 min", ""]);
+    if (mob) [0, 1].forEach(j => e.push([MOB[(si * 2 + j + vr) % MOB.length], "2 × 30 s", "15 s"]));
     return { n: { A:"Corpo inteiro A", B:"Corpo inteiro B", C:"Corpo inteiro C", U:"Parte de cima", L:"Pernas e core" }[key], e };
   });
   const notes = [];
@@ -125,9 +131,13 @@ function generatePlan({ place="casa", dayIdx, days, min=30, lvl="zero", goal="ma
   if (back) notes.push("sem peso morto, com exercícios que poupam as costas");
   if (shoulder) notes.push("cargas leves nos ombros");
   if (!knee && low) notes.push("sem impacto, para começar com segurança");
+  if (obj === "habito") notes.push("sessões mais curtas, para criar o hábito");
+  if (mob) notes.push("mobilidade no fim de cada treino");
+  if (tstyle === "corpo") notes.push("só com o peso do corpo");
+  if (minor) notes.push("cargas moderadas, próprias de menores de 18 anos");
   if (focus !== "todo") notes.push("mais volume em " + ({ pernas:"pernas e glúteos", cima:"peito, costas e braços", core:"core", cardio:"resistência" }[focus] || focus));
-  return { id:"custom", n:`Plano para ti · ${nd}× ${min} min`, lvl: lvl === "regular" ? 3 : lvl === "algum" ? 2 : 1, min, days:dayIdx, s:sessions,
-    d:`${LVL_L[lvl] || "Iniciação"}, ${PLACE_L[place] || ""}, objetivo: ${goalName(goal).toLowerCase()}.` + (notes.length ? ` Adaptado: ${notes.join("; ")}.` : "") };
+  return { id:"custom", n:`Plano para ti · ${nd}× ${min} min`, lvl: lvl === "regular" ? 3 : lvl === "algum" ? 2 : 1, min, days:dayIdx, s:sessions, meta:{ obj, lvl, place, tstyle, vr },
+    d:`${LVL_L[lvl] || "Iniciação"}, ${PLACE_L[place === "casa" && kit === "equip" ? "equip" : place] || ""}, objetivo: ${TOBJ[obj].toLowerCase()}.` + (notes.length ? ` Adaptado: ${notes.join("; ")}.` : "") };
 }
 // Ciclo de 4 semanas: base, base, progressão, semana leve.
 function weekPhase(k){ if (!S.wk) return null; const w = Math.max(0, Math.floor((parseK(k) - parseK(S.wk.start)) / (7*864e5))) % 4;
@@ -136,16 +146,6 @@ function weekPhase(k){ if (!S.wk) return null; const w = Math.max(0, Math.floor(
           { n:"Semana 3 de 4 · progressão", t:"Faz mais 1 ou 2 repetições por série, ou junta um pouco de peso." },
           { n:"Semana 4 de 4 · semana leve", t:"Faz menos 1 série em cada exercício. O corpo também evolui a descansar." }][w]; }
 function exName(k, se, i){ const key = se.sess.n + "|" + i; return (S.wk.swap && S.wk.swap[key]) || se.sess.e[i][0]; }
-function openExercise(k, i){
-  const se = sessionFor(k); if (!se) return; const e = se.sess.e[i], name = exName(k, se, i), info = EXINFO[name];
-  const pat = PAT_OF(se.sess.e[i][0]), alts = pat ? [...new Set(Object.values(EXL[pat]).flat())].filter(x => x !== name).slice(0, 4) : [];
-  openSheet(name, `<p class="small muted">${esc(info ? info[0] : "Movimento geral")} · ${esc(e[1])}${e[2] ? " · descanso " + esc(e[2]) : ""}</p>
-    ${info ? `<ol class="steps" style="margin-top:12px">${info[1].map(x => `<li>${esc(x)}</li>`).join("")}</ol>` : `<p style="margin-top:12px">Faz o movimento devagar e com controlo, sem dor.</p>`}
-    <div class="note" style="margin-top:12px">${icon("info","sm")}<span>Se sentires dor (e não só esforço), para. Escolhe uma alternativa abaixo.</span></div>
-    ${alts.length ? `<h3 style="margin-top:18px">Trocar por</h3><div class="list" style="margin-top:8px">${alts.map(a => `<button class="li" data-alt="${esc(a)}"><span class="lt"><b>${esc(a)}</b><small>${esc(EXINFO[a] ? EXINFO[a][0] : "")}</small></span>${icon("right","sm")}</button>`).join("")}</div>` : ""}`, b => {
-    $$("[data-alt]", b).forEach(x => x.onclick = () => { S.wk.swap = S.wk.swap || {}; S.wk.swap[se.sess.n + "|" + i] = x.dataset.alt; save(); closeSheet(); renderTreino(); toast("Exercício trocado em todas as semanas"); });
-  });
-}
 const progOf = () => S.wk && (S.wk.prog === "custom" ? S.wk.custom : PROGRAMS.find(p => p.id === S.wk.prog));
 const workoutDone = k => !!((S.wk && S.wk.done && S.wk.done[k]) || (S.wkHist && S.wkHist[k]));
 function sessionFor(k){ const p = progOf(); if (!p) return null; const days = S.wk.days, d = dow(k); if (!days.includes(d)) return null;

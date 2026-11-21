@@ -88,9 +88,9 @@ function startWorkout(k){
 // Plano de treino a partir das respostas iniciais. Só pergunta o que falta (sítio do treino).
 function customFromAnswers(){
   const u = S.u || {};
-  if (!u.place) { openOnboarding(true, "gym"); return; }
+  if (!u.place) { openOnboarding(true, "tobj", false, "treino"); return; }
   const d = Array.isArray(u.tdays) && u.tdays.length >= 2 && u.tdays.length <= 6 ? u.tdays : (u.gdaysSel && u.gdaysSel.length ? u.gdaysSel : [0, 2, 4]), p = S.prof;
   const pl = generatePlan({ place:u.place, days:d.length, dayIdx:d, equip:(u.equip || []).filter(x => x !== "Nenhum"), focus:u.focus || "todo", cardio:u.cardio || "caminhar", min:u.gmin || 30, lvl:u.lvl || "zero",
-    goal:u.goal || "manter", lim:(u.lim || []).filter(x => x !== "Nenhuma"), bmi: validBody(p) && u.age === "18 ou mais" ? p.w / ((p.h / 100) ** 2) : 22, age: p.age || 30 });
-  u.gym = "sim"; S.wk = { prog:"custom", custom:pl, days:pl.days.slice(), start:today(), done:{}, ex:{} }; save(); renderTreino(); toast("Plano de treino criado com as tuas respostas");
+    goal:u.goal || "manter", lim:(u.lim || []).filter(x => x !== "Nenhuma"), tobj:u.tobj, tstyle:u.tstyle, vr:u.tvr || 0, minor:isMinor(), bmi: validBody(p) && u.age === "18 ou mais" ? p.w / ((p.h / 100) ** 2) : 22, age: p.age || 30 });
+  u.gym = "sim"; S.wkHist = Object.assign(S.wkHist || {}, (S.wk && S.wk.done) || {}); S.wk = { prog:"custom", custom:pl, days:pl.days.slice(), start:today(), done:{}, ex:{} }; save(); renderTreino(); toast("Plano de treino criado com as tuas respostas");
 }

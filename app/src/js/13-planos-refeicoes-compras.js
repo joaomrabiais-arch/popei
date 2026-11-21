@@ -87,15 +87,33 @@ function renderTreino(){
       <span class="tp-meta"><span>${x.days.length}× semana</span><span>${x.min} min</span><span class="lvl" aria-label="Nível ${x.lvl} de 3">${[1,2,3].map(j => `<i class="${j <= x.lvl ? "on" : ""}"></i>`).join("")}</span></span></button>`).join("")}</div>
     <p class="tiny muted" style="margin:12px 4px">Se tens lesões, dores ou alguma condição de saúde, fala com um profissional antes de começar. Para de imediato se sentires dor.</p>`;
     $$("[data-p]", el).forEach(b => b.onclick = () => b.dataset.p === "custom" ? customFromAnswers() : openProgram(b.dataset.p)); return; }
-  const k = today(), mon = mondayOf(k), se = sessionFor(k);
+  const k = today(), mon = mondayOf(k), se = sessionFor(k), sel = planSel, ss = sessionFor(sel), custom = S.wk.prog === "custom";
   const weekDone = DOW.filter((_, i) => workoutDone(addDays(mon, i))).length;
-  el.innerHTML = `<div class="card" style="margin-top:18px"><div class="row between"><div><p class="tiny muted" style="font-weight:700;text-transform:uppercase;letter-spacing:.06em">O teu plano</p><h3>${esc(p.n)}</h3></div><button class="btn ghost sm" id="t-chg">Mudar</button></div>
-      <div class="wstrip" style="margin-top:14px">${DOW.map((d, i) => { const dk = addDays(mon, i); return `<div class="${S.wk.days.includes(i) ? (workoutDone(dk) ? "dn" : "pl") : ""} ${dk === k ? "td" : ""}">${d}<b></b></div>`; }).join("")}</div>
-      <p class="small muted" style="margin-top:10px">${weekDone} de ${S.wk.days.length} treinos esta semana. Falhaste um? Não faz mal, continua no seguinte.</p></div>
-    <div class="sec"><div class="sec-h"><h2>${se ? "Treino de hoje" : "Hoje é dia de descanso"}</h2></div>${se ? wkHero(k, se) + sessionCard(k, se) : `<div class="card row">${abi({ mood:"sleepy", size:64 })}<p class="muted">Recupera bem. O próximo treino é ${esc(nextSessionTxt())}.</p></div>`}</div>
-    <div class="sec"><div class="sec-h"><h2>Mês</h2><span class="tiny muted">○ planeado · ● feito</span></div><div class="card">${calendar(planMonth, planSel, k2 => sessionFor(k2) ? `<i class="${workoutDone(k2) ? "wd" : "wo"}"></i>` : (workoutDone(k2) ? `<i class="wd"></i>` : ""))}</div>
-    ${planSel !== k && sessionFor(planSel) ? `<div style="margin-top:12px">${sessionCard(planSel, sessionFor(planSel))}</div>` : ""}</div>${minorNote}`;
+  const days = DOW.map((d, i) => { const dk = addDays(mon, i), s2 = sessionFor(dk), dn = workoutDone(dk);
+    const stt = dn ? "Feito" : !s2 ? "" : dk === k ? "Hoje" : dk < S.wk.start ? "" : dk < k ? "Ficou por fazer" : "A seguir"; /* antes do início do plano não há nada por fazer */
+    return `<li><button class="wd${dk === k ? " td" : ""}${dk === sel ? " sel" : ""}${dn ? " dn" : ""}${s2 ? "" : " rest"}" data-wd="${dk}" aria-pressed="${dk === sel}">
+      <span class="wd-d"><small>${d}</small><b class="num">${+dk.slice(8)}</b></span>
+      <span class="wd-t"><b>${s2 ? esc(s2.sess.n) : dn ? "Treino extra" : "Descanso"}</b><small>${s2 ? `${s2.prog.min} min · ${s2.sess.e.length} exercícios` : "Recuperação. Caminhar ou alongar, se te apetecer."}</small></span>
+      <span class="wd-s">${dn ? icon("check", "xs") : ""}${stt}</span></button></li>`; }).join("");
+  const selBody = ss ? (sel === k ? wkHero(k, se) : "") + sessionCard(sel, ss)
+    : `<div class="card row">${abi({ mood:"sleepy", size:64 })}<p class="muted">${sel === k ? "Hoje recuperas." : "Dia de descanso."} O próximo treino é ${esc(nextSessionTxt())}.</p></div>`;
+  const dayNames = S.wk.days.map(i => DOW[i]).join(", ");
+  el.innerHTML = `<div class="wk-top"><p class="eyebrow">O teu plano</p><h2>${esc(p.n)}</h2>${p.d ? `<p class="small muted">${esc(p.d)}</p>` : ""}</div>
+    <ol class="wk-week" aria-label="Esta semana">${days}</ol>
+    <p class="small muted" style="margin:10px 2px 0">${weekDone} de ${S.wk.days.length} treinos feitos esta semana. Falhaste um? Continua no seguinte.</p>
+    <div class="sec"><div class="sec-h"><h2>${sel === k ? (se ? "Treino de hoje" : "Hoje é dia de descanso") : esc(fmtDay(sel))}</h2></div>${selBody}</div>
+    <div class="sec"><div class="sec-h"><h2>Ajustar o plano</h2></div><div class="list wk-adj">
+      <button class="li" id="t-ans"><span class="lt"><b>Mudar as respostas</b><small>Objetivo, nível, sítio, material e tempo</small></span>${icon("right","sm")}</button>
+      <button class="li" id="t-days"><span class="lt"><b>Mudar os dias</b><small>Agora: ${esc(dayNames)}</small></span>${icon("right","sm")}</button>
+      ${custom ? `<button class="li" id="t-new"><span class="lt"><b>Gerar outra versão</b><small>Mesmos critérios, outros exercícios</small></span>${icon("right","sm")}</button>` : ""}
+      <button class="li" id="t-chg"><span class="lt"><b>Escolher outro plano</b><small>Os treinos feitos ficam no histórico</small></span>${icon("right","sm")}</button></div>
+      <p class="tiny muted" style="margin:8px 4px 0">Para trocar um exercício ou escolher uma versão mais fácil ou mais difícil, toca no ${icon("info","xs")} ao lado dele.</p></div>
+    <div class="sec"><div class="sec-h"><h2>Histórico</h2><span class="tiny muted">○ planeado · ● feito</span></div><div class="card">${calendar(planMonth, planSel, k2 => sessionFor(k2) ? `<i class="${workoutDone(k2) ? "wd" : "wo"}"></i>` : (workoutDone(k2) ? `<i class="wd"></i>` : ""))}</div></div>${minorNote}`;
   $("#t-chg", el).onclick = async () => { if (!await confirmDlg("Mudar de plano? Os treinos já feitos ficam no histórico.", "Mudar")) return; S.wkHist = Object.assign(S.wkHist || {}, S.wk.done || {}); S.wk = null; save(); renderTreino(); };
+  $("#t-ans", el).onclick = () => openOnboarding(true, "tobj", false, "treino");
+  $("#t-days", el).onclick = () => custom ? openOnboarding(true, "gdaysSel", true) : openProgram(S.wk.prog);
+  const tn = $("#t-new", el); if (tn) tn.onclick = async () => { if (!await confirmDlg("Gerar outra versão do plano? Os treinos feitos ficam no histórico.", "Gerar")) return; S.u.tvr = ((S.u && S.u.tvr) || 0) + 1; customFromAnswers(); };
+  $$("[data-wd]", el).forEach(b => b.onclick = () => { planSel = b.dataset.wd; planMonth = planSel.slice(0, 7); renderTreino(); });
   $$("[data-mo]", el).forEach(b => b.onclick = () => { planMonth = shiftMonth(planMonth, +b.dataset.mo); renderTreino(); });
   $$(".cal [data-k]", el).forEach(b => b.onclick = () => { planSel = b.dataset.k; renderTreino(); });
   $$("[data-ex]", el).forEach(b => b.onclick = () => { const [kk, i] = b.dataset.ex.split("|"); S.wk.ex = S.wk.ex || {}; const a = S.wk.ex[kk] = S.wk.ex[kk] || []; const j = a.indexOf(+i); if (j >= 0) a.splice(j,1); else a.push(+i); save(); renderTreino(); });
@@ -113,7 +131,7 @@ function wkHero(k, se){ const st = (S.wk.ex && S.wk.ex[k]) || [], dn = workoutDo
 function sessionCard(k, se){ const st = (S.wk.ex && S.wk.ex[k]) || [], dn = workoutDone(k);
   return `<div class="card"><div class="row between"><div><b>${esc(se.sess.n)}</b><p class="small muted">${k === today() ? "Hoje" : esc(fmtDay(k))} · ${se.prog.min} min</p></div>${dn ? `<span class="conf alta">${icon("check","xs")} Feito</span>` : ""}</div>
     ${(() => { const ph = S.wk.prog === "custom" ? weekPhase(k) : null; return ph ? `<div class="note" style="margin-top:12px">${icon("chart","sm")}<span><b>${esc(ph.n)}.</b> ${esc(ph.t)}</span></div>` : ""; })()}
-    <div style="margin-top:8px">${se.sess.e.map((e, i) => `<div class="exrow"><button class="ex ${st.includes(i) || dn ? "done" : ""}" data-ex="${k}|${i}" aria-pressed="${st.includes(i) || dn}"><span class="tick">${icon("check","xs")}</span><span class="lt"><b>${esc(exName(k, se, i))}</b><small>${esc(e[1])}${e[2] ? " · descanso " + esc(e[2]) : ""}${lastTxt(exName(k, se, i)) ? `<br><span class="wk-last">${esc(lastTxt(exName(k, se, i)))}</span>` : ""}</small></span></button>${i ? `<button class="iconbtn" data-exi="${k}|${i}" aria-label="Como fazer ${esc(exName(k, se, i))}">${icon("info","sm")}</button>` : ""}</div>`).join("")}</div>
+    <div style="margin-top:8px">${se.sess.e.map((e, i) => `<div class="exrow"><button class="ex ${st.includes(i) || dn ? "done" : ""}" data-ex="${k}|${i}" aria-pressed="${st.includes(i) || dn}"><span class="tick">${icon("check","xs")}</span><span class="lt"><b>${esc(exName(k, se, i))}</b><small>${esc(e[1])}${e[2] ? " · descanso " + esc(e[2]) : ""}${lastTxt(exName(k, se, i)) ? `<br><span class="wk-last">${esc(lastTxt(exName(k, se, i)))}</span>` : ""}</small></span></button>${i ? `<button class="iconbtn" data-exi="${k}|${i}" aria-label="Como fazer, versão mais fácil ou mais difícil: ${esc(exName(k, se, i))}">${icon("info","sm")}</button>` : ""}</div>`).join("")}</div>
     ${k <= today() ? `<button class="btn ${dn ? "ghost" : ""} block" data-fin="${k}" style="margin-top:12px">${dn ? "Desmarcar treino" : "Concluir treino"}</button>` : `<p class="tiny muted" style="margin-top:10px">Podes marcar este treino no próprio dia.</p>`}</div>`; }
 function openProgram(id){
   const p = PROGRAMS.find(x => x.id === id); let days = p.days.slice();
@@ -126,7 +144,7 @@ function openProgram(id){
     const dr = () => { $("#pg-d", b).innerHTML = DOW.map((d, i) => `<button class="chip ${days.includes(i) ? "on" : ""}" data-i="${i}" aria-pressed="${days.includes(i)}">${d}</button>`).join("");
       $$("#pg-d button", b).forEach(x => x.onclick = () => { const i = +x.dataset.i; days = days.includes(i) ? days.filter(y => y !== i) : days.concat(i).sort((a,b2) => a-b2); dr(); }); };
     dr();
-    $("#pg-ok", b).onclick = () => { if (!days.length) { toast("Escolhe pelo menos um dia"); return; } S.wk = { prog:p.id, days, start:today(), done:{}, ex:{} }; save(); closeSheet(); renderTreino(); toast("Plano ativado"); };
+    $("#pg-ok", b).onclick = () => { if (!days.length) { toast("Escolhe pelo menos um dia"); return; } S.wkHist = Object.assign(S.wkHist || {}, (S.wk && S.wk.done) || {}); S.wk = { prog:p.id, days, start:today(), done:{}, ex:{} }; save(); closeSheet(); renderTreino(); toast("Plano ativado"); };
   });
 }
 const CATS = ["Frutas e legumes","Carne e peixe","Laticínios e ovos","Mercearia","Outros"];

@@ -32,7 +32,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   ok(/kcal\/dia/.test(await page.textContent(".ob-week")), "faixa da semana mostra energia depois dos dados");
   // Refeições, porções, alimentação, cozinha, em casa, treino; orçamento e supermercado saltados
   const steps = ["1.375", "normal", "PEOPLE", "Nenhuma", "Como de tudo", "Cogumelos", ["Pequeno-almoço","Almoço","Lanche","Jantar"], "dobro", "30", "portuguesa", "equilibrado", "TASTE",
-    "DIAS", "sim", "casa", "Nenhum", "30", "zero", "todo", "caminhar", "Joelhos", "SKIP", ["Arroz","Azeite"], "SKIP"];
+    "DIAS", "sim", "geral", "zero", "casa", "Nenhum", "30", "misto", "todo", "caminhar", "Joelhos", "SKIP", ["Arroz","Azeite"], "SKIP"];
   ok((await page.$$(".opts .opt.on")).length === 0, "perguntas: nenhuma resposta vem marcada antes de tocar (nada herdado da pergunta anterior)");
   for (const opt of steps) {
     if (opt === "DIAS") { for (const d of [0, 2, 4]) await page.click(`#ob-days [data-i="${d}"]`); await shot("02d-dias"); }
@@ -147,7 +147,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   ok(plan && plan.s.length === 3 && plan.days.length === 3, "plano personalizado com 3 treinos por semana");
   const exs = plan ? plan.s.flatMap(x => x.e.map(e => e[0])).join("|") : "";
   ok(!/Lunges|Agachamento com|salto/i.test(exs) && /Ponte de glúteos|Sentar e levantar/.test(exs), "plano poupa os joelhos (" + exs + ")");
-  ok(await page.evaluate(() => { const a = generatePlan({ place:"gym", days:4, min:60, lvl:"regular", goal:"musculo" }), b = generatePlan({ place:"casa", days:2, min:20, lvl:"zero", goal:"perder", bmi:32 });
+  ok(await page.evaluate(() => { const a = generatePlan({ place:"gym", days:4, min:60, lvl:"regular", goal:"musculo" }), b = generatePlan({ place:"casa", days:2, min:20, lvl:"zero", tobj:"resistencia", bmi:32 });
     return a.s.length === 4 && a.s[0].e.length > b.s[0].e.length && /4 ×/.test(a.s[0].e[1][1]) && /2 ×/.test(b.s[0].e[1][1]) && b.s[0].e.some(e => /Caminhada/.test(e[0])); }), "planos diferentes para pessoas diferentes");
   await page.evaluate(() => { const d = (new Date().getDay()+6)%7; if (!S.wk.days.includes(d)) S.wk.days.push(d); save(); renderTreino(); }); await page.waitForTimeout(300);
   await page.click("[data-ex] >> nth=0"); await page.waitForTimeout(200);
@@ -168,6 +168,35 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
     S.wk.log.Teste2 = [{ d:"2026-01-01", sets:[{ kg:20, reps:12 }, { kg:20, reps:9 }] }]; const b = suggestLoad("Teste2", "2 × 10–12", 2); return a.kg === 22.5 && b.kg === 20 && /Última vez: 20 kg × 12/.test(lastTxt("Teste")); }), "progressão: sobe o peso só quando fizeste todas as repetições");
   await page.click("#wk-ok"); await page.waitForTimeout(300); await closeCel();
   await shot("11-treino");
+  // 7c. Treino personalizado: respostas que mudam o plano, perguntas só de treino, troca, concluir e recarregar
+  ok(await page.evaluate(() => { const base = { place:"casa", days:3, min:30, lvl:"algum" }, names = p => p.s.flatMap(x => x.e.map(e => e[0])).join("|");
+    const f = generatePlan({ ...base, tobj:"forca" }), r = generatePlan({ ...base, tobj:"resistencia" }), m = generatePlan({ ...base, tobj:"mobilidade" }), h = generatePlan({ ...base, tobj:"habito" });
+    const c = generatePlan({ ...base, place:"gym", tstyle:"corpo" }), g = generatePlan({ ...base, place:"gym" }), v1 = generatePlan({ ...base, vr:1 });
+    return /6–8/.test(f.s[0].e[1][1]) && /12–15/.test(r.s[0].e[1][1]) && MOB.some(x => names(m).includes(x)) && h.s[0].e.length < f.s[0].e.length
+      && !/Leg press|Supino|Puxada|Remada sentada/.test(names(c)) && /Leg press|Supino|Puxada|Remada sentada/.test(names(g)) && names(v1) !== names(generatePlan(base)); }), "respostas diferentes dão planos diferentes (objetivo, estilo, versão)");
+  ok(await page.evaluate(() => { const a = generatePlan({ place:"gym", days:3, min:45, lvl:"regular", tobj:"forca", minor:true }); return !/6–8/.test(a.s[0].e[1][1]) && /cargas moderadas/.test(a.d) && !/perder/i.test(a.d); }), "menores: cargas moderadas e nada de perder peso no treino");
+  ok(await page.evaluate(() => { S.u.place = "casa"; S.u.equip = []; const v = variantsOf("Flexões de joelhos", "push"); return v.easier && v.harder && !v.list.some(x => /Supino|elástico/.test(x)); }), "variantes mais fácil e mais difícil respeitam o material");
+  await page.click("#t-ans"); await page.waitForTimeout(300);
+  ok(/^Treino/.test(await page.textContent(".ob-where")), "mudar as respostas abre só as perguntas do treino");
+  await page.click('#ob-in [data-o="resistencia"]'); await page.click("#ob-n2"); await page.waitForTimeout(150);
+  await page.click("#ob-b"); await page.waitForTimeout(150);
+  ok(await page.isVisible('#ob-in .opt.on[data-o="resistencia"]'), "voltar atrás mostra a resposta dada");
+  await page.click("#ob-n2"); await page.waitForTimeout(100);
+  for (let i = 0; i < 15 && await page.isVisible("#ob-n2"); i++) { if (await page.isVisible("#ob-skip")) await page.click("#ob-skip"); else await page.click("#ob-n2"); await page.waitForTimeout(80); }
+  ok(await page.evaluate(() => S.u.tobj === "resistencia" && S.wk.custom.meta.obj === "resistencia" && /12–15/.test(S.wk.custom.s[0].e[1][1])), "plano refeito com as respostas novas");
+  await page.evaluate(() => { const d = (new Date().getDay()+6)%7; if (!S.wk.days.includes(d)) { S.wk.days.push(d); S.wk.days.sort(); } planSel = today(); save(); renderTreino(); }); await page.waitForTimeout(200);
+  await page.click("[data-exi] >> nth=0"); await page.waitForTimeout(250);
+  ok(await page.isVisible(".ex-demo svg") && await page.isVisible(".ex-stats"), "ecrã do exercício com demonstração, séries e descanso");
+  await shot("11f-exercicio");
+  const swapTo = await page.getAttribute(".ex-var[data-alt], .list [data-alt] >> nth=0", "data-alt");
+  await page.click(".ex-var[data-alt], .list [data-alt] >> nth=0"); await page.waitForTimeout(300);
+  ok(await page.evaluate(n => Object.values(S.wk.swap || {}).includes(n) && document.querySelector("#p-treino").textContent.includes(n), swapTo), "exercício trocado (" + swapTo + ")");
+  await page.click("[data-fin] >> nth=0"); await page.waitForTimeout(500); await closeCel();
+  await shot("11g-treino-semana");
+  await page.reload(); await page.waitForTimeout(2200);
+  await page.click('.nav [data-tab="planos"]'); await page.waitForTimeout(300); await page.click('#p-seg [data-s="treino"]'); await page.waitForTimeout(300);
+  ok(await page.evaluate(n => !!S.wk.done[today()] && S.u.tobj === "resistencia" && Object.values(S.wk.swap).includes(n) && document.querySelector("#p-treino").textContent.includes(n)
+    && document.querySelector(".wd.td.dn") !== null, swapTo), "depois de recarregar: plano, troca e treino feito continuam guardados");
   await page.click('#p-seg [data-s="compras"]'); await page.waitForTimeout(300); await shot("12-compras");
   ok((await page.$$(".shop-item")).length >= 3, "lista de compras com ingredientes da receita");
 
