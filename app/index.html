@@ -1039,10 +1039,72 @@ ul.hook{gap:4px}
 /* Receitas: dado rápido sobre a foto */
 .rcard{position:relative}
 .rc-k{position:absolute;left:8px;top:8px;z-index:1;padding:4px 8px;border-radius:8px;background:rgba(15,20,17,.66);color:#fff;font-size:11px;font-weight:700;backdrop-filter:blur(4px);pointer-events:none}
+/* ===== Sistema visual final (último ficheiro: ganha a tudo o que vem antes) =====
+   Uma só cor de destaque (o verde da marca, ou o tema que a pessoa escolher) para botões principais,
+   separador ativo e progresso. O resto é neutro: fundo liso, cartões um tom acima, ícones em tinta.
+   A cor vem das fotografias. O azul só aparece no enchimento da água. Sem brilhos nem fundos animados. */
+:root{--bg:#F3F4F1;--surface:#FFFFFF;--surface-2:#EDEEEA;--line:#E2E4DF;--ink:#151A17;--ink-2:#3A423D;--muted:#5D6661;--faint:#6A726D;--deep:#1E3527;--deep-ink:#F2F5F1;--deep-muted:#B8C6BC}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101211;--surface:#1A1D1B;--surface-2:#242826;--line:#2C312E;--ink:#EEF1EE;--ink-2:#C8CEC9;--muted:#9AA39D;--faint:#8C958F;--deep:#1E3527;--deep-ink:#F2F5F1;--deep-muted:#B8C6BC}}
+:root[data-theme="dark"]{--bg:#101211;--surface:#1A1D1B;--surface-2:#242826;--line:#2C312E;--ink:#EEF1EE;--ink-2:#C8CEC9;--muted:#9AA39D;--faint:#8C958F;--deep:#1E3527;--deep-ink:#F2F5F1;--deep-muted:#B8C6BC}
+body{background:var(--bg)}
+
+/* Sem fundo a brilhar */
+.aurora{display:none}
+
+/* Ícones e etiquetas: neutros, nunca um arco-íris */
+.badge,.badge.acc,.badge.gold,.badge.sky,#h-meals .mealw .badge{background:var(--surface-2);color:var(--ink-2)}
+#h-gift,#h-spins{color:var(--ink-2)}
+.top .streak{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.top .streak .ic{color:var(--brand)}
+.ptag{background:var(--surface-2)}
+
+/* Cartões escuros de destaque (Pro, plano recomendado): verde-escuro liso, sem brilho */
+.pw2-hero,.tp-feat,.pf-pro{background:var(--deep);box-shadow:none}
+.pw2-hero p,.tp-feat small,.pf-pro small{color:var(--deep-muted)}
+.pw2-badge,.tp-tag,.pf-pro-ic{background:rgba(255,255,255,.14);color:var(--deep-ink)}
+.pw2-badge .ic,.tp-tag .ic,.pf-pro-ic .ic{color:var(--deep-ink)}
+.pw2-pics img{border-color:var(--deep)}
+
+/* Água: cartão neutro, o azul só no que enche */
+.wcard{background:var(--surface)}
+.wat-b{border-color:var(--line);background:var(--surface-2)}
+.wat-b::before{background:var(--line)}
+.wat-b i{background:var(--water)}
+.wat-b i s{background:radial-gradient(10px 7px at 10px 7px,var(--water) 98%,transparent) 0 0/20px 14px repeat-x}
+.wat-b>b{text-shadow:none}
+.wat-a .btn.wplus{background:var(--surface-2);color:var(--ink);border:1px solid var(--line)}
+.wat-a .iconbtn{background:var(--surface-2);border-color:var(--line)}
+.wcard .glass{background:var(--surface-2)}
+.wcard .glass i{background:var(--water)}
+
+/* Treino: cartões iguais, sem faixa de cor */
+.tp-card::before{display:none}
+.tp-ic{color:var(--ink-2);background:var(--surface-2)}
+
+/* Compras: categorias com ícone neutro */
+.sh-ic{color:var(--ink-2);background:var(--surface-2)}
+
+/* Desafios de hoje: uma lista, como a das compras */
+.chlist{border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);overflow:hidden}
+.chr{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;text-align:left;border-top:1px solid var(--line)}
+.chr:first-child{border-top:0}
+.chr-ck{width:24px;height:24px;flex:none;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;color:transparent;transition:all .2s}
+.chr.done .chr-ck{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.chr .lt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.chr .lt b{font-weight:600;font-size:15px}
+.chr.done .lt b{color:var(--muted)}
+.chr .lt small{font-size:13px;color:var(--muted)}
+.chr-pr{display:block;height:4px;border-radius:2px;background:var(--surface-2);margin-top:6px;overflow:hidden;max-width:160px}
+.chr-pr i{display:block;height:100%;background:var(--brand)}
+.chr-r{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}
+#h-water.wcard{background:var(--surface);border:1px solid var(--line)}
+.wat-b i s{display:none}
+.wat-b{border-radius:18px 18px 22px 22px}
+#h-wt .wdrop,.water .wdrop{background:var(--surface-2);color:var(--ink-2)}
 </style>
 </head>
 <body>
-<div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+
 <div class="app">
   <div id="saving" class="saving" aria-live="polite">Guardado</div>
 
@@ -1191,7 +1253,7 @@ const BRAND = {
   mascot: "Abi",                    // o abacate
   storageKey: "brota_v1",          // não mudar: é onde estão os dados das pessoas
   legacyKeys: ["nutrivida"],        // dados da NutriVida migrados automaticamente
-  aiEndpoint: "",                   // URL do servidor grátis com Llama (ver servidor/LEIA-ME.md). Vazio = a IA só funciona dentro do Claude.
+  aiEndpoint: "",                   // URL do servidor grátis com Mistral (ver servidor/LEIA-ME.md). Vazio = a IA só funciona dentro do Claude.
   // Conta e cópia na nuvem (Supabase, região UE). A chave "anon" é pública por desenho: a proteção está nas regras RLS de servidor/supabase.sql.
   // Vazio = sem contas; a app funciona só neste aparelho e o Perfil não mostra a opção.
   supabase: { url: "", anonKey: "" }
@@ -2110,13 +2172,13 @@ function renderHoje(){
   renderRewardBanner();
   const tk = today(), CH = todaysChallenges(tk);
   // Desafios em cartões: ícone, progresso quando há números, e o prémio (+1 giro) bem à vista.
-  const CH_IC = { agua6:["drop","--water"], peq:["coffee","--sun"], "3ref":["bowl","--brand"], fruta:["apple","--coral"], legume:["leaf","--brand"], calma:["moon","--water"], mexer:["dumbbell","--coral"], planear:["cal","--sun"], nova:["book","--brand"] };
+
   const CH_PR = { agua6:() => [S.water[tk] || 0, 6], "3ref":() => [new Set((S.days[tk] || []).map(m => m.m)).size, 3] };
-  $("#h-ch").className = "chcards";
-  $("#h-ch").innerHTML = CH.map(c => { const dn = challengeDone(c, tk), [ic, col] = CH_IC[c.id] || ["star","--brand"], pr = CH_PR[c.id] && CH_PR[c.id]();
-    return `<button class="chc ${dn ? "done" : ""}" data-c="${c.id}" aria-pressed="${dn}" style="--cc:var(${col})"><span class="chc-ic">${icon(dn ? "check" : ic, "sm")}</span><b>${esc(c.n)}</b>
-      ${pr && !dn ? `<span class="chc-bar"><i style="width:${Math.min(100, pr[0] / pr[1] * 100)}%"></i></span><small>${Math.min(pr[0], pr[1])} de ${pr[1]}</small>` : `<small>${dn ? "Feito" : c.auto ? "Marca-se sozinho" : "Toca quando fizeres"}</small>`}
-      <span class="chc-gift">${icon("gift","xs")} +1 giro</span></button>`; }).join("");
+  $("#h-ch").className = "chlist";
+  $("#h-ch").innerHTML = CH.map(c => { const dn = challengeDone(c, tk), pr = CH_PR[c.id] && CH_PR[c.id]();
+    return `<button class="chr ${dn ? "done" : ""}" data-c="${c.id}" aria-pressed="${dn}"><span class="chr-ck">${icon("check","xs")}</span>
+      <span class="lt"><b>${esc(c.n)}</b>${pr && !dn ? `<small>${Math.min(pr[0], pr[1])} de ${pr[1]}</small><span class="chr-pr"><i style="width:${Math.min(100, pr[0] / pr[1] * 100)}%"></i></span>` : `<small>${dn ? "Feito" : c.auto ? "Marca-se sozinho" : "Toca quando fizeres"}</small>`}</span>
+      <span class="chr-r">+1 giro</span></button>`; }).join("");
   $$("#h-ch [data-c]").forEach(b => b.onclick = () => { const c = CHALLENGES.find(x => x.id === b.dataset.c); if (c.auto) { toast("Este marca-se sozinho quando o fizeres."); return; }
     S.ch[tk] = S.ch[tk] || []; const i = S.ch[tk].indexOf(c.id); if (i >= 0) S.ch[tk].splice(i,1); else S.ch[tk].push(c.id); save(); syncChallenges(); renderHoje(); });
 
@@ -2196,7 +2258,7 @@ function countTo(el, key){ if (!el || !el.firstChild) return; const node = el.fi
   node.textContent = from; requestAnimationFrame(step); }
 /* ========================== Adicionar refeição ========================== */
 let sample = null;
-const aiReady = (async () => { try { sample = (window.claude && await window.claude.use("sample")) || (BRAND.aiEndpoint ? remoteAI(BRAND.aiEndpoint) : null); } catch(e) { sample = null; } })();
+const aiReady = (async () => { try { sample = BRAND.aiEndpoint ? remoteAI(BRAND.aiEndpoint) : (window.claude && await window.claude.use("sample")) || null; /* o servidor próprio primeiro: é o que os utilizadores das lojas vão ter */ } catch(e) { sample = null; } })();
 async function shrink(file){ const img = await createImageBitmap(file); const s = Math.min(1, 1024/Math.max(img.width, img.height));
   const c = document.createElement("canvas"); c.width = Math.round(img.width*s); c.height = Math.round(img.height*s); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
   return new Promise(r => c.toBlob(r, "image/jpeg", .82)); }
@@ -2416,7 +2478,7 @@ $("#h-repeat").onclick = async () => { const y = S.days[addDays(curDay,-1)] || [
   if (!await confirmDlg(`Copiar as ${y.length} refeição(ões) do dia anterior para este dia?`, "Copiar")) return;
   y.forEach(m => addEntry(curDay, { n:m.n, k:m.k, p:m.p, c:m.c, g:m.g, m:m.m, q:m.q, src:"repeat" })); renderHoje(); toast("Refeições copiadas"); };
 
-/* ========================== IA grátis (Llama na Cloudflare) ========================== */
+/* ========================== IA grátis (Mistral na Cloudflare) ========================== */
 // Se AI_ENDPOINT estiver preenchido, a análise de fotos e o chat usam esse servidor (ver servidor/LEIA-ME.md).
 async function blobB64(b){ return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(",")[1]); fr.onerror = rej; fr.readAsDataURL(b); }); }
 function remoteAI(url){
@@ -2789,10 +2851,10 @@ function renderPerfil(){
   const at = t => M.findIndex(m => m[2] === t), grp = (t, L) => { L = L.filter(i => i >= 0); return L.length ? `<p class="pf-g">${t}</p><div class="list">${L.map(item).join("")}</div>` : ""; };
   const cloudI = M.findIndex(m => m[0] === "upload"), dataI = M.length - 1;
   $("#pf-menu").innerHTML = `<button class="pf-pro" data-m="0"><span class="pf-pro-ic">${icon("crown","sm")}</span><span class="grow"><b>${esc(M[0][2])}</b><small>${esc(M[0][3])}</small></span><span class="pf-pro-go">Ver</span></button>`
-    + grp("O teu plano", [at("Plano alimentar"), at("Preferências")])
-    + grp("O teu progresso", [at("Progresso"), at("Conquistas"), at("Bem-estar")])
-    + grp("Extras", [1, 2, at(`Falar com o ${BRAND.mascot}`)])
-    + grp("App", [at("Aparência e som"), at("Como funciona a app"), cloudI, dataI]);
+    + grp("O teu plano", [at("Plano alimentar"), at("Preferências"), at(`Falar com o ${BRAND.mascot}`)])
+    + grp("Progresso", [at("Progresso"), at("Conquistas"), at("Bem-estar")])
+    + grp("Recompensas", [1, 2])
+    + grp("Definições", [at("Aparência e som"), at("Como funciona a app"), cloudI, dataI]);
   $$("#pf-menu [data-m]").forEach(b => b.onclick = () => M[+b.dataset.m][4]());
 }
 function openCloset(){

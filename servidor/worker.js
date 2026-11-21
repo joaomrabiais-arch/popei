@@ -1,6 +1,7 @@
-// Servidor de IA grátis da AvocoraFit: Cloudflare Worker com Llama 3.2 11B Vision (Workers AI).
-// Recebe { prompt, image? (JPEG em base64) } e devolve { text }. A chave nunca sai da Cloudflare.
-const MODEL = "@cf/meta/llama-3.2-11b-vision-instruct";
+// Servidor de IA grátis da AvocoraFit: Cloudflare Worker com Mistral Small 3.1 24B (Workers AI), que lê imagens.
+// Porquê este e não o Llama 3.2 Vision: a licença dos modelos multimodais da Meta não dá direitos a empresas e pessoas com sede na UE.
+// O Mistral Small 3.1 é Apache 2.0. Recebe { prompt, image? (JPEG em base64) } e devolve { text }. A chave nunca sai da Cloudflare.
+const MODEL = "@cf/mistralai/mistral-small-3.1-24b-instruct";
 const HITS = new Map(), WINDOW_MS = 10 * 60 * 1000, MAX_HITS = 20; // até 20 pedidos por IP a cada 10 minutos
 
 export default {
@@ -24,18 +25,19 @@ export default {
     const prompt = String(body.prompt || "").slice(0, 6000);
     if (!prompt) return json({ error: "Falta o prompt" }, 400);
 
-    // Aceitar a licença da Meta (só é preciso uma vez): envia { "prompt": "agree" }.
-    if (prompt === "agree") { await env.AI.run(MODEL, { prompt: "agree" }); return json({ text: "Licença aceite." }); }
-
-    const input = { messages: [{ role: "user", content: prompt }], max_tokens: 900 };
+    // A imagem vai como parte da mensagem (formato de mensagens com image_url em data URL).
+    const content = [{ type: "text", text: prompt }];
     if (body.image) {
-      if (String(body.image).length > 2_000_000) return json({ error: "Imagem demasiado grande" }, 413);
-      try { input.image = [...Uint8Array.from(atob(body.image), c => c.charCodeAt(0))]; }
-      catch { return json({ error: "Imagem inválida" }, 400); }
+      const b64 = String(body.image);
+      if (b64.length > 2_000_000) return json({ error: "Imagem demasiado grande" }, 413);
+      if (!/^[A-Za-z0-9+/=]+$/.test(b64)) return json({ error: "Imagem inválida" }, 400);
+      content.push({ type: "image_url", image_url: { url: "data:image/jpeg;base64," + b64 } });
     }
+    const input = { messages: [{ role: "user", content }], max_tokens: 900, temperature: 0.2 };
     try {
       const out = await env.AI.run(MODEL, input);
-      return json({ text: out.response || "" });
+      const text = typeof out.response === "string" ? out.response : JSON.stringify(out.response || "");
+      return json({ text });
     } catch (e) {
       const lim = /limit|quota|neurons/i.test(String(e && e.message || e));
       return json({ error: lim ? "Limite diário grátis atingido" : "Falha no modelo" }, lim ? 429 : 502);

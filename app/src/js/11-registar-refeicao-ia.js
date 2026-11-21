@@ -1,6 +1,6 @@
 /* ========================== Adicionar refeição ========================== */
 let sample = null;
-const aiReady = (async () => { try { sample = (window.claude && await window.claude.use("sample")) || (BRAND.aiEndpoint ? remoteAI(BRAND.aiEndpoint) : null); } catch(e) { sample = null; } })();
+const aiReady = (async () => { try { sample = BRAND.aiEndpoint ? remoteAI(BRAND.aiEndpoint) : (window.claude && await window.claude.use("sample")) || null; /* o servidor próprio primeiro: é o que os utilizadores das lojas vão ter */ } catch(e) { sample = null; } })();
 async function shrink(file){ const img = await createImageBitmap(file); const s = Math.min(1, 1024/Math.max(img.width, img.height));
   const c = document.createElement("canvas"); c.width = Math.round(img.width*s); c.height = Math.round(img.height*s); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
   return new Promise(r => c.toBlob(r, "image/jpeg", .82)); }
@@ -220,7 +220,7 @@ $("#h-repeat").onclick = async () => { const y = S.days[addDays(curDay,-1)] || [
   if (!await confirmDlg(`Copiar as ${y.length} refeição(ões) do dia anterior para este dia?`, "Copiar")) return;
   y.forEach(m => addEntry(curDay, { n:m.n, k:m.k, p:m.p, c:m.c, g:m.g, m:m.m, q:m.q, src:"repeat" })); renderHoje(); toast("Refeições copiadas"); };
 
-/* ========================== IA grátis (Llama na Cloudflare) ========================== */
+/* ========================== IA grátis (Mistral na Cloudflare) ========================== */
 // Se AI_ENDPOINT estiver preenchido, a análise de fotos e o chat usam esse servidor (ver servidor/LEIA-ME.md).
 async function blobB64(b){ return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(",")[1]); fr.onerror = rej; fr.readAsDataURL(b); }); }
 function remoteAI(url){

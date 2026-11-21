@@ -83,13 +83,13 @@ function renderHoje(){
   renderRewardBanner();
   const tk = today(), CH = todaysChallenges(tk);
   // Desafios em cartões: ícone, progresso quando há números, e o prémio (+1 giro) bem à vista.
-  const CH_IC = { agua6:["drop","--water"], peq:["coffee","--sun"], "3ref":["bowl","--brand"], fruta:["apple","--coral"], legume:["leaf","--brand"], calma:["moon","--water"], mexer:["dumbbell","--coral"], planear:["cal","--sun"], nova:["book","--brand"] };
+
   const CH_PR = { agua6:() => [S.water[tk] || 0, 6], "3ref":() => [new Set((S.days[tk] || []).map(m => m.m)).size, 3] };
-  $("#h-ch").className = "chcards";
-  $("#h-ch").innerHTML = CH.map(c => { const dn = challengeDone(c, tk), [ic, col] = CH_IC[c.id] || ["star","--brand"], pr = CH_PR[c.id] && CH_PR[c.id]();
-    return `<button class="chc ${dn ? "done" : ""}" data-c="${c.id}" aria-pressed="${dn}" style="--cc:var(${col})"><span class="chc-ic">${icon(dn ? "check" : ic, "sm")}</span><b>${esc(c.n)}</b>
-      ${pr && !dn ? `<span class="chc-bar"><i style="width:${Math.min(100, pr[0] / pr[1] * 100)}%"></i></span><small>${Math.min(pr[0], pr[1])} de ${pr[1]}</small>` : `<small>${dn ? "Feito" : c.auto ? "Marca-se sozinho" : "Toca quando fizeres"}</small>`}
-      <span class="chc-gift">${icon("gift","xs")} +1 giro</span></button>`; }).join("");
+  $("#h-ch").className = "chlist";
+  $("#h-ch").innerHTML = CH.map(c => { const dn = challengeDone(c, tk), pr = CH_PR[c.id] && CH_PR[c.id]();
+    return `<button class="chr ${dn ? "done" : ""}" data-c="${c.id}" aria-pressed="${dn}"><span class="chr-ck">${icon("check","xs")}</span>
+      <span class="lt"><b>${esc(c.n)}</b>${pr && !dn ? `<small>${Math.min(pr[0], pr[1])} de ${pr[1]}</small><span class="chr-pr"><i style="width:${Math.min(100, pr[0] / pr[1] * 100)}%"></i></span>` : `<small>${dn ? "Feito" : c.auto ? "Marca-se sozinho" : "Toca quando fizeres"}</small>`}</span>
+      <span class="chr-r">+1 giro</span></button>`; }).join("");
   $$("#h-ch [data-c]").forEach(b => b.onclick = () => { const c = CHALLENGES.find(x => x.id === b.dataset.c); if (c.auto) { toast("Este marca-se sozinho quando o fizeres."); return; }
     S.ch[tk] = S.ch[tk] || []; const i = S.ch[tk].indexOf(c.id); if (i >= 0) S.ch[tk].splice(i,1); else S.ch[tk].push(c.id); save(); syncChallenges(); renderHoje(); });
 

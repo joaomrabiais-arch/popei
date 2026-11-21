@@ -23,10 +23,10 @@ function renderPerfil(){
   const at = t => M.findIndex(m => m[2] === t), grp = (t, L) => { L = L.filter(i => i >= 0); return L.length ? `<p class="pf-g">${t}</p><div class="list">${L.map(item).join("")}</div>` : ""; };
   const cloudI = M.findIndex(m => m[0] === "upload"), dataI = M.length - 1;
   $("#pf-menu").innerHTML = `<button class="pf-pro" data-m="0"><span class="pf-pro-ic">${icon("crown","sm")}</span><span class="grow"><b>${esc(M[0][2])}</b><small>${esc(M[0][3])}</small></span><span class="pf-pro-go">Ver</span></button>`
-    + grp("O teu plano", [at("Plano alimentar"), at("Preferências")])
-    + grp("O teu progresso", [at("Progresso"), at("Conquistas"), at("Bem-estar")])
-    + grp("Extras", [1, 2, at(`Falar com o ${BRAND.mascot}`)])
-    + grp("App", [at("Aparência e som"), at("Como funciona a app"), cloudI, dataI]);
+    + grp("O teu plano", [at("Plano alimentar"), at("Preferências"), at(`Falar com o ${BRAND.mascot}`)])
+    + grp("Progresso", [at("Progresso"), at("Conquistas"), at("Bem-estar")])
+    + grp("Recompensas", [1, 2])
+    + grp("Definições", [at("Aparência e som"), at("Como funciona a app"), cloudI, dataI]);
   $$("#pf-menu [data-m]").forEach(b => b.onclick = () => M[+b.dataset.m][4]());
 }
 function openCloset(){

@@ -1,4 +1,4 @@
-name = "brota-ia"
+name = "avocorafit-ia"
 main = "worker.js"
 compatibility_date = "2025-06-01"
 
@@ -6,5 +6,5 @@ compatibility_date = "2025-06-01"
 binding = "AI"
 
 [vars]
-# Troca "*" pelo endereço onde a app vai estar (ex.: "https://brota.app") para outros sites não gastarem a tua quota.
+# Troca "*" pelo endereço onde a app vai estar (ex.: "https://avocorafit.pt") para outros sites não gastarem a tua quota.
 ALLOW_ORIGIN = "*"
