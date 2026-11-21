@@ -246,6 +246,10 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   ok(!ms.kc && ms.goal === "manter" && ms.later && ms.plan > 0 && ms.age === "Menos de 18", "menor: terminar depois cria plano sem calorias (" + JSON.stringify(ms) + ")");
   await p3.evaluate(() => { document.querySelectorAll(".celebrate").forEach(x => x.remove()); openSummary(); });
   ok(!(await p3.isVisible("#pw-in")), "menor: sem registo de peso no Progresso");
+  ok(await page.evaluate(async () => { const P = '"><img src=x onerror="window.__xss=1"><svg onload="window.__xss=1">', d = today(), keep = JSON.stringify(S);
+    S.u.name = P; S.days[d] = (S.days[d] || []).concat([{ id:"xss", m:"Almoço", n:P, q:P, k:1, p:1, c:1, g:1 }]); S.shop.push({ n:P, q:P, c:"Outros", k:0 }); S.plan.push({ id:"xssp", date:d, m:"Jantar", n:P });
+    for (const f of [() => go("hoje"), () => openDayDetail(d), () => { closeSheet(); go("planos"); planSub = "ref"; renderPlanos(); }, () => { planSub = "compras"; renderPlanos(); }, () => go("perfil"), () => openAdd("Almoço", "rec")]) { f(); await new Promise(r => setTimeout(r, 120)); }
+    closeSheet(); const bad = !!window.__xss, shown = document.body.textContent.includes("onerror"); Object.assign(S, JSON.parse(keep)); save(); refreshAll(); return !bad && shown; }), "segurança: código nos dados aparece como texto e nunca corre");
   ok(await page.evaluate(() => { const was = S.lang; S.lang = "en"; const d = document.createElement("div"); d.innerHTML = '<b>Hoje</b><span>Faltam 3 produtos</span><input placeholder="Pesquisar alimento ou receita">'; translateTree(d); S.lang = was;
     return d.querySelector("b").textContent === "Today" && d.querySelector("span").textContent === "3 items left" && d.querySelector("input").placeholder === "Search food or recipe" && trText("Sábado, 21 de novembro") === "Saturday, November 21"; }), "idioma: inglês traduz textos, frases com números e datas");
   await p3.close();

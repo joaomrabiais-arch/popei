@@ -1239,6 +1239,14 @@ body{background:var(--bg)}
 .pw2-ph img{width:52px;height:52px;border-radius:14px;object-fit:cover}
 .pw2-ph i{position:absolute;right:-5px;bottom:-5px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--deep);color:var(--deep-ink);border:2px solid var(--bg)}
 .pw2-ic{width:52px;height:52px;border-radius:14px}
+.pw2-ill svg{width:52px;height:52px;display:block}
+.ill-bg{fill:var(--brand-soft)}
+.ill-ln{fill:none;stroke:var(--brand);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.ill-ar{fill:var(--brand);opacity:.16}
+.ill-dt{fill:var(--brand)}
+.ill-dv{fill:var(--surface);stroke:var(--brand);stroke-width:2}
+.ill-ln2{stroke:var(--brand);stroke-width:2.4;stroke-linecap:round}
+.ill-sy{fill:none;stroke:var(--brand);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 </style>
 </head>
 <body>
@@ -2970,7 +2978,9 @@ function openPro(){
   openSheet(`${BRAND.name} Pro`, `<div class="pw2-hero"><div class="pw2-pics">${pics.map(src => `<img src="${esc(src)}" alt="">`).join("")}</div>
       <span class="pw2-badge">${icon("crown","xs")} PRO</span><h2>Mais tempo para comer bem, menos tempo a planear</h2><p>O plano grátis continua grátis. O Pro junta mais análises, planos mais longos e os teus dados na nuvem.</p></div>
     <ul class="pw2-ben">${BEN.map(([i, t, s], k) => { const ph = k < 2 ? mealPic(k ? "Jantar" : "Almoço") : "";
-      return `<li>${ph ? `<span class="pw2-ph"><img src="${esc(ph)}" alt=""><i>${icon(i,"xs")}</i></span>` : `<span class="pw2-ic">${icon(i,"sm")}</span>`}<div><b>${t}</b><small>${s}</small></div></li>`; }).join("")}</ul>
+      return `<li>${ph ? `<span class="pw2-ph"><img src="${esc(ph)}" alt=""><i>${icon(i,"xs")}</i></span>` : `<span class="pw2-ph pw2-ill">${k === 2
+        ? `<svg viewBox="0 0 52 52" aria-hidden="true"><rect width="52" height="52" rx="14" class="ill-bg"/><path d="M9 36 18 29 26 32 35 21 43 17" class="ill-ln"/><path d="M9 36 18 29 26 32 35 21 43 17V43H9Z" class="ill-ar"/><circle cx="43" cy="17" r="3.2" class="ill-dt"/></svg>`
+        : `<svg viewBox="0 0 52 52" aria-hidden="true"><rect width="52" height="52" rx="14" class="ill-bg"/><rect x="8" y="17" width="23" height="16" rx="2.5" class="ill-dv"/><path d="M5 35h29" class="ill-ln2"/><rect x="34" y="13" width="12" height="22" rx="3" class="ill-dv"/><path d="M22 10a8 8 0 0 1 13 2" class="ill-sy"/><path d="M35 9v3.4h-3.4" class="ill-sy"/></svg>`}<i>${icon(i,"xs")}</i></span>`}<div><b>${t}</b><small>${s}</small></div></li>`; }).join("")}</ul>
     <div class="pw2-plan"><div class="pw2-radio"><i></i></div><div class="grow"><b>Mensal</b><small>${esc(PRO.note[0].toUpperCase() + PRO.note.slice(1))}</small></div>
       <div class="pw2-pr">${d ? `<s>${eurPro(p)}</s>` : ""}<b>${eurPro(d ? withD : p)}</b><small>por mês</small></div>${d ? `<span class="pw2-tag">-${d}% no 1.º ano</span>` : ""}</div>
     <button class="btn block pw2-cta" disabled aria-disabled="true">Disponível em breve</button>
@@ -3047,8 +3057,8 @@ function openChat(){
   const off = !sample;
   openSheet(`Falar com o ${BRAND.mascot}`, `<div class="row">${abi({ mood:"wave", size:56 })}<p class="small">Pergunta-me sobre alimentos, combinações, substituições ou receitas.</p></div>
     <div id="ch-l" style="margin-top:12px;min-height:60px">${chatHist.map(m => `<div class="msg ${m.r}">${esc(m.t)}</div>`).join("")}</div>
-    <div class="row" style="margin-top:12px"><input id="ch-i" maxlength="500" placeholder="${off ? "Indisponível fora do Claude" : "Escreve a tua pergunta"}" ${off ? "disabled" : ""} aria-label="Pergunta"><button class="btn" id="ch-s" ${off ? "disabled" : ""}>Enviar</button></div>
-    <p class="tiny muted" style="margin-top:10px">${off ? "O assistente usa a IA do Claude e só funciona quando a app abre como artefacto no Claude." : "Informação geral e educativa. Não diagnostica nem substitui um profissional de saúde."}</p>`, b => {
+    <div class="row" style="margin-top:12px"><input id="ch-i" maxlength="500" placeholder="${off ? "Assistente ainda não ligado" : "Escreve a tua pergunta"}" ${off ? "disabled" : ""} aria-label="Pergunta"><button class="btn" id="ch-s" ${off ? "disabled" : ""}>Enviar</button></div>
+    <p class="tiny muted" style="margin-top:10px">${off ? "O assistente precisa do servidor de IA da app, que ainda não está ligado nesta versão." : "Informação geral e educativa. Não diagnostica nem substitui um profissional de saúde."}</p>`, b => {
     const send = async () => { const q = $("#ch-i", b).value.trim(); if (!q || !sample) return; $("#ch-i", b).value = ""; chatHist.push({ r:"u", t:q }); ach("ask");
       const l = $("#ch-l", b); l.insertAdjacentHTML("beforeend", `<div class="msg u">${esc(q)}</div><div class="msg a" id="ch-w">A pensar…</div>`); $("#ch-s", b).disabled = true;
       const u = S.u || {}, al = (u.al||[]).filter(x => x !== "Nenhuma").join(", ") || "nada indicado";

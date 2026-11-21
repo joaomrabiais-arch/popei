@@ -193,3 +193,11 @@ body{background:var(--bg)}
 .pw2-ph img{width:52px;height:52px;border-radius:14px;object-fit:cover}
 .pw2-ph i{position:absolute;right:-5px;bottom:-5px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--deep);color:var(--deep-ink);border:2px solid var(--bg)}
 .pw2-ic{width:52px;height:52px;border-radius:14px}
+.pw2-ill svg{width:52px;height:52px;display:block}
+.ill-bg{fill:var(--brand-soft)}
+.ill-ln{fill:none;stroke:var(--brand);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.ill-ar{fill:var(--brand);opacity:.16}
+.ill-dt{fill:var(--brand)}
+.ill-dv{fill:var(--surface);stroke:var(--brand);stroke-width:2}
+.ill-ln2{stroke:var(--brand);stroke-width:2.4;stroke-linecap:round}
+.ill-sy{fill:none;stroke:var(--brand);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}

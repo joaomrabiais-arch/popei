@@ -63,8 +63,8 @@ function openChat(){
   const off = !sample;
   openSheet(`Falar com o ${BRAND.mascot}`, `<div class="row">${abi({ mood:"wave", size:56 })}<p class="small">Pergunta-me sobre alimentos, combinações, substituições ou receitas.</p></div>
     <div id="ch-l" style="margin-top:12px;min-height:60px">${chatHist.map(m => `<div class="msg ${m.r}">${esc(m.t)}</div>`).join("")}</div>
-    <div class="row" style="margin-top:12px"><input id="ch-i" maxlength="500" placeholder="${off ? "Indisponível fora do Claude" : "Escreve a tua pergunta"}" ${off ? "disabled" : ""} aria-label="Pergunta"><button class="btn" id="ch-s" ${off ? "disabled" : ""}>Enviar</button></div>
-    <p class="tiny muted" style="margin-top:10px">${off ? "O assistente usa a IA do Claude e só funciona quando a app abre como artefacto no Claude." : "Informação geral e educativa. Não diagnostica nem substitui um profissional de saúde."}</p>`, b => {
+    <div class="row" style="margin-top:12px"><input id="ch-i" maxlength="500" placeholder="${off ? "Assistente ainda não ligado" : "Escreve a tua pergunta"}" ${off ? "disabled" : ""} aria-label="Pergunta"><button class="btn" id="ch-s" ${off ? "disabled" : ""}>Enviar</button></div>
+    <p class="tiny muted" style="margin-top:10px">${off ? "O assistente precisa do servidor de IA da app, que ainda não está ligado nesta versão." : "Informação geral e educativa. Não diagnostica nem substitui um profissional de saúde."}</p>`, b => {
     const send = async () => { const q = $("#ch-i", b).value.trim(); if (!q || !sample) return; $("#ch-i", b).value = ""; chatHist.push({ r:"u", t:q }); ach("ask");
       const l = $("#ch-l", b); l.insertAdjacentHTML("beforeend", `<div class="msg u">${esc(q)}</div><div class="msg a" id="ch-w">A pensar…</div>`); $("#ch-s", b).disabled = true;
       const u = S.u || {}, al = (u.al||[]).filter(x => x !== "Nenhuma").join(", ") || "nada indicado";

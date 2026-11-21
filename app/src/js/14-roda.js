@@ -72,7 +72,9 @@ function openPro(){
   openSheet(`${BRAND.name} Pro`, `<div class="pw2-hero"><div class="pw2-pics">${pics.map(src => `<img src="${esc(src)}" alt="">`).join("")}</div>
       <span class="pw2-badge">${icon("crown","xs")} PRO</span><h2>Mais tempo para comer bem, menos tempo a planear</h2><p>O plano grátis continua grátis. O Pro junta mais análises, planos mais longos e os teus dados na nuvem.</p></div>
     <ul class="pw2-ben">${BEN.map(([i, t, s], k) => { const ph = k < 2 ? mealPic(k ? "Jantar" : "Almoço") : "";
-      return `<li>${ph ? `<span class="pw2-ph"><img src="${esc(ph)}" alt=""><i>${icon(i,"xs")}</i></span>` : `<span class="pw2-ic">${icon(i,"sm")}</span>`}<div><b>${t}</b><small>${s}</small></div></li>`; }).join("")}</ul>
+      return `<li>${ph ? `<span class="pw2-ph"><img src="${esc(ph)}" alt=""><i>${icon(i,"xs")}</i></span>` : `<span class="pw2-ph pw2-ill">${k === 2
+        ? `<svg viewBox="0 0 52 52" aria-hidden="true"><rect width="52" height="52" rx="14" class="ill-bg"/><path d="M9 36 18 29 26 32 35 21 43 17" class="ill-ln"/><path d="M9 36 18 29 26 32 35 21 43 17V43H9Z" class="ill-ar"/><circle cx="43" cy="17" r="3.2" class="ill-dt"/></svg>`
+        : `<svg viewBox="0 0 52 52" aria-hidden="true"><rect width="52" height="52" rx="14" class="ill-bg"/><rect x="8" y="17" width="23" height="16" rx="2.5" class="ill-dv"/><path d="M5 35h29" class="ill-ln2"/><rect x="34" y="13" width="12" height="22" rx="3" class="ill-dv"/><path d="M22 10a8 8 0 0 1 13 2" class="ill-sy"/><path d="M35 9v3.4h-3.4" class="ill-sy"/></svg>`}<i>${icon(i,"xs")}</i></span>`}<div><b>${t}</b><small>${s}</small></div></li>`; }).join("")}</ul>
     <div class="pw2-plan"><div class="pw2-radio"><i></i></div><div class="grow"><b>Mensal</b><small>${esc(PRO.note[0].toUpperCase() + PRO.note.slice(1))}</small></div>
       <div class="pw2-pr">${d ? `<s>${eurPro(p)}</s>` : ""}<b>${eurPro(d ? withD : p)}</b><small>por mês</small></div>${d ? `<span class="pw2-tag">-${d}% no 1.º ano</span>` : ""}</div>
     <button class="btn block pw2-cta" disabled aria-disabled="true">Disponível em breve</button>
