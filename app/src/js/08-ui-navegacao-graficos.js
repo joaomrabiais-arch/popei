@@ -87,6 +87,7 @@ function openSummary(){
   const line = logged >= 5 ? ["abi","Semana muito consistente. Estou orgulhoso!","party"] : logged >= 2 ? ["abi","Boa semana. Cada registo ajuda-te a conhecer-te melhor.","happy"] : ["abi","Uma semana mais calma também conta. Estou aqui quando quiseres.","happy"];
   openSheet("Progresso", `<div class="card row">${abi({ mood:line[2], size: line[0] === "abi" ? 60 : 44 })}<p>${line[1]}</p></div>
     <div class="stat3" style="margin-top:12px"><div><b>${logged}/7</b><small>dias com registo</small></div><div><b>${wk}</b><small>treinos</small></div><div><b>${chd}</b><small>desafios</small></div></div>
+    <div class="card" style="margin-top:12px"><div class="row between"><h3>Água</h3><span class="small muted">${wa.filter(x => x >= S.wg).length} de 7 dias no objetivo · ${(wa.reduce((a, x) => a + x, 0) * .25).toLocaleString("pt-PT", { maximumFractionDigits:1 })} L na semana</span></div>${barChart(wa, lab, { goal:S.wg, cls:"soft" })}</div>
     ${isMinor() ? "" : `<div class="card" style="margin-top:16px"><div class="row between"><h3>Peso</h3>${last && first !== last ? `<span class="small muted">${(last[1]-first[1] > 0 ? "+" : "") + (last[1]-first[1]).toFixed(1).replace(".",",")} kg desde ${first[0].slice(8)}/${first[0].slice(5,7)}</span>` : ""}</div>
       <div style="margin-top:8px">${lineChart(W, { goal: S.u && S.u.tw ? +S.u.tw : null })}</div>
       <div class="row" style="margin-top:10px"><input id="pw-in" type="number" inputmode="decimal" step="0.1" min="30" max="250" placeholder="Peso de hoje (kg)" value="${(S.weights||{})[today()] || ""}" aria-label="Peso de hoje"><button class="btn" id="pw-ok">Registar</button></div>
@@ -94,7 +95,6 @@ function openSummary(){
     ${kcalOn() ? `<div class="card" style="margin-top:12px"><div class="row between"><h3>Energia</h3><span class="small muted">média ${Math.round(kc.reduce((a,b) => a+b, 0) / Math.max(1, kc.filter(Boolean).length))} kcal</span></div>${barChart(kc, lab, { goal:S.goal })}<p class="tiny muted">A linha tracejada é a tua referência.</p></div>` : ""}
     <div class="card" style="margin-top:12px"><h3>Equilíbrio da semana</h3><div class="stackbar" style="margin-top:12px">${pc.map(x => `<i style="width:${(x[1]*100).toFixed(1)}%;background:${x[2]}"></i>`).join("")}</div>
       <div class="row between small" style="margin-top:8px">${pc.map(x => `<span><span class="dot" style="background:${x[2]}"></span>${x[0]} ${Math.round(x[1]*100)}%</span>`).join("")}</div></div>
-    <div class="card" style="margin-top:12px"><h3>Água (copos)</h3>${barChart(wa, lab, { goal:S.wg, cls:"soft" })}</div>
     <p class="tiny muted" style="margin-top:12px">Sem "bom" nem "mau": serve só para veres padrões.</p>`, b => {
     if ($("#pw-ok", b)) $("#pw-ok", b).onclick = () => { if (!logWeight($("#pw-in", b).value)) { toast("Indica um peso entre 30 e 250 kg"); return; } openSummary(); };
   });

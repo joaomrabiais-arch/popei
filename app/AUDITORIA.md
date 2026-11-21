@@ -1,3 +1,46 @@
+# AvocoraFit — auditoria de 21/11/2026 (por cima da de 19/11, que fica abaixo)
+
+**Como foi feita:** um script percorreu todas as perguntas iniciais a tocar como uma pessoa; outro abriu todos os ecrãs secundários (Progresso, Conquistas, Bem-estar, Aparência e som, Dados, Armário, Abi, visita guiada) com dados de exemplo; outro meteu código malicioso em todos os campos e nos dados. Erros na consola: nenhum.
+
+## Encontrado e corrigido nesta ronda
+
+| Problema (confirmado) | Correção |
+|---|---|
+| Perguntas iniciais: a atividade vinha marcada sem a pessoa escolher, na posição da opção da pergunta anterior | só usa a resposta guardada se a pessoa já respondeu antes; teste novo |
+| Dados e privacidade dizia que as fotos iam "para a IA do Claude" (falso) | texto certo + ligação à política de privacidade |
+| Conquistas: 13 cartões iguais, cinzentos, com a mesma estrela | medalha própria por conquista (ícone e cor), cadeado nas por ganhar, barra "x de 13", vista de detalhe |
+| Progresso: a água estava no fundo, depois do peso | água no topo, com dias no objetivo e litros da semana |
+| Aparência e som: caixas de seleção do browser, sem forma de ouvir os sons | interruptores, descrição e "Ouvir um exemplo" |
+| "Roda de prémios" em três sítios | "Roda de descontos" |
+| Falar com o Abi: ecrã morto sem IA | respostas rápidas com dados reais (receitas, alimentos, a tua água), marcadas "sem IA" |
+| Pro: dois benefícios sem imagem | ilustrações próprias |
+
+## O que funciona (verificado por teste)
+
+Registar (pesquisa, manual, repetir, foto com IA simulada), Hoje (anel, macros, água, peso, desafios), plano de refeições automático e troca de pratos, compras a partir do plano, receitas com porções, treino guiado com cargas e recordes, perguntas iniciais, modo de menores, roda de descontos, Pro honesto, inglês na interface, segurança contra código malicioso. 69 testes.
+
+## A meio ou em falta
+
+1. **Fotos de 73 receitas e 40 alimentos** — à espera de ~17 créditos no Higgsfield.
+2. **IA real** (fotos e Abi) — servidor pronto (`servidor/`), falta publicar na Cloudflare com a conta do dono.
+3. **Inglês** — interface traduzida; receitas, ingredientes e parte das perguntas continuam em português.
+4. **Notificações** e **e-mails** — ver abaixo. Não implementados.
+5. **Visita guiada** — funciona e aponta para elementos reais, mas falta torná-la mais visual.
+6. **Treino** — falta trocar um exercício por uma alternativa mais fácil ou mais difícil dentro do treino.
+7. **Conquistas** — falta uma celebração grande ao ganhar (hoje é um aviso discreto).
+
+## Notificações e e-mails: o que é possível com esta arquitetura
+
+- **Lembretes com a app aberta:** possíveis já, com a API de notificações do browser e pedido de autorização.
+- **Lembretes com a app fechada:** precisam de Web Push (o `sw.js` já existe), de um servidor que envie as mensagens (chaves VAPID, por exemplo num Worker com agendamento) e de guardar as subscrições (Supabase). No iPhone só funcionam com a app instalada no ecrã principal. Não estão feitos, e a app não diz que estão.
+- **E-mails:** precisam de um fornecedor com escalão grátis limitado (confirmar condições antes de escolher), domínio próprio com SPF/DKIM, consentimento explícito e ligação para cancelar. Hoje só é enviada a ligação de entrada do Supabase, pedida pela própria pessoa.
+
+## Ordem recomendada
+
+1. Créditos para as fotos. 2. Publicar o servidor de IA. 3. Criar o Supabase. 4. Testar com 5 pessoas reais. 5. Lembretes de água com a app aberta. 6. Alternativas de exercícios. 7. Traduzir as receitas. 8. Push e e-mails, só se as pessoas os pedirem.
+
+---
+
 # Brota — auditoria completa e plano (fases 1 e 2)
 
 Data: 19/11/2026. Código auditado: `app/src/` → `app/index.html` (398 KB, commit `84e3178`).

@@ -108,7 +108,7 @@ function openOnboarding(edit, startKey, single){
     S.plan = S.plan.filter(x => !(x.a && x.date >= today())); S.planWk = {}; ensurePlans();
     if (A.gym === "sim" && (!single || keyChanged === "tdays" || keyChanged === "gym")) { const pl = planFor(); S.wkHist = Object.assign(S.wkHist || {}, (S.wk && S.wk.done) || {}); S.wk = { prog:"custom", custom:pl, days:pl.days.slice(), start:today(), done:{}, ex:{} }; }
     if (first) S.spins = 3; save(); ob.classList.add("hide"); refreshAll();
-    if (first) setTimeout(() => celebrate({ who:"abi", title:"Presente de boas-vindas", name:"3 giros na roda de prémios", desc:`Gira a roda e ganha acessórios para o ${BRAND.mascot}. No fim das 3 tentativas, o prémio dourado é garantido.`, mood:"party", action:{ label:"Ir à roda", fn:() => go("roda") }, onClose:() => setTimeout(() => { if (!S.tourDone) startTour(); }, 300) }), 300);
+    if (first) setTimeout(() => celebrate({ who:"abi", title:"Presente de boas-vindas", name:"3 giros na roda de descontos", desc:`Gira a roda e ganha acessórios para o ${BRAND.mascot}. No fim das 3 tentativas, o prémio dourado é garantido.`, mood:"party", action:{ label:"Ir à roda", fn:() => go("roda") }, onClose:() => setTimeout(() => { if (!S.tourDone) startTour(); }, 300) }), 300);
     else { toast(single ? "Guardado. O plano desta semana foi atualizado." : "Preferências guardadas e plano atualizado"); if (!single) say(A.gym === "sim" ? "plan" : "hello", true); }
   };
 
@@ -235,7 +235,7 @@ const TOUR = [
   ["#h-tip", "Eu vou estar aqui a dizer-te o próximo passo. Toca no botão e eu trato do resto."],
   ["#h-meals", "Toca no + de cada refeição para registar. Podes pesquisar, tirar foto ou repetir."],
   ["#h-water", "Cada bloco é um copo de 250 ml. Toca para registar."],
-  ["#h-ch", "Três desafios por dia. Cada um dá um giro na roda de prémios."],
+  ["#h-ch", "Três desafios por dia. Cada um dá um giro na roda de descontos."],
   ['.nav [data-tab="planos"]', "Em Planos tens as refeições da semana, o treino e as compras, tudo feito para ti."],
   ["#nav-add", "E este botão regista qualquer coisa, a qualquer hora."]
 ];

@@ -37,12 +37,27 @@ function openCloset(){
   openSheet("Armário do " + BRAND.mascot, `<div style="display:grid;place-items:center">${abi({ mood:"wave", size:120 })}</div>
     <div class="closet" style="margin-top:14px"><button class="${!S.equip ? "on" : ""}" data-a="">${abi({ size:40, acc:null })}Nada</button>
     ${accs.map(a => { const own = S.owned.includes(a.id); return `<button class="${S.equip === a.id ? "on" : ""} ${own ? "" : "locked"}" data-a="${a.id}">${abi({ size:40, acc:a.id })}${esc(a.name)}${own ? "" : "<small class='muted'>Por ganhar</small>"}</button>`; }).join("")}</div>
-    <p class="tiny muted" style="margin-top:12px">Os acessórios ganham-se na roda de prémios. Nunca se compram.</p>`, b => {
+    <p class="tiny muted" style="margin-top:12px">Os acessórios ganham-se na roda de descontos. Nunca se compram.</p>`, b => {
     $$(".closet button", b).forEach(x => x.onclick = () => { const id = x.dataset.a; if (id && !S.owned.includes(id)) { toast("Ainda não ganhaste este acessório"); return; } S.equip = id || null; save(); openCloset(); refreshAll(); });
   });
 }
 
-function openAch(){ openSheet("Conquistas", `<p class="small muted" style="margin-bottom:12px">Celebram curiosidade e hábitos, nunca peso nem restrição.</p><div class="ach">${ACH.map(a => `<div class="${S.ach[a[0]] ? "on" : ""}"><span class="medal">${icon(S.ach[a[0]] ? "trophy" : "star")}</span><b>${esc(a[1])}</b><small class="muted">${esc(S.ach[a[0]] ? "Obtida a " + S.ach[a[0]].split("-").reverse().join("/") : a[2])}</small></div>`).join("")}</div>`); }
+// Cada conquista tem o seu desenho: ícone e cor próprios. As ganhas aparecem a cores; as outras com cadeado e como se ganham.
+const ACH_ART = { meal:["bowl","#2F7D4A"], water:["drop","#2F78B8"], plan:["cal","#5B6BB5"], fav:["heart-f","#C2475E"], cook:["brush","#B7791F"], rexp:["book","#2E7D7A"],
+  photo:["camera","#3B6E9E"], wk1:["dumbbell","#B5523B"], ch1:["target","#7A5BB0"], spin:["gift","#B08A1E"], gold:["crown","#A8781B"], well:["leaf","#4E8A3E"], ask:["chat","#3E7F8F"] };
+const medal = (a, big) => { const [ic, c] = ACH_ART[a[0]] || ["star","#2F6B3A"], on = !!S.ach[a[0]];
+  return `<span class="medal2 ${on ? "on" : ""} ${big ? "big" : ""}" style="--mc:${c}"><i>${icon(ic, big ? "" : "sm")}</i>${on ? "" : `<em>${icon("shield","xs")}</em>`}</span>`; };
+function openAch(){
+  const got = ACH.filter(a => S.ach[a[0]]).length, dt = d => d.split("-").reverse().join("/");
+  openSheet("Conquistas", `<div class="ach-top"><div><b class="num">${got}</b><span> de ${ACH.length}</span></div><span class="ach-bar"><i style="width:${Math.round(got / ACH.length * 100)}%"></i></span>
+      <p class="small muted">Celebram curiosidade e hábitos, nunca peso nem restrição.</p></div>
+    <div class="ach2">${ACH.slice().sort((x, y) => !!S.ach[y[0]] - !!S.ach[x[0]]).map(a => `<button class="${S.ach[a[0]] ? "on" : ""}" data-ac="${a[0]}">${medal(a)}<b>${esc(a[1])}</b><small>${S.ach[a[0]] ? "Ganha a " + dt(S.ach[a[0]]) : "Por ganhar"}</small></button>`).join("")}</div>`, b => {
+    $$("[data-ac]", b).forEach(x => x.onclick = () => { const a = ACH.find(y => y[0] === x.dataset.ac), on = !!S.ach[a[0]];
+      openSheet(a[1], `<div class="ach-det">${medal(a, true)}<h2>${esc(a[1])}</h2><p class="muted">${on ? "Ganhaste-a a " + dt(S.ach[a[0]]) + "." : "Ainda não a tens."}</p>
+        <div class="ach-how"><span class="tiny muted">${on ? "O que fizeste" : "Como se ganha"}</span><p>${esc(a[2])}</p></div></div>
+        <button class="btn ghost block" id="ach-back" style="margin-top:16px">${icon("left","sm")} Todas as conquistas</button>`, c => { $("#ach-back", c).onclick = openAch; }); });
+  });
+}
 function openWell(){
   const w = S.well[today()] || {};
   const scale = (id, v, lbl) => `<div class="field"><span>${lbl}</span><div class="seg" id="${id}">${[1,2,3,4,5].map(i => `<button data-v="${i}" class="${(v || 3) === i ? "on" : ""}">${i}</button>`).join("")}</div></div>`;
@@ -61,11 +76,24 @@ function openWell(){
 let chatHist = [];
 function openChat(){
   const off = !sample;
+  // Sem IA: respostas rápidas feitas com os dados reais da app (receitas, alimentos, a tua água). Nunca finge ser IA.
+  const local = q => { const n = norm(q), R = RECIPES.filter(recipeAllowed), list = L => L.slice(0, 4).map(r => `• ${r.n} (${r.t} min)`).join("\n");
+    const ing = (n.match(/(?:com|de|tenho)\s+([a-zà-ú-]{3,})/) || [])[1];
+    if (/agua|beber|hidrat/.test(n)) return `Hoje bebeste ${((S.water[today()] || 0) * .25).toLocaleString("pt-PT")} L de ${(S.wg * .25).toLocaleString("pt-PT")} L. Um copo a cada refeição e outro a meio da manhã e da tarde chegam para a maioria das pessoas.`;
+    if (/proteina|musculo|massa muscular/.test(n)) return "Receitas com mais proteína para ti:\n" + list(R.filter(r => r.p * 4 / r.k >= .25).sort((a, b) => b.p - a.p)) + "\nOvos, iogurte grego, leguminosas, peixe e frango são boas bases.";
+    if (/lanche|snack|fome a meio/.test(n)) return "Ideias de lanche:\n" + list(R.filter(r => r.c === "Lanche"));
+    if (/pequeno|manha/.test(n)) return "Ideias de pequeno-almoço:\n" + list(R.filter(r => r.c === "Pequeno-almoço"));
+    if (/substitu|trocar|em vez/.test(n)) return "Trocas simples: arroz ↔ quinoa ou batata-doce; massa ↔ massa integral ou leguminosas; natas ↔ iogurte natural; açúcar ↔ fruta madura ou canela; carne picada ↔ lentilhas.";
+    if (/doce|sobremesa|chocolate/.test(n)) return "Doces mais leves:\n" + list(R.filter(r => /chocolate|cacau|bolo|brownie|gelado|mousse|assada|doce/i.test(r.n)));
+    if (ing) { const L = R.filter(r => norm(r.n + " " + r.i.map(x => x[0]).join(" ")).includes(ing)); if (L.length) return `Receitas com ${ing}:\n` + list(L); }
+    return "Ainda não sei responder a isso sem a IA ligada. Experimenta: \"receitas com frango\", \"ricas em proteína\", \"ideias de lanche\", \"substituir o arroz\" ou \"quanta água bebi\"."; };
   openSheet(`Falar com o ${BRAND.mascot}`, `<div class="row">${abi({ mood:"wave", size:56 })}<p class="small">Pergunta-me sobre alimentos, combinações, substituições ou receitas.</p></div>
     <div id="ch-l" style="margin-top:12px;min-height:60px">${chatHist.map(m => `<div class="msg ${m.r}">${esc(m.t)}</div>`).join("")}</div>
-    <div class="row" style="margin-top:12px"><input id="ch-i" maxlength="500" placeholder="${off ? "Assistente ainda não ligado" : "Escreve a tua pergunta"}" ${off ? "disabled" : ""} aria-label="Pergunta"><button class="btn" id="ch-s" ${off ? "disabled" : ""}>Enviar</button></div>
-    <p class="tiny muted" style="margin-top:10px">${off ? "O assistente precisa do servidor de IA da app, que ainda não está ligado nesta versão." : "Informação geral e educativa. Não diagnostica nem substitui um profissional de saúde."}</p>`, b => {
-    const send = async () => { const q = $("#ch-i", b).value.trim(); if (!q || !sample) return; $("#ch-i", b).value = ""; chatHist.push({ r:"u", t:q }); ach("ask");
+    <div class="row" style="margin-top:12px"><input id="ch-i" maxlength="500" placeholder="${off ? "Ex.: receitas com frango" : "Escreve a tua pergunta"}" aria-label="Pergunta"><button class="btn" id="ch-s">Enviar</button></div>
+    <p class="tiny muted" style="margin-top:10px">${off ? "A IA ainda não está ligada nesta versão. Até lá, o Abi responde com os dados da app: receitas, alimentos e a tua água." : "Informação geral e educativa. Não diagnostica nem substitui um profissional de saúde."}</p>`, b => {
+    const send = async () => { const q = $("#ch-i", b).value.trim(); if (!q) return;
+      if (!sample) { $("#ch-i", b).value = ""; const a = local(q); chatHist.push({ r:"u", t:q }, { r:"a", t:a }); ach("ask");
+        $("#ch-l", b).insertAdjacentHTML("beforeend", `<div class="msg u">${esc(q)}</div><div class="msg a">${esc(a).replace(/\n/g, "<br>")}<small class="msg-tag">Resposta rápida, sem IA</small></div>`); return; } $("#ch-i", b).value = ""; chatHist.push({ r:"u", t:q }); ach("ask");
       const l = $("#ch-l", b); l.insertAdjacentHTML("beforeend", `<div class="msg u">${esc(q)}</div><div class="msg a" id="ch-w">A pensar…</div>`); $("#ch-s", b).disabled = true;
       const u = S.u || {}, al = (u.al||[]).filter(x => x !== "Nenhuma").join(", ") || "nada indicado";
       const sys = `És o ${BRAND.mascot}, a mascote abacate da app ${BRAND.name}. Respondes em português europeu, de forma curta, simpática e clara. Dás informação geral e educativa sobre alimentação. Não diagnostiques, não prescrevas dietas, restrições, jejum, défices calóricos nem perda de peso. Nunca classifiques alimentos como bons ou maus. Remete questões clínicas para médico ou nutricionista. ${isMinor() ? "A pessoa pode ser menor de idade: foca-te em refeições regulares e variadas e nunca fales em emagrecer. " : ""}Alimentação da pessoa: ${(u.diet||[]).join(", ") || "não indicada"}. Evita: ${al}.`;
@@ -148,11 +176,12 @@ function openLook(){
   const ACC = [["", "Abacate", "#2F6B3A", true]].concat(ACCESSORIES.concat(GOLDEN).filter(t => t.type === "theme").map(t => [t.accent, t.name.replace("Tema ",""), COL[t.accent], S.owned.includes(t.id)]));
   openSheet("Aparência e som", `<div class="stack"><div class="field"><span>Tema</span><div class="seg" id="lk-t">${[["","Automático"],["light","Claro"],["dark","Escuro"]].map(([v,l]) => `<button data-v="${v}" class="${(S.theme || "") === v ? "on" : ""}">${l}</button>`).join("")}</div></div>
     <div class="field"><span>Idioma</span><div class="seg" id="lk-l">${[["pt","Português"],["en","English"]].map(([v, l]) => `<button data-l="${v}" class="${LANG() === v ? "on" : ""}">${l}</button>`).join("")}</div></div>
-    <div class="field"><span>Cor principal</span><div class="row" style="flex-wrap:wrap;gap:8px" id="lk-a">${ACC.map(([v, l, c, own]) => `<button class="chip ${(S.accent || "") === v ? "on" : ""}" data-v="${v}" data-own="${own ? 1 : 0}" style="${own ? "" : "opacity:.5"}"><span style="width:14px;height:14px;border-radius:50%;background:${c}"></span>${esc(l)}${own ? "" : " · por ganhar"}</button>`).join("")}</div><p class="tiny muted" style="margin-top:6px">Mais cores ganham-se na roda de prémios.</p></div>
-    <div class="card stack"><label class="row between"><span>Sons</span><input type="checkbox" id="lk-s" ${S.snd ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label><label class="row between"><span>O ${esc(BRAND.mascot)} fala comigo</span><input type="checkbox" id="lk-tk" ${S.talk === true ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label><label class="row between"><span>Animações reduzidas</span><input type="checkbox" id="lk-m" ${S.mot ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label></div></div>`, b => {
+    <div class="field"><span>Cor principal</span><div class="row" style="flex-wrap:wrap;gap:8px" id="lk-a">${ACC.map(([v, l, c, own]) => `<button class="chip ${(S.accent || "") === v ? "on" : ""}" data-v="${v}" data-own="${own ? 1 : 0}" style="${own ? "" : "opacity:.5"}"><span style="width:14px;height:14px;border-radius:50%;background:${c}"></span>${esc(l)}${own ? "" : " · por ganhar"}</button>`).join("")}</div><p class="tiny muted" style="margin-top:6px">Mais cores ganham-se na roda de descontos.</p></div>
+    <div class="card stack"><label class="row between"><span>Sons<small class="lk-sub">Sons curtos ao concluir tarefas. Respeitam o modo silencioso do telemóvel.</small></span><input type="checkbox" id="lk-s" ${S.snd ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label><button class="btn ghost sm" id="lk-try" type="button">${icon("sound","sm")} Ouvir um exemplo</button><label class="row between"><span>O ${esc(BRAND.mascot)} fala comigo</span><input type="checkbox" id="lk-tk" ${S.talk === true ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label><label class="row between"><span>Animações reduzidas</span><input type="checkbox" id="lk-m" ${S.mot ? "checked" : ""} style="width:24px;height:24px;accent-color:var(--brand);flex:none"></label></div></div>`, b => {
     $$("#lk-l button", b).forEach(x => x.onclick = () => { if (x.dataset.l !== LANG()) setLang(x.dataset.l); });
+    $("#lk-try", b).onclick = () => { const was = S.snd; S.snd = true; snd("win"); S.snd = was; };
     $$("#lk-t button", b).forEach(x => x.onclick = () => { S.theme = x.dataset.v; save(); applyPrefs(); openLook(); });
-    $$("#lk-a button", b).forEach(x => x.onclick = () => { if (x.dataset.own !== "1") { toast("Ganha esta cor na roda de prémios"); return; } S.accent = x.dataset.v; save(); applyPrefs(); openLook(); });
+    $$("#lk-a button", b).forEach(x => x.onclick = () => { if (x.dataset.own !== "1") { toast("Ganha esta cor na roda de descontos"); return; } S.accent = x.dataset.v; save(); applyPrefs(); openLook(); });
     $("#lk-s", b).onchange = e => { S.snd = e.target.checked; save(); if (S.snd) snd("ok"); };
     $("#lk-m", b).onchange = e => { S.mot = e.target.checked; save(); applyPrefs(); };
     $("#lk-tk", b).onchange = e => { S.talk = e.target.checked; save(); };
@@ -161,7 +190,7 @@ function openLook(){
 async function download(name, text){ try { const d = window.claude && await window.claude.use("downloads"); if (!d) throw 0; await d.save({ filename:name, data:text }); toast("Ficheiro pronto"); }
   catch(e) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text])); a.download = name; a.click(); toast("Se o download não começar, abre a app fora da pré-visualização"); } }
 function openData(){
-  openSheet("Dados e privacidade", `<div class="stack"><div class="note">${icon("shield","sm")}<span>Os teus dados ficam só neste aparelho e não são enviados para servidores. As fotos só vão para a IA do Claude quando pedes uma análise.</span></div>
+  openSheet("Dados e privacidade", `<div class="stack"><div class="note">${icon("shield","sm")}<span>Os teus dados ficam neste aparelho. Só saem se criares conta (cópia na nuvem, na UE) ou quando pedes para analisar uma foto (servidor de IA da app). Lê a <a href="privacidade.html" target="_blank" rel="noopener">política de privacidade</a>.</span></div>
     <div class="g2"><button class="btn soft" id="d-j">${icon("download","sm")} Cópia JSON</button><button class="btn soft" id="d-c">${icon("download","sm")} Refeições CSV</button></div>
     <label class="btn ghost block" for="f-imp">${icon("upload","sm")} Importar cópia (JSON)</label>
     <button class="btn ghost block" id="d-t">Rever as perguntas iniciais</button>

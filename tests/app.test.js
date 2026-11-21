@@ -253,6 +253,11 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
     closeSheet(); const bad = !!window.__xss, shown = document.body.textContent.includes("onerror"); Object.assign(S, JSON.parse(keep)); save(); refreshAll(); return !bad && shown; }), "segurança: código nos dados aparece como texto e nunca corre");
   ok(await page.evaluate(() => { const was = S.lang; S.lang = "en"; const d = document.createElement("div"); d.innerHTML = '<b>Hoje</b><span>Faltam 3 produtos</span><input placeholder="Pesquisar alimento ou receita">'; translateTree(d); S.lang = was;
     return d.querySelector("b").textContent === "Today" && d.querySelector("span").textContent === "3 items left" && d.querySelector("input").placeholder === "Search food or recipe" && trText("Sábado, 21 de novembro") === "Saturday, November 21"; }), "idioma: inglês traduz textos, frases com números e datas");
+  ok(await page.evaluate(async () => { const was = sample; sample = null; closeSheet(); openChat(); await new Promise(r => setTimeout(r, 200));
+    $("#ch-i").value = "receitas com frango"; $("#ch-s").click(); await new Promise(r => setTimeout(r, 100));
+    const last = [...document.querySelectorAll("#ch-l .msg.a")].pop(), ok1 = last && /frango/i.test(last.textContent) && /sem IA/.test(last.textContent); sample = was; closeSheet(); return ok1; }), "Abi sem IA: responde com receitas reais e diz que não é IA");
+  ok(await page.evaluate(async () => { openAch(); await new Promise(r => setTimeout(r, 200)); const n = document.querySelectorAll(".ach2 [data-ac]").length; document.querySelector(".ach2 [data-ac]").click(); await new Promise(r => setTimeout(r, 300));
+    const det = !!document.querySelector(".ach-det .medal2.big"); closeSheet(); return n === ACH.length && det; }), "conquistas: todas com medalha própria e vista de detalhe");
   await p3.close();
 
   // 12. Migração a partir da NutriVida
