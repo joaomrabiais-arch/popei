@@ -56,13 +56,22 @@ function renderPlanRef(){
   $("#pl-shop").onclick = () => { planSub = "compras"; renderPlanos(); };
 }
 function openPlanAdd(k, recipe){
-  const R = RECIPES.filter(recipeAllowed);
-  openSheet("Planear refeição", `<div class="stack"><label class="field"><span>Dia</span><input id="pa-d" type="date" value="${k}"></label>
-    <label class="field"><span>Refeição</span><select id="pa-m">${MEALS.map(m => `<option ${recipe && recipe.c === m.id ? "selected" : ""}>${m.id}</option>`).join("")}</select></label>
-    <label class="field"><span>O que vais comer</span><input id="pa-n" list="pa-l" maxlength="80" value="${recipe ? esc(recipe.n) : ""}" placeholder="Receita ou refeição"><datalist id="pa-l">${R.map(r => `<option value="${esc(r.n)}">`).join("")}</datalist></label>
-    <div class="row"><button class="btn ghost grow" id="pa-s">${icon("sparkle","sm")} Sugerir</button><button class="btn grow" id="pa-ok">Planear</button></div></div>`, b => {
-    $("#pa-s", b).onclick = () => { if (!R.length) { toast("Sem receitas compatíveis"); return; } const m = $("#pa-m", b).value, L = R.filter(r => r.c === m), P = L.length ? L : R; $("#pa-n", b).value = P[Math.floor(rnd()*P.length)].n; };
-    $("#pa-ok", b).onclick = () => { const n = $("#pa-n", b).value.trim().slice(0,80), d = $("#pa-d", b).value; if (!n || !/^\d{4}-\d{2}-\d{2}$/.test(d)) { toast("Escolhe o dia e escreve a refeição"); return; }
+  const R = RECIPES.filter(recipeAllowed), start = k < today() ? today() : k, days = Array.from({ length:7 }, (_, i) => addDays(start, i));
+  let m = recipe ? recipe.c : defMeal();
+  openSheet("Planear refeição", `<div class="stack"><input id="pa-d" type="hidden" value="${start}"><select id="pa-m" class="hide" aria-hidden="true" tabindex="-1">${MEALS.map(x => `<option ${x.id === m ? "selected" : ""}>${x.id}</option>`).join("")}</select>
+    <div><p class="pa-l">Dia</p><div class="pa-days">${days.map(d => `<button class="pa-day ${d === start ? "on" : ""}" data-pd="${d}"><small>${d === today() ? "Hoje" : DOW[dow(d)]}</small><b>${parseK(d).getDate()}</b></button>`).join("")}</div></div>
+    <div><p class="pa-l">Refeição</p><div class="seg pa-meals">${MEALS.map(x => `<button data-pm="${x.id}" class="${x.id === m ? "on" : ""}">${x.id === "Pequeno-almoço" ? "Peq.-almoço" : x.id}</button>`).join("")}</div></div>
+    <div><p class="pa-l">O que vais comer</p><input id="pa-n" list="pa-l" maxlength="80" value="${recipe ? esc(recipe.n) : ""}" placeholder="Escreve ou escolhe uma sugestão" aria-label="O que vais comer"><datalist id="pa-l">${R.map(r => `<option value="${esc(r.n)}">`).join("")}</datalist>
+      <div class="pa-sug" id="pa-sug"></div></div>
+    <div class="row"><button class="btn ghost grow" id="pa-s">${icon("sparkle","sm")} Outras sugestões</button><button class="btn grow" id="pa-ok">Planear</button></div></div>`, b => {
+    const sug = () => { const L = R.filter(r => isMain(m) ? isMain(r.c) : r.c === m), P = (L.length ? L : R).slice().sort(() => rnd() - .5).sort((x, y) => !!photoOf(y) - !!photoOf(x)).slice(0, 4);
+      $("#pa-sug", b).innerHTML = P.map(r => `<button class="pa-rc ${$("#pa-n", b).value === r.n ? "on" : ""}" data-pr="${esc(r.n)}">${thumb(r.n, r.c, 64)}<span>${esc(r.n)}</span></button>`).join(""); };
+    $$("[data-pd]", b).forEach(x => x.onclick = () => { $("#pa-d", b).value = x.dataset.pd; $$("[data-pd]", b).forEach(y => y.classList.toggle("on", y === x)); });
+    $$("[data-pm]", b).forEach(x => x.onclick = () => { m = x.dataset.pm; $("#pa-m", b).value = m; $$("[data-pm]", b).forEach(y => y.classList.toggle("on", y === x)); sug(); });
+    $("#pa-sug", b).onclick = e => { const x = e.target.closest("[data-pr]"); if (!x) return; $("#pa-n", b).value = x.dataset.pr; $$("[data-pr]", b).forEach(y => y.classList.toggle("on", y === x)); };
+    $("#pa-s", b).onclick = () => { if (!R.length) { toast("Sem receitas compatíveis"); return; } sug(); };
+    sug();
+    $("#pa-ok", b).onclick = () => { const n = $("#pa-n", b).value.trim().slice(0,80), d = $("#pa-d", b).value; if (!n || !/^\d{4}-\d{2}-\d{2}$/.test(d)) { toast("Escolhe o dia e o que vais comer"); return; }
       const r = RECIPES.find(q => q.n === n); S.plan.push({ id:uid(), date:d, m:$("#pa-m", b).value, n, r:r ? r.id : undefined }); save(); ach("plan"); syncChallenges();
       closeSheet(); toast("Planeado para " + fmtDay(d).toLowerCase()); planSel = d; planMonth = d.slice(0,7); if (curTab === "planos") renderPlanos(); };
   });

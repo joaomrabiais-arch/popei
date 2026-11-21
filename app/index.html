@@ -1101,6 +1101,46 @@ body{background:var(--bg)}
 .wat-b i s{display:none}
 .wat-b{border-radius:18px 18px 22px 22px}
 #h-wt .wdrop,.water .wdrop{background:var(--surface-2);color:var(--ink-2)}
+
+/* Ecrã da receita */
+.rx-cover{position:relative;border-radius:var(--r-lg);overflow:hidden}
+.rx-fav{position:absolute;top:12px;right:12px;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--surface);color:var(--ink);box-shadow:var(--sh-1)}
+.rx-fav.on .ic{color:var(--brand)}
+.rx-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.rx-meta i{width:3px;height:3px;border-radius:50%;background:var(--faint)}
+.rx-ds{margin-top:8px;color:var(--ink-2);line-height:1.5}
+.rx-mac{display:flex;align-items:center;gap:16px;margin-top:16px;padding:14px 16px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line)}
+.rx-k b{display:block;font:600 26px var(--fd);letter-spacing:-.02em}.rx-k small{font-size:12px;color:var(--muted)}
+.rx-mac .sbar{margin-top:0}
+.rx-ml{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:8px;font-size:12px;color:var(--muted)}
+.rx-ml span{display:inline-flex;align-items:center;gap:5px}.rx-ml i{width:8px;height:8px;border-radius:2px}.rx-ml b{color:var(--ink);font-weight:600}
+.rx-al{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:13px;color:var(--ink-2)}
+.rx-h{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px}
+.rx-h .stepper b{min-width:76px;font-size:13px}
+.rx-ing{margin-top:8px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);overflow:hidden}
+.rx-ing li{align-items:center;padding:12px 14px;cursor:pointer;font-size:15px}
+.rx-ing li span:last-child{font-weight:600;color:var(--ink-2)}
+.rx-ck{width:22px;height:22px;flex:none;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;color:transparent;transition:all .2s}
+.rx-ing li.dn .rx-ck{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.rx-ing li.dn .grow{text-decoration:line-through;color:var(--faint)}
+.rx-steps li{padding:10px 0;line-height:1.5}
+.rx-steps li:before{background:var(--ink);color:var(--surface);width:26px;height:26px}
+.rx-act{position:sticky;bottom:0;margin:18px -2px 0;padding:12px 2px 4px;background:linear-gradient(transparent,var(--bg) 22%)}
+.rx-act2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+/* Planear refeição */
+.pa-l{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.pa-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.pa-day{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.pa-day small{font-size:11px;color:var(--muted)}.pa-day b{font:600 16px var(--fd)}
+.pa-day.on{background:var(--ink);border-color:var(--ink)}.pa-day.on small,.pa-day.on b{color:var(--surface)}
+.pa-meals button{font-size:13px}
+.pa-sug{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.pa-rc{display:flex;align-items:center;gap:10px;padding:8px;border-radius:14px;background:var(--surface);border:1.5px solid var(--line);text-align:left;font-size:13px;font-weight:600;line-height:1.25}
+.pa-rc .th,.pa-rc .art-tile{width:48px!important;height:48px!important;border-radius:10px;flex:none}
+.pa-rc.on{border-color:var(--brand);background:var(--brand-soft)}
+.rx-act{display:flex;gap:8px;align-items:stretch}.rx-act #rc-plan{flex:1.3;min-height:50px}.rx-act2{display:contents}.rx-act2 .btn{flex:1;min-height:50px;padding:0 8px}
+.rx-act{background:var(--bg);border-top:1px solid var(--line);padding-top:10px}
+.rx-act{bottom:calc(-28px - env(safe-area-inset-bottom,0px));padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));margin-bottom:calc(-28px - env(safe-area-inset-bottom,0px))}
 </style>
 </head>
 <body>
@@ -2528,19 +2568,30 @@ $("#r-q").oninput = renderReceitas;
 function openRecipe(id){
   const r = RECIPES.find(x => x.id === id); if (!r) return;
   if (!S.ropen.includes(id)) { S.ropen.push(id); save(); if (S.ropen.length >= 5) ach("rexp"); }
-  const fav = S.fav.includes(id);
-  openSheet(r.n, `<div style="border-radius:20px;overflow:hidden">${recipeCover(r)}</div>${photoCredit(r) ? `<p class="photo-credit">${esc(photoCredit(r))}</p>` : ""}
-    <p style="margin-top:14px">${esc(r.ds)}</p>
-    <div style="margin-top:12px"><span class="tag">${icon("clock","xs")} ${r.t} min</span><span class="tag">${r.f}</span><span class="tag">${r.c}</span>${r.d === 0 ? '<span class="tag">Vegan</span>' : r.d === 1 ? '<span class="tag">Vegetariana</span>' : ""}${r.al.map(a => `<span class="tag warn">Contém ${esc(a.toLowerCase())}</span>`).join("")}</div>
-    <div class="facts" style="margin-top:8px"><div><b>${r.k}</b><small>kcal</small></div><div><b>${r.p} g</b><small>proteína</small></div><div><b>${r.h} g</b><small>hidratos</small></div><div><b>${r.g} g</b><small>gordura</small></div></div>
-    <p class="tiny muted" style="margin-top:6px">Receita para ${r.srv || 1} ${(r.srv || 1) > 1 ? "porções" : "porção"}. Valores por porção: estimativa aproximada a partir dos ingredientes, não é análise laboratorial.</p>
-    <h3 style="margin-top:20px">Ingredientes</h3><ul class="ing" style="margin-top:6px">${r.i.map(x => `<li><span>${esc(x[0])}</span><span>${esc(x[1])}</span></li>`).join("")}</ul>
-    <h3 style="margin-top:20px">Preparação</h3><ol class="steps" style="margin-top:6px">${r.s.map(x => `<li>${esc(x)}</li>`).join("")}</ol>
-    <div class="stack" style="margin-top:18px"><button class="btn block" id="rc-plan">${icon("cal","sm")} Planear</button>
-    <div class="row"><button class="btn ghost grow sm" id="rc-fav">${icon(fav ? "heart-f" : "heart","sm")} ${fav ? "Guardada" : "Guardar"}</button><button class="btn ghost grow sm" id="rc-shop">${icon("cart","sm")} Compras</button><button class="btn ghost grow sm" id="rc-eat">${icon("check","sm")} Comi</button></div></div>
-    <p class="tiny muted" style="margin-top:14px">Se tens alergias, confirma sempre os rótulos dos ingredientes.</p>`, b => {
+  const fav = S.fav.includes(id), base = r.srv || 1; let n = base;
+  const qty = q => { const pq = parseQty(q); return pq ? fmtQty(pq.v * n / base, pq.u, pq.rest) : q; };
+  const mk = Math.max(1, r.p * 4 + r.h * 4 + r.g * 9), MC = [["Proteína", r.p, 4, "var(--prot)"], ["Hidratos", r.h, 4, "var(--carb)"], ["Gordura", r.g, 9, "var(--fat)"]];
+  openSheet(r.n, `<div class="rx-cover">${recipeCover(r)}<button class="rx-fav ${fav ? "on" : ""}" id="rc-fav" aria-label="${fav ? "Remover das favoritas" : "Guardar nas favoritas"}">${icon(fav ? "heart-f" : "heart","sm")}</button></div>${photoCredit(r) ? `<p class="photo-credit">${esc(photoCredit(r))}</p>` : ""}
+    <p class="rx-meta">${icon("clock","xs")} ${r.t} min <i></i> ${esc(r.f)} <i></i> ${esc(r.c)}${r.d === 0 ? " <i></i> Vegan" : r.d === 1 ? " <i></i> Vegetariana" : ""}</p>
+    <p class="rx-ds">${esc(r.ds)}</p>
+    <div class="rx-mac"><div class="rx-k">${kcalOn() ? `<b>${r.k}</b><small>kcal por porção</small>` : `<b>${r.p} g</b><small>proteína por porção</small>`}</div>
+      <div class="grow"><div class="sbar">${MC.map(([, v, m, c]) => `<i style="background:${c};flex:${v * m / mk || .001}"></i>`).join("")}</div>
+      <div class="rx-ml">${MC.map(([t, v, , c]) => `<span><i style="background:${c}"></i>${t} <b>${v} g</b></span>`).join("")}</div></div></div>
+    ${r.al.length ? `<p class="rx-al">${icon("info","xs")} Contém ${r.al.map(a => esc(a.toLowerCase())).join(", ")}. Confirma sempre os rótulos.</p>` : ""}
+    <div class="rx-h"><h3>Ingredientes</h3><div class="stepper" aria-label="Porções"><button id="rx-m" aria-label="Menos uma porção">${icon("minus","xs")}</button><b class="num" id="rx-n"></b><button id="rx-p" aria-label="Mais uma porção">${icon("plus","xs")}</button></div></div>
+    <ul class="ing rx-ing" id="rx-ing"></ul>
+    <h3 style="margin-top:22px">Preparação</h3><ol class="steps rx-steps" style="margin-top:8px">${r.s.map(x => `<li>${esc(x)}</li>`).join("")}</ol>
+    <p class="tiny muted" style="margin-top:12px">Valores por porção: estimativa aproximada a partir dos ingredientes, não é análise laboratorial.</p>
+    <div class="rx-act"><button class="btn block" id="rc-plan">${icon("cal","sm")} Planear</button>
+      <div class="rx-act2"><button class="btn ghost sm" id="rc-shop">${icon("cart","sm")} Compras</button><button class="btn ghost sm" id="rc-eat">${icon("check","sm")} Comi</button></div></div>`, b => {
+    const done = new Set();
+    const draw = () => { $("#rx-n", b).textContent = pl(n, "porção", "porções"); $("#rx-m", b).disabled = n <= 1;
+      $("#rx-ing", b).innerHTML = r.i.map((x, i) => `<li class="${done.has(i) ? "dn" : ""}" data-i="${i}"><span class="rx-ck">${icon("check","xs")}</span><span class="grow">${esc(x[0])}</span><span>${esc(qty(x[1]))}</span></li>`).join(""); };
+    $("#rx-m", b).onclick = () => { n = Math.max(1, n - 1); draw(); }; $("#rx-p", b).onclick = () => { n = Math.min(12, n + 1); draw(); };
+    $("#rx-ing", b).onclick = e => { const li = e.target.closest("[data-i]"); if (!li) return; const i = +li.dataset.i; done.has(i) ? done.delete(i) : done.add(i); draw(); };
+    draw();
     $("#rc-fav", b).onclick = () => { S.fav = fav ? S.fav.filter(x => x !== id) : S.fav.concat(id); save(); if (!fav) { ach("fav"); say("fav"); } closeSheet(); toast(fav ? "Removida das favoritas" : "Guardada nas favoritas"); refreshAll(); };
-    $("#rc-shop", b).onclick = () => { const n = r.i.reduce((a, x) => a + addShop(x[0], x[1], x[2]), 0); save(); toast(n ? `${pl(n, "ingrediente", "ingredientes")} na lista de compras` : "Já estavam todos na lista"); };
+    $("#rc-shop", b).onclick = () => { const k = r.i.reduce((a, x) => a + addShop(x[0], qty(x[1]), x[2]), 0); save(); toast(k ? `${pl(k, "ingrediente", "ingredientes")} na lista de compras` : "Já estavam todos na lista"); };
     $("#rc-eat", b).onclick = () => { addEntry(curDay, { n:r.n, k:r.k, p:r.p, c:r.h, g:r.g, m:r.c, q:"1 porção", src:"recipe" }); ach("cook"); closeSheet(); go("hoje"); toast("Adicionado ao diário"); };
     $("#rc-plan", b).onclick = () => openPlanAdd(today(), r);
   });
@@ -2603,13 +2654,22 @@ function renderPlanRef(){
   $("#pl-shop").onclick = () => { planSub = "compras"; renderPlanos(); };
 }
 function openPlanAdd(k, recipe){
-  const R = RECIPES.filter(recipeAllowed);
-  openSheet("Planear refeição", `<div class="stack"><label class="field"><span>Dia</span><input id="pa-d" type="date" value="${k}"></label>
-    <label class="field"><span>Refeição</span><select id="pa-m">${MEALS.map(m => `<option ${recipe && recipe.c === m.id ? "selected" : ""}>${m.id}</option>`).join("")}</select></label>
-    <label class="field"><span>O que vais comer</span><input id="pa-n" list="pa-l" maxlength="80" value="${recipe ? esc(recipe.n) : ""}" placeholder="Receita ou refeição"><datalist id="pa-l">${R.map(r => `<option value="${esc(r.n)}">`).join("")}</datalist></label>
-    <div class="row"><button class="btn ghost grow" id="pa-s">${icon("sparkle","sm")} Sugerir</button><button class="btn grow" id="pa-ok">Planear</button></div></div>`, b => {
-    $("#pa-s", b).onclick = () => { if (!R.length) { toast("Sem receitas compatíveis"); return; } const m = $("#pa-m", b).value, L = R.filter(r => r.c === m), P = L.length ? L : R; $("#pa-n", b).value = P[Math.floor(rnd()*P.length)].n; };
-    $("#pa-ok", b).onclick = () => { const n = $("#pa-n", b).value.trim().slice(0,80), d = $("#pa-d", b).value; if (!n || !/^\d{4}-\d{2}-\d{2}$/.test(d)) { toast("Escolhe o dia e escreve a refeição"); return; }
+  const R = RECIPES.filter(recipeAllowed), start = k < today() ? today() : k, days = Array.from({ length:7 }, (_, i) => addDays(start, i));
+  let m = recipe ? recipe.c : defMeal();
+  openSheet("Planear refeição", `<div class="stack"><input id="pa-d" type="hidden" value="${start}"><select id="pa-m" class="hide" aria-hidden="true" tabindex="-1">${MEALS.map(x => `<option ${x.id === m ? "selected" : ""}>${x.id}</option>`).join("")}</select>
+    <div><p class="pa-l">Dia</p><div class="pa-days">${days.map(d => `<button class="pa-day ${d === start ? "on" : ""}" data-pd="${d}"><small>${d === today() ? "Hoje" : DOW[dow(d)]}</small><b>${parseK(d).getDate()}</b></button>`).join("")}</div></div>
+    <div><p class="pa-l">Refeição</p><div class="seg pa-meals">${MEALS.map(x => `<button data-pm="${x.id}" class="${x.id === m ? "on" : ""}">${x.id === "Pequeno-almoço" ? "Peq.-almoço" : x.id}</button>`).join("")}</div></div>
+    <div><p class="pa-l">O que vais comer</p><input id="pa-n" list="pa-l" maxlength="80" value="${recipe ? esc(recipe.n) : ""}" placeholder="Escreve ou escolhe uma sugestão" aria-label="O que vais comer"><datalist id="pa-l">${R.map(r => `<option value="${esc(r.n)}">`).join("")}</datalist>
+      <div class="pa-sug" id="pa-sug"></div></div>
+    <div class="row"><button class="btn ghost grow" id="pa-s">${icon("sparkle","sm")} Outras sugestões</button><button class="btn grow" id="pa-ok">Planear</button></div></div>`, b => {
+    const sug = () => { const L = R.filter(r => isMain(m) ? isMain(r.c) : r.c === m), P = (L.length ? L : R).slice().sort(() => rnd() - .5).sort((x, y) => !!photoOf(y) - !!photoOf(x)).slice(0, 4);
+      $("#pa-sug", b).innerHTML = P.map(r => `<button class="pa-rc ${$("#pa-n", b).value === r.n ? "on" : ""}" data-pr="${esc(r.n)}">${thumb(r.n, r.c, 64)}<span>${esc(r.n)}</span></button>`).join(""); };
+    $$("[data-pd]", b).forEach(x => x.onclick = () => { $("#pa-d", b).value = x.dataset.pd; $$("[data-pd]", b).forEach(y => y.classList.toggle("on", y === x)); });
+    $$("[data-pm]", b).forEach(x => x.onclick = () => { m = x.dataset.pm; $("#pa-m", b).value = m; $$("[data-pm]", b).forEach(y => y.classList.toggle("on", y === x)); sug(); });
+    $("#pa-sug", b).onclick = e => { const x = e.target.closest("[data-pr]"); if (!x) return; $("#pa-n", b).value = x.dataset.pr; $$("[data-pr]", b).forEach(y => y.classList.toggle("on", y === x)); };
+    $("#pa-s", b).onclick = () => { if (!R.length) { toast("Sem receitas compatíveis"); return; } sug(); };
+    sug();
+    $("#pa-ok", b).onclick = () => { const n = $("#pa-n", b).value.trim().slice(0,80), d = $("#pa-d", b).value; if (!n || !/^\d{4}-\d{2}-\d{2}$/.test(d)) { toast("Escolhe o dia e o que vais comer"); return; }
       const r = RECIPES.find(q => q.n === n); S.plan.push({ id:uid(), date:d, m:$("#pa-m", b).value, n, r:r ? r.id : undefined }); save(); ach("plan"); syncChallenges();
       closeSheet(); toast("Planeado para " + fmtDay(d).toLowerCase()); planSel = d; planMonth = d.slice(0,7); if (curTab === "planos") renderPlanos(); };
   });

@@ -123,6 +123,14 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   await page.click('#r-f [data-f="Vegan"]'); await page.waitForTimeout(200);
   ok((await page.$$("#r-l [data-r]")).length >= 3, "filtro vegan mostra receitas");
   await page.click('#r-f [data-f="Todas"]'); await page.click("#r-l [data-r] >> nth=0"); await page.waitForTimeout(400); await shot("07-receita");
+  const q0 = await page.textContent("#rx-ing li:first-child span:last-child"), n0 = await page.textContent("#rx-n");
+  await page.click("#rx-p"); await page.click("#rx-p"); await page.waitForTimeout(100);
+  ok((await page.textContent("#rx-n")) !== n0 && (await page.textContent("#rx-ing li:first-child span:last-child")) !== q0 || /q\.b\./.test(q0), "receita: mais porções recalculam os ingredientes (" + q0 + " → " + await page.textContent("#rx-ing li:first-child span:last-child") + ")");
+  await page.click("#rx-ing li:first-child"); ok(await page.$("#rx-ing li.dn"), "receita: tocar num ingrediente risca-o");
+  await page.click("#rc-plan"); await page.waitForTimeout(400); await shot("07b-planear");
+  const d3 = await page.getAttribute(".pa-day:nth-child(3)", "data-pd"); await page.click(".pa-day:nth-child(3)"); await page.click('[data-pm="Jantar"]'); await page.click(".pa-rc >> nth=0"); await page.click("#pa-ok"); await page.waitForTimeout(300);
+  ok(await page.evaluate(d => S.plan.some(x => x.date === d && x.m === "Jantar"), d3), "planear: guarda o dia e a refeição escolhidos nos botões"); await page.evaluate(() => { planSel = today(); planMonth = today().slice(0,7); });
+  await page.click("#r-l [data-r] >> nth=0"); await page.waitForTimeout(400);
   await page.click("#rc-shop"); await page.waitForTimeout(200); await sheetClose();
 
   // 7. Planos: semana, mês, treino, compras

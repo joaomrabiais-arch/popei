@@ -36,19 +36,30 @@ $("#r-q").oninput = renderReceitas;
 function openRecipe(id){
   const r = RECIPES.find(x => x.id === id); if (!r) return;
   if (!S.ropen.includes(id)) { S.ropen.push(id); save(); if (S.ropen.length >= 5) ach("rexp"); }
-  const fav = S.fav.includes(id);
-  openSheet(r.n, `<div style="border-radius:20px;overflow:hidden">${recipeCover(r)}</div>${photoCredit(r) ? `<p class="photo-credit">${esc(photoCredit(r))}</p>` : ""}
-    <p style="margin-top:14px">${esc(r.ds)}</p>
-    <div style="margin-top:12px"><span class="tag">${icon("clock","xs")} ${r.t} min</span><span class="tag">${r.f}</span><span class="tag">${r.c}</span>${r.d === 0 ? '<span class="tag">Vegan</span>' : r.d === 1 ? '<span class="tag">Vegetariana</span>' : ""}${r.al.map(a => `<span class="tag warn">Contém ${esc(a.toLowerCase())}</span>`).join("")}</div>
-    <div class="facts" style="margin-top:8px"><div><b>${r.k}</b><small>kcal</small></div><div><b>${r.p} g</b><small>proteína</small></div><div><b>${r.h} g</b><small>hidratos</small></div><div><b>${r.g} g</b><small>gordura</small></div></div>
-    <p class="tiny muted" style="margin-top:6px">Receita para ${r.srv || 1} ${(r.srv || 1) > 1 ? "porções" : "porção"}. Valores por porção: estimativa aproximada a partir dos ingredientes, não é análise laboratorial.</p>
-    <h3 style="margin-top:20px">Ingredientes</h3><ul class="ing" style="margin-top:6px">${r.i.map(x => `<li><span>${esc(x[0])}</span><span>${esc(x[1])}</span></li>`).join("")}</ul>
-    <h3 style="margin-top:20px">Preparação</h3><ol class="steps" style="margin-top:6px">${r.s.map(x => `<li>${esc(x)}</li>`).join("")}</ol>
-    <div class="stack" style="margin-top:18px"><button class="btn block" id="rc-plan">${icon("cal","sm")} Planear</button>
-    <div class="row"><button class="btn ghost grow sm" id="rc-fav">${icon(fav ? "heart-f" : "heart","sm")} ${fav ? "Guardada" : "Guardar"}</button><button class="btn ghost grow sm" id="rc-shop">${icon("cart","sm")} Compras</button><button class="btn ghost grow sm" id="rc-eat">${icon("check","sm")} Comi</button></div></div>
-    <p class="tiny muted" style="margin-top:14px">Se tens alergias, confirma sempre os rótulos dos ingredientes.</p>`, b => {
+  const fav = S.fav.includes(id), base = r.srv || 1; let n = base;
+  const qty = q => { const pq = parseQty(q); return pq ? fmtQty(pq.v * n / base, pq.u, pq.rest) : q; };
+  const mk = Math.max(1, r.p * 4 + r.h * 4 + r.g * 9), MC = [["Proteína", r.p, 4, "var(--prot)"], ["Hidratos", r.h, 4, "var(--carb)"], ["Gordura", r.g, 9, "var(--fat)"]];
+  openSheet(r.n, `<div class="rx-cover">${recipeCover(r)}<button class="rx-fav ${fav ? "on" : ""}" id="rc-fav" aria-label="${fav ? "Remover das favoritas" : "Guardar nas favoritas"}">${icon(fav ? "heart-f" : "heart","sm")}</button></div>${photoCredit(r) ? `<p class="photo-credit">${esc(photoCredit(r))}</p>` : ""}
+    <p class="rx-meta">${icon("clock","xs")} ${r.t} min <i></i> ${esc(r.f)} <i></i> ${esc(r.c)}${r.d === 0 ? " <i></i> Vegan" : r.d === 1 ? " <i></i> Vegetariana" : ""}</p>
+    <p class="rx-ds">${esc(r.ds)}</p>
+    <div class="rx-mac"><div class="rx-k">${kcalOn() ? `<b>${r.k}</b><small>kcal por porção</small>` : `<b>${r.p} g</b><small>proteína por porção</small>`}</div>
+      <div class="grow"><div class="sbar">${MC.map(([, v, m, c]) => `<i style="background:${c};flex:${v * m / mk || .001}"></i>`).join("")}</div>
+      <div class="rx-ml">${MC.map(([t, v, , c]) => `<span><i style="background:${c}"></i>${t} <b>${v} g</b></span>`).join("")}</div></div></div>
+    ${r.al.length ? `<p class="rx-al">${icon("info","xs")} Contém ${r.al.map(a => esc(a.toLowerCase())).join(", ")}. Confirma sempre os rótulos.</p>` : ""}
+    <div class="rx-h"><h3>Ingredientes</h3><div class="stepper" aria-label="Porções"><button id="rx-m" aria-label="Menos uma porção">${icon("minus","xs")}</button><b class="num" id="rx-n"></b><button id="rx-p" aria-label="Mais uma porção">${icon("plus","xs")}</button></div></div>
+    <ul class="ing rx-ing" id="rx-ing"></ul>
+    <h3 style="margin-top:22px">Preparação</h3><ol class="steps rx-steps" style="margin-top:8px">${r.s.map(x => `<li>${esc(x)}</li>`).join("")}</ol>
+    <p class="tiny muted" style="margin-top:12px">Valores por porção: estimativa aproximada a partir dos ingredientes, não é análise laboratorial.</p>
+    <div class="rx-act"><button class="btn block" id="rc-plan">${icon("cal","sm")} Planear</button>
+      <div class="rx-act2"><button class="btn ghost sm" id="rc-shop">${icon("cart","sm")} Compras</button><button class="btn ghost sm" id="rc-eat">${icon("check","sm")} Comi</button></div></div>`, b => {
+    const done = new Set();
+    const draw = () => { $("#rx-n", b).textContent = pl(n, "porção", "porções"); $("#rx-m", b).disabled = n <= 1;
+      $("#rx-ing", b).innerHTML = r.i.map((x, i) => `<li class="${done.has(i) ? "dn" : ""}" data-i="${i}"><span class="rx-ck">${icon("check","xs")}</span><span class="grow">${esc(x[0])}</span><span>${esc(qty(x[1]))}</span></li>`).join(""); };
+    $("#rx-m", b).onclick = () => { n = Math.max(1, n - 1); draw(); }; $("#rx-p", b).onclick = () => { n = Math.min(12, n + 1); draw(); };
+    $("#rx-ing", b).onclick = e => { const li = e.target.closest("[data-i]"); if (!li) return; const i = +li.dataset.i; done.has(i) ? done.delete(i) : done.add(i); draw(); };
+    draw();
     $("#rc-fav", b).onclick = () => { S.fav = fav ? S.fav.filter(x => x !== id) : S.fav.concat(id); save(); if (!fav) { ach("fav"); say("fav"); } closeSheet(); toast(fav ? "Removida das favoritas" : "Guardada nas favoritas"); refreshAll(); };
-    $("#rc-shop", b).onclick = () => { const n = r.i.reduce((a, x) => a + addShop(x[0], x[1], x[2]), 0); save(); toast(n ? `${pl(n, "ingrediente", "ingredientes")} na lista de compras` : "Já estavam todos na lista"); };
+    $("#rc-shop", b).onclick = () => { const k = r.i.reduce((a, x) => a + addShop(x[0], qty(x[1]), x[2]), 0); save(); toast(k ? `${pl(k, "ingrediente", "ingredientes")} na lista de compras` : "Já estavam todos na lista"); };
     $("#rc-eat", b).onclick = () => { addEntry(curDay, { n:r.n, k:r.k, p:r.p, c:r.h, g:r.g, m:r.c, q:"1 porção", src:"recipe" }); ach("cook"); closeSheet(); go("hoje"); toast("Adicionado ao diário"); };
     $("#rc-plan", b).onclick = () => openPlanAdd(today(), r);
   });
