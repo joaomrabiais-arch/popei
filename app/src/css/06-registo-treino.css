@@ -224,3 +224,4 @@
 .tp-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:auto;padding-top:6px;font-size:11px;font-weight:700;color:var(--ink-2)}
 .tp-meta>span:not(.lvl){padding:3px 7px;border-radius:7px;background:var(--surface-2)}
 @media (max-width:340px){.tp-grid{grid-template-columns:1fr}}
+.tp-intro{margin-top:20px}.tp-intro h2{font:600 22px var(--fd);letter-spacing:-.01em}.tp-intro p{margin-top:4px}

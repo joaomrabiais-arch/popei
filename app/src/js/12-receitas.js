@@ -9,7 +9,7 @@ function recipeAllowed(r){ const u = S.u || {}, al = (u.al||[]).filter(x => x !=
   if (dl.length && r.i.some(i => dl.some(d => i[0].toLowerCase().includes(d)))) return false;
   const lim = dt.includes("Vegan") ? 0 : dt.includes("Vegetariano") ? 1 : dt.some(x => String(x).startsWith("Pescetariano")) ? 2 : 3; return r.d <= lim; }
 function suggestRecipes(){ const m = defMeal(); return RECIPES.filter(recipeAllowed).sort((a, b) => (b.c === m) - (a.c === m) || a.t - b.t); }
-const recCard = r => `<div class="rwrap"><button class="rcard" data-r="${r.id}">${recipeCover(r)}<span class="rb"><b>${esc(r.n)}</b><small>${icon("clock","xs")} ${r.t} min · ${r.f}</small></span></button>${S.fav.includes(r.id) ? `<span class="favdot" aria-label="Favorita">${icon("heart-f","xs")}</span>` : ""}</div>`;
+const recCard = r => `<div class="rwrap"><button class="rcard" data-r="${r.id}">${recipeCover(r)}<span class="rc-k">${kcalOn() ? r.k + " kcal" : r.p + " g proteína"}</span><span class="rb"><b>${esc(r.n)}</b><small>${icon("clock","xs")} ${r.t} min · ${r.f}</small></span></button>${S.fav.includes(r.id) ? `<span class="favdot" aria-label="Favorita">${icon("heart-f","xs")}</span>` : ""}</div>`;
 const bindRecCards = el => $$("[data-r]", el).forEach(b => b.onclick = () => openRecipe(+b.dataset.r));
 function renderReceitas(){
   $("#r-f").innerHTML = RF.map(f => `<button class="chip ${f === rFilter ? "on" : ""}" data-f="${f}" aria-pressed="${f === rFilter}">${f === "Favoritas" ? icon("heart","xs") : ""}${f}</button>`).join("");

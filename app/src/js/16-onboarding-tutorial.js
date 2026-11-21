@@ -126,7 +126,7 @@ function openOnboarding(edit, startKey, single){
 
   const draw = () => { const V = vis(); n = Math.min(n, V.length - 1); const s = V[n], pv = preview();
     let body = "", q = s.q ? s.q(A) : "", sub = typeof s.s === "function" ? s.s(A) : s.s || "", head = s.who ? face(s.who, { mood: mood || s.m, size: s.who === "abi" ? 96 : 84 }) : "";
-    if (s.type === "hook") body = `<ul class="hook">${[["cal","A tua semana de refeições feita por ti, à tua medida"],["cart","A lista de compras sai sozinha do plano"],["leaf","Sem dietas restritivas nem culpa: um passo de cada vez"]].map(([i, t]) => `<li><span>${icon(i,"sm")}</span>${t}</li>`).join("")}</ul>`;
+    if (s.type === "hook") body = `<div class="hook-pics">${["Pequeno-almoço","Almoço","Jantar","Lanche"].map(mealPic).filter(Boolean).map(src => `<img src="${esc(src)}" alt="">`).join("")}</div><ul class="hook">${[["cal","A tua semana de refeições feita para ti, à tua medida"],["cart","A lista de compras sai sozinha do plano"],["leaf","Sem dietas restritivas nem culpa: um passo de cada vez"]].map(([i, t]) => `<li><span>${icon(i,"sm")}</span>${t}</li>`).join("")}</ul>`;
     else if (s.type === "text") body = `<input id="ob-n" maxlength="40" autocomplete="given-name" placeholder="O teu nome" value="${esc(A.name)}" aria-label="Nome">`;
     else if (s.type === "age") body = `<label class="field"><span>Idade</span><input id="ob-age" type="number" inputmode="numeric" min="10" max="100" value="${A.ageN || ""}"></label><p class="small" id="ob-agen" style="margin-top:8px;color:var(--muted)"></p>`;
     else if (s.type === "body") body = `<div class="ob-form"><div class="seg" id="ob-sex"><button data-v="f" class="${B.sex === "f" ? "on" : ""}">Feminino</button><button data-v="m" class="${B.sex === "m" ? "on" : ""}">Masculino</button></div>
@@ -221,7 +221,7 @@ function openPlanPrefs(){
     ["Treino", [["tdays","Dias de treino", P.tdays.length ? P.tdays.map(d => DOWL[d]).join(", ") : "Não treino"]]],
     ["Extras", [["budget","Orçamento semanal", P.budget ? P.budget + " €" : "Sem orçamento"], ...(P.budget ? [["strict","Se não couber", lab(STRICT, P.strict)]] : []), ["market","Supermercado", u.market || "–"]]]];
   openSheet("Preferências do plano", `<p class="small muted">Cada resposta muda o plano. Ao guardar, as sugestões desta semana são refeitas a partir de hoje; o que planeaste à mão fica.</p>
-    ${rows.map(([t, L]) => `<p class="shop-cat">${t}</p><div class="list">${L.map(([k, a, v]) => `<button class="li" data-ek="${k}"><span class="lt"><small>${a}</small><b>${esc(v || "–")}</b></span>${icon("right","sm")}</button>`).join("")}</div>`).join("")}
+    <div class="pp">${rows.map(([t, L]) => `<p class="pf-g">${t}</p><div class="list">${L.map(([k, a, v]) => `<button class="li pp-r" data-ek="${k}"><span class="pp-a">${a}</span><span class="pp-v">${esc(v || "–")}</span>${icon("right","sm")}</button>`).join("")}</div>`).join("")}</div>
     <button class="btn ghost block" id="pp-all" style="margin-top:16px">Responder a tudo outra vez</button>
     ${isMinor() ? `<p class="tiny muted" style="margin-top:10px">Para menores de 18 anos a app não mostra calorias nem metas de peso.</p>` : ""}`, b => {
     $$("[data-ek]", b).forEach(x => x.onclick = () => { closeSheet(); openOnboarding(true, x.dataset.ek, true); });

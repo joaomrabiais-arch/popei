@@ -833,6 +833,7 @@ body:has(#toast.on) .talk{display:none}
 .tp-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:auto;padding-top:6px;font-size:11px;font-weight:700;color:var(--ink-2)}
 .tp-meta>span:not(.lvl){padding:3px 7px;border-radius:7px;background:var(--surface-2)}
 @media (max-width:340px){.tp-grid{grid-template-columns:1fr}}
+.tp-intro{margin-top:20px}.tp-intro h2{font:600 22px var(--fd);letter-spacing:-.01em}.tp-intro p{margin-top:4px}
 /* ===== Ilustrações, refeições do dia, desafios e grelha de gosto ===== */
 .art-tile{display:grid;place-items:center;flex:none;border-radius:16px;background:linear-gradient(145deg,var(--a1),var(--a2));box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
 .art{display:block;overflow:visible}
@@ -961,6 +962,22 @@ body:has(#toast.on) .talk{display:none}
 .pw2-hero h2{color:#F4F7F2;margin-top:46px}
 .pw2-pics{position:absolute;top:14px;right:14px;margin:0}
 .pw2-pics img{width:56px;height:56px}
+/* ===== Perfil ===== */
+.pf-top{display:flex;align-items:center;gap:14px}
+.pf-top h2{font:600 22px var(--fd)}
+.pf-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.pf-stats div{padding:12px 6px;border-radius:var(--r-sm);background:var(--surface-2);text-align:center}
+.pf-stats b{display:block;font:600 22px var(--fd)}.pf-stats small{display:block;font-size:11px;line-height:1.3;color:var(--muted);margin-top:2px}
+.pf-pro{display:flex;align-items:center;gap:12px;width:100%;margin-top:14px;padding:16px;border-radius:var(--r-md);text-align:left;color:#F4F7F2;background:radial-gradient(110% 100% at 100% 0%,#3E7A4C,transparent 60%),linear-gradient(160deg,#1F4A2B,#122B19);box-shadow:var(--sh-1)}
+.pf-pro b{display:block;font:600 16px var(--fd);color:#F4F7F2}.pf-pro small{display:block;font-size:13px;color:#C9D8CC}
+.pf-pro-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:#E9C46A;color:#2B2108;flex:none}.pf-pro-ic .ic{color:#2B2108}
+.pf-pro-go{padding:8px 14px;border-radius:10px;background:#F4F7F2;color:#1F4A2B;font-weight:700;font-size:13px}
+.pf-g{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:22px 4px 8px}
+.pp-r{gap:12px}.pp-a{flex:none;width:42%;font-size:14px;color:var(--muted)}
+.pp-v{flex:1;min-width:0;font-weight:600;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pf-menu .pf-pro{margin-top:0}
+.pp-v{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.3}
+.pp-a{width:38%}
 /* ===== Guia de estilo da AvocoraFit (sobrepõe os tokens antigos; ver DESIGN.md) =====
    Fundo verde-folha muito claro em vez do creme "de IA"; texto secundário com contraste AA;
    letra do sistema no texto e nos controlos, Bricolage só nos títulos e números. */
@@ -1013,6 +1030,15 @@ button:active:not(:disabled),.btn:active,.li:active,.opt:active,.chip:active{tra
 @keyframes pop{from{transform:scale(.7) translateY(10px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.aurora i,.view.on>*,#ob-in *{animation:none!important}}
 :root[data-motion="low"] .aurora i,:root[data-motion="low"] .view.on>*,:root[data-motion="low"] #ob-in *{animation:none!important}
+/* Início: fotos de pratos e benefícios leves */
+.hook-pics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:2px 0 18px}
+.hook-pics img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:16px;box-shadow:var(--sh-1)}
+.hook-pics img:nth-child(even){transform:translateY(10px)}
+ul.hook li{background:none;border:0;box-shadow:none;padding:8px 0}
+ul.hook{gap:4px}
+/* Receitas: dado rápido sobre a foto */
+.rcard{position:relative}
+.rc-k{position:absolute;left:8px;top:8px;z-index:1;padding:4px 8px;border-radius:8px;background:rgba(15,20,17,.66);color:#fff;font-size:11px;font-weight:700;backdrop-filter:blur(4px);pointer-events:none}
 </style>
 </head>
 <body>
@@ -1064,8 +1090,8 @@ button:active:not(:disabled),.btn:active,.li:active,.opt:active,.chip:active{tra
 
   <section class="view" id="v-perfil">
     <div class="top"><div class="t"><h1>Perfil</h1></div></div>
-    <div class="card" id="pf-head" style="display:flex;gap:16px;align-items:center;margin-top:8px"></div>
-    <div class="sec"><div class="list" id="pf-menu"></div></div>
+    <div class="card" id="pf-head" style="margin-top:8px"></div>
+    <div class="sec"><div id="pf-menu"></div></div>
     <p class="tiny muted" style="margin:18px 4px">A <span data-brand></span> dá informação geral e estimativas. Não substitui médico, nutricionista nem personal trainer.</p>
   </section>
 
@@ -2413,7 +2439,7 @@ function recipeAllowed(r){ const u = S.u || {}, al = (u.al||[]).filter(x => x !=
   if (dl.length && r.i.some(i => dl.some(d => i[0].toLowerCase().includes(d)))) return false;
   const lim = dt.includes("Vegan") ? 0 : dt.includes("Vegetariano") ? 1 : dt.some(x => String(x).startsWith("Pescetariano")) ? 2 : 3; return r.d <= lim; }
 function suggestRecipes(){ const m = defMeal(); return RECIPES.filter(recipeAllowed).sort((a, b) => (b.c === m) - (a.c === m) || a.t - b.t); }
-const recCard = r => `<div class="rwrap"><button class="rcard" data-r="${r.id}">${recipeCover(r)}<span class="rb"><b>${esc(r.n)}</b><small>${icon("clock","xs")} ${r.t} min · ${r.f}</small></span></button>${S.fav.includes(r.id) ? `<span class="favdot" aria-label="Favorita">${icon("heart-f","xs")}</span>` : ""}</div>`;
+const recCard = r => `<div class="rwrap"><button class="rcard" data-r="${r.id}">${recipeCover(r)}<span class="rc-k">${kcalOn() ? r.k + " kcal" : r.p + " g proteína"}</span><span class="rb"><b>${esc(r.n)}</b><small>${icon("clock","xs")} ${r.t} min · ${r.f}</small></span></button>${S.fav.includes(r.id) ? `<span class="favdot" aria-label="Favorita">${icon("heart-f","xs")}</span>` : ""}</div>`;
 const bindRecCards = el => $$("[data-r]", el).forEach(b => b.onclick = () => openRecipe(+b.dataset.r));
 function renderReceitas(){
   $("#r-f").innerHTML = RF.map(f => `<button class="chip ${f === rFilter ? "on" : ""}" data-f="${f}" aria-pressed="${f === rFilter}">${f === "Favoritas" ? icon("heart","xs") : ""}${f}</button>`).join("");
@@ -2529,7 +2555,7 @@ function openPlanAdd(k, recipe){
 function renderTreino(){
   const el = $("#p-treino"), p = progOf();
   const minorNote = isMinor() ? `<div class="note warn" style="margin-top:14px">${icon("info","sm")}<span>Se tens menos de 18 anos, mostra estes planos a um adulto ou treinador e começa sempre pela versão mais leve.</span></div>` : "";
-  if (!p) { el.innerHTML = `<div class="card row" style="margin-top:18px;gap:14px">${abi({ mood:"happy", size:64 })}<div><h3>Escolhe um plano</h3><p class="small muted">Começa pelo que te parece fácil. Podes mudar quando quiseres.</p></div></div>${minorNote}
+  if (!p) { el.innerHTML = `<div class="tp-intro"><h2>Escolhe o teu plano</h2><p class="small muted">Começa pelo que te parece fácil. Podes mudar quando quiseres, sem perder o histórico.</p></div>${minorNote}
     <button class="tp-feat" data-p="custom"><span class="tp-tag">${icon("sparkle","xs")} Recomendado</span><b>Plano feito para ti</b>
       <small>${(() => { const P2 = planPrefs(); return P2.tdays.length ? `${P2.tdays.length}× por semana, nos dias que escolheste` : "Com os dias, o objetivo, o sítio e o tempo que indicaste"; })()}. Muda sozinho a cada 4 semanas.</small><span class="tp-go">Criar o meu plano ${icon("right","sm")}</span></button>
     <p class="small muted" style="margin:20px 2px 10px">Ou começa por um destes</p>
@@ -2742,8 +2768,8 @@ function openPro(){
 function renderPerfil(){
   const u = S.u || {}, days = Object.keys(S.days).filter(k => (S.days[k]||[]).length).length;
   const wks = Object.keys(Object.assign({}, S.wkHist || {}, (S.wk && S.wk.done) || {})).length;
-  $("#pf-head").innerHTML = `${abi({ mood:"happy", size:84 })}<div class="grow"><h2>${esc(u.name || "Olá!")}</h2><p class="small muted">${esc(u.obj || "Sem objetivo definido")}</p>
-    <div class="row" style="margin-top:8px;gap:14px;flex-wrap:wrap"><span class="small"><b class="num">${days}</b> <span class="muted">${days===1?"dia":"dias"}</span></span><span class="small"><b class="num">${wks}</b> <span class="muted">${wks===1?"treino":"treinos"}</span></span><span class="small"><b class="num">${Object.keys(S.ach).length}</b> <span class="muted">conquistas</span></span></div></div>`;
+  $("#pf-head").innerHTML = `<div class="pf-top">${abi({ mood:"happy", size:72, acc:S.equip })}<div class="grow"><h2>${esc(u.name || "Olá!")}</h2><p class="small muted">${esc(u.obj || goalName(u.goal) || "Sem objetivo definido")}</p></div></div>
+    <div class="pf-stats"><div><b class="num">${days}</b><small>${days === 1 ? "dia com registos" : "dias com registos"}</small></div><div><b class="num">${wks}</b><small>${wks === 1 ? "treino feito" : "treinos feitos"}</small></div><div><b class="num">${Object.keys(S.ach).length}</b><small>conquistas</small></div></div>`;
   const M = [
     ["crown","gold",`${BRAND.name} Pro`, S.proDisc ? `Tens ${S.proDisc}% de desconto guardado` : "Gira a roda e ganha desconto", openPro],
     ["gift","gold","Roda de descontos",`${pl(S.spins, "giro disponível", "giros disponíveis")}`, () => go("roda")],
@@ -2759,7 +2785,14 @@ function renderPerfil(){
     ...(cloudOn() ? [["upload","","Conta e cópia na nuvem", cloudUser ? "Ligada: " + cloudUser.email : "Guarda os teus dados em segurança", openAccount]] : []),
     ["shield","","Dados e privacidade","Exportar, importar, apagar", openData]
   ];
-  $("#pf-menu").innerHTML = M.map((m, i) => `<button class="li" data-m="${i}"><span class="badge ${m[1]}">${icon(m[0])}</span><span class="lt"><b>${esc(m[2])}</b><small>${esc(m[3])}</small></span>${icon("right","sm")}</button>`).join("");
+  const item = i => { const m = M[i]; return `<button class="li" data-m="${i}"><span class="badge ${m[1]}">${icon(m[0])}</span><span class="lt"><b>${esc(m[2])}</b><small>${esc(m[3])}</small></span>${icon("right","sm")}</button>`; };
+  const at = t => M.findIndex(m => m[2] === t), grp = (t, L) => { L = L.filter(i => i >= 0); return L.length ? `<p class="pf-g">${t}</p><div class="list">${L.map(item).join("")}</div>` : ""; };
+  const cloudI = M.findIndex(m => m[0] === "upload"), dataI = M.length - 1;
+  $("#pf-menu").innerHTML = `<button class="pf-pro" data-m="0"><span class="pf-pro-ic">${icon("crown","sm")}</span><span class="grow"><b>${esc(M[0][2])}</b><small>${esc(M[0][3])}</small></span><span class="pf-pro-go">Ver</span></button>`
+    + grp("O teu plano", [at("Plano alimentar"), at("Preferências")])
+    + grp("O teu progresso", [at("Progresso"), at("Conquistas"), at("Bem-estar")])
+    + grp("Extras", [1, 2, at(`Falar com o ${BRAND.mascot}`)])
+    + grp("App", [at("Aparência e som"), at("Como funciona a app"), cloudI, dataI]);
   $$("#pf-menu [data-m]").forEach(b => b.onclick = () => M[+b.dataset.m][4]());
 }
 function openCloset(){
@@ -3035,7 +3068,7 @@ function openOnboarding(edit, startKey, single){
 
   const draw = () => { const V = vis(); n = Math.min(n, V.length - 1); const s = V[n], pv = preview();
     let body = "", q = s.q ? s.q(A) : "", sub = typeof s.s === "function" ? s.s(A) : s.s || "", head = s.who ? face(s.who, { mood: mood || s.m, size: s.who === "abi" ? 96 : 84 }) : "";
-    if (s.type === "hook") body = `<ul class="hook">${[["cal","A tua semana de refeições feita por ti, à tua medida"],["cart","A lista de compras sai sozinha do plano"],["leaf","Sem dietas restritivas nem culpa: um passo de cada vez"]].map(([i, t]) => `<li><span>${icon(i,"sm")}</span>${t}</li>`).join("")}</ul>`;
+    if (s.type === "hook") body = `<div class="hook-pics">${["Pequeno-almoço","Almoço","Jantar","Lanche"].map(mealPic).filter(Boolean).map(src => `<img src="${esc(src)}" alt="">`).join("")}</div><ul class="hook">${[["cal","A tua semana de refeições feita para ti, à tua medida"],["cart","A lista de compras sai sozinha do plano"],["leaf","Sem dietas restritivas nem culpa: um passo de cada vez"]].map(([i, t]) => `<li><span>${icon(i,"sm")}</span>${t}</li>`).join("")}</ul>`;
     else if (s.type === "text") body = `<input id="ob-n" maxlength="40" autocomplete="given-name" placeholder="O teu nome" value="${esc(A.name)}" aria-label="Nome">`;
     else if (s.type === "age") body = `<label class="field"><span>Idade</span><input id="ob-age" type="number" inputmode="numeric" min="10" max="100" value="${A.ageN || ""}"></label><p class="small" id="ob-agen" style="margin-top:8px;color:var(--muted)"></p>`;
     else if (s.type === "body") body = `<div class="ob-form"><div class="seg" id="ob-sex"><button data-v="f" class="${B.sex === "f" ? "on" : ""}">Feminino</button><button data-v="m" class="${B.sex === "m" ? "on" : ""}">Masculino</button></div>
@@ -3130,7 +3163,7 @@ function openPlanPrefs(){
     ["Treino", [["tdays","Dias de treino", P.tdays.length ? P.tdays.map(d => DOWL[d]).join(", ") : "Não treino"]]],
     ["Extras", [["budget","Orçamento semanal", P.budget ? P.budget + " €" : "Sem orçamento"], ...(P.budget ? [["strict","Se não couber", lab(STRICT, P.strict)]] : []), ["market","Supermercado", u.market || "–"]]]];
   openSheet("Preferências do plano", `<p class="small muted">Cada resposta muda o plano. Ao guardar, as sugestões desta semana são refeitas a partir de hoje; o que planeaste à mão fica.</p>
-    ${rows.map(([t, L]) => `<p class="shop-cat">${t}</p><div class="list">${L.map(([k, a, v]) => `<button class="li" data-ek="${k}"><span class="lt"><small>${a}</small><b>${esc(v || "–")}</b></span>${icon("right","sm")}</button>`).join("")}</div>`).join("")}
+    <div class="pp">${rows.map(([t, L]) => `<p class="pf-g">${t}</p><div class="list">${L.map(([k, a, v]) => `<button class="li pp-r" data-ek="${k}"><span class="pp-a">${a}</span><span class="pp-v">${esc(v || "–")}</span>${icon("right","sm")}</button>`).join("")}</div>`).join("")}</div>
     <button class="btn ghost block" id="pp-all" style="margin-top:16px">Responder a tudo outra vez</button>
     ${isMinor() ? `<p class="tiny muted" style="margin-top:10px">Para menores de 18 anos a app não mostra calorias nem metas de peso.</p>` : ""}`, b => {
     $$("[data-ek]", b).forEach(x => x.onclick = () => { closeSheet(); openOnboarding(true, x.dataset.ek, true); });

@@ -2,8 +2,8 @@
 function renderPerfil(){
   const u = S.u || {}, days = Object.keys(S.days).filter(k => (S.days[k]||[]).length).length;
   const wks = Object.keys(Object.assign({}, S.wkHist || {}, (S.wk && S.wk.done) || {})).length;
-  $("#pf-head").innerHTML = `${abi({ mood:"happy", size:84 })}<div class="grow"><h2>${esc(u.name || "Olá!")}</h2><p class="small muted">${esc(u.obj || "Sem objetivo definido")}</p>
-    <div class="row" style="margin-top:8px;gap:14px;flex-wrap:wrap"><span class="small"><b class="num">${days}</b> <span class="muted">${days===1?"dia":"dias"}</span></span><span class="small"><b class="num">${wks}</b> <span class="muted">${wks===1?"treino":"treinos"}</span></span><span class="small"><b class="num">${Object.keys(S.ach).length}</b> <span class="muted">conquistas</span></span></div></div>`;
+  $("#pf-head").innerHTML = `<div class="pf-top">${abi({ mood:"happy", size:72, acc:S.equip })}<div class="grow"><h2>${esc(u.name || "Olá!")}</h2><p class="small muted">${esc(u.obj || goalName(u.goal) || "Sem objetivo definido")}</p></div></div>
+    <div class="pf-stats"><div><b class="num">${days}</b><small>${days === 1 ? "dia com registos" : "dias com registos"}</small></div><div><b class="num">${wks}</b><small>${wks === 1 ? "treino feito" : "treinos feitos"}</small></div><div><b class="num">${Object.keys(S.ach).length}</b><small>conquistas</small></div></div>`;
   const M = [
     ["crown","gold",`${BRAND.name} Pro`, S.proDisc ? `Tens ${S.proDisc}% de desconto guardado` : "Gira a roda e ganha desconto", openPro],
     ["gift","gold","Roda de descontos",`${pl(S.spins, "giro disponível", "giros disponíveis")}`, () => go("roda")],
@@ -19,7 +19,14 @@ function renderPerfil(){
     ...(cloudOn() ? [["upload","","Conta e cópia na nuvem", cloudUser ? "Ligada: " + cloudUser.email : "Guarda os teus dados em segurança", openAccount]] : []),
     ["shield","","Dados e privacidade","Exportar, importar, apagar", openData]
   ];
-  $("#pf-menu").innerHTML = M.map((m, i) => `<button class="li" data-m="${i}"><span class="badge ${m[1]}">${icon(m[0])}</span><span class="lt"><b>${esc(m[2])}</b><small>${esc(m[3])}</small></span>${icon("right","sm")}</button>`).join("");
+  const item = i => { const m = M[i]; return `<button class="li" data-m="${i}"><span class="badge ${m[1]}">${icon(m[0])}</span><span class="lt"><b>${esc(m[2])}</b><small>${esc(m[3])}</small></span>${icon("right","sm")}</button>`; };
+  const at = t => M.findIndex(m => m[2] === t), grp = (t, L) => { L = L.filter(i => i >= 0); return L.length ? `<p class="pf-g">${t}</p><div class="list">${L.map(item).join("")}</div>` : ""; };
+  const cloudI = M.findIndex(m => m[0] === "upload"), dataI = M.length - 1;
+  $("#pf-menu").innerHTML = `<button class="pf-pro" data-m="0"><span class="pf-pro-ic">${icon("crown","sm")}</span><span class="grow"><b>${esc(M[0][2])}</b><small>${esc(M[0][3])}</small></span><span class="pf-pro-go">Ver</span></button>`
+    + grp("O teu plano", [at("Plano alimentar"), at("Preferências")])
+    + grp("O teu progresso", [at("Progresso"), at("Conquistas"), at("Bem-estar")])
+    + grp("Extras", [1, 2, at(`Falar com o ${BRAND.mascot}`)])
+    + grp("App", [at("Aparência e som"), at("Como funciona a app"), cloudI, dataI]);
   $$("#pf-menu [data-m]").forEach(b => b.onclick = () => M[+b.dataset.m][4]());
 }
 function openCloset(){

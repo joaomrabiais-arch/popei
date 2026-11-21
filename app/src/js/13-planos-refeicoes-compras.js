@@ -70,7 +70,7 @@ function openPlanAdd(k, recipe){
 function renderTreino(){
   const el = $("#p-treino"), p = progOf();
   const minorNote = isMinor() ? `<div class="note warn" style="margin-top:14px">${icon("info","sm")}<span>Se tens menos de 18 anos, mostra estes planos a um adulto ou treinador e começa sempre pela versão mais leve.</span></div>` : "";
-  if (!p) { el.innerHTML = `<div class="card row" style="margin-top:18px;gap:14px">${abi({ mood:"happy", size:64 })}<div><h3>Escolhe um plano</h3><p class="small muted">Começa pelo que te parece fácil. Podes mudar quando quiseres.</p></div></div>${minorNote}
+  if (!p) { el.innerHTML = `<div class="tp-intro"><h2>Escolhe o teu plano</h2><p class="small muted">Começa pelo que te parece fácil. Podes mudar quando quiseres, sem perder o histórico.</p></div>${minorNote}
     <button class="tp-feat" data-p="custom"><span class="tp-tag">${icon("sparkle","xs")} Recomendado</span><b>Plano feito para ti</b>
       <small>${(() => { const P2 = planPrefs(); return P2.tdays.length ? `${P2.tdays.length}× por semana, nos dias que escolheste` : "Com os dias, o objetivo, o sítio e o tempo que indicaste"; })()}. Muda sozinho a cada 4 semanas.</small><span class="tp-go">Criar o meu plano ${icon("right","sm")}</span></button>
     <p class="small muted" style="margin:20px 2px 10px">Ou começa por um destes</p>

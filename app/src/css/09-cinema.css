@@ -25,3 +25,12 @@
 @keyframes pop{from{transform:scale(.7) translateY(10px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.aurora i,.view.on>*,#ob-in *{animation:none!important}}
 :root[data-motion="low"] .aurora i,:root[data-motion="low"] .view.on>*,:root[data-motion="low"] #ob-in *{animation:none!important}
+/* Início: fotos de pratos e benefícios leves */
+.hook-pics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:2px 0 18px}
+.hook-pics img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:16px;box-shadow:var(--sh-1)}
+.hook-pics img:nth-child(even){transform:translateY(10px)}
+ul.hook li{background:none;border:0;box-shadow:none;padding:8px 0}
+ul.hook{gap:4px}
+/* Receitas: dado rápido sobre a foto */
+.rcard{position:relative}
+.rc-k{position:absolute;left:8px;top:8px;z-index:1;padding:4px 8px;border-radius:8px;background:rgba(15,20,17,.66);color:#fff;font-size:11px;font-weight:700;backdrop-filter:blur(4px);pointer-events:none}
