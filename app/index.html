@@ -560,6 +560,53 @@ body:has(#toast.on) .talk{display:none}
 .pw-ph{width:36px;height:36px;box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--line)}
 .pw.past .pw-ph:empty{background:none;border:1.5px dashed var(--line);box-shadow:none}
 .pw-ph:empty{background:var(--surface-2)}
+
+/* ===== Compras ===== */
+.shop-hero{display:flex;align-items:center;gap:14px;position:relative}
+.shop-hero h3{font:600 19px var(--fd);margin-top:2px}
+.shop-hero .grow{min-width:0}
+.sh-ring{position:relative;width:72px;height:72px;flex:none}
+.sh-ring svg{width:72px;height:72px}
+.sh-ring .tr{fill:none;stroke:var(--surface-2);stroke-width:7}
+.sh-ring .fg{fill:none;stroke:var(--brand);stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset .6s var(--ease)}
+.sh-ring b{position:absolute;inset:0;display:grid;place-content:center;font:700 18px var(--fd)}
+.sh-ring b small{font:500 11px var(--f);color:var(--muted);text-align:center}
+.sh-cost{position:absolute;top:14px;right:16px;text-align:right}
+.sh-cost b{display:block;font:600 15px var(--fd)}.sh-cost small{font-size:11px;color:var(--muted)}
+.shop-hero .eyebrow{margin-right:70px}
+.sh-add{display:flex;gap:8px;margin-top:12px;padding:6px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);box-shadow:var(--sh-1)}
+.sh-add input{border:0;background:transparent;min-width:0;height:44px}
+.sh-add #sh-n{flex:1}.sh-add #sh-q{width:70px;border-left:1px solid var(--line);border-radius:0}
+.sh-add input:focus{outline:none;box-shadow:none}
+.sh-add .btn{width:44px;height:44px;min-height:44px;padding:0;border-radius:12px;flex:none}
+.sh-sug{margin-top:14px}
+.sh-sugr{display:flex;gap:8px;overflow-x:auto;margin:8px calc(-1 * var(--gut)) 0;padding:0 var(--gut) 4px;scrollbar-width:none}
+.sh-sugr::-webkit-scrollbar{display:none}
+.sh-sugr .chip{flex:none}
+.sh-sec{margin-top:18px}
+.sh-h{display:flex;align-items:center;gap:10px;margin:0 2px 8px;list-style:none;cursor:default}
+.sh-h::-webkit-details-marker{display:none}
+.sh-h b{font:600 15px var(--fd);flex:1}
+.sh-ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;color:var(--cc,var(--brand));background:color-mix(in srgb,var(--cc,var(--brand)) 14%,transparent)}
+.sh-n{min-width:24px;height:22px;padding:0 7px;border-radius:999px;display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--ink-2);background:var(--surface-2)}
+.sh-box{border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);overflow:hidden}
+.shop-item{padding:12px 8px 12px 14px;gap:12px;min-height:54px}
+.shop-item .nm{font-weight:500;cursor:pointer}
+.sh-q{font-size:12px;font-weight:600;color:var(--ink-2);background:var(--surface-2);padding:3px 8px;border-radius:7px;white-space:nowrap;max-width:42%;overflow:hidden;text-overflow:ellipsis}
+.sh-ck{appearance:none;-webkit-appearance:none;width:24px;height:24px;flex:none;margin:0;border-radius:50%;border:2px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;transition:all .2s}
+.sh-ck:checked{background:var(--brand);border-color:var(--brand)}
+.sh-ck:checked::after{content:"";width:6px;height:11px;border:solid var(--brand-ink);border-width:0 2.5px 2.5px 0;transform:translateY(-1px) rotate(45deg)}
+.sh-ck:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 40%,transparent);outline-offset:2px}
+.sh-del{width:32px;height:32px;color:var(--faint)}
+.sh-done .sh-h{cursor:pointer}
+.sh-done{--cc:var(--muted)}
+.sh-done .sh-box{opacity:.75}
+.sh-act{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.sh-act .btn{flex-direction:column;gap:4px;height:auto;min-height:62px;padding:8px 4px;font-size:12px;line-height:1.2}
+@media (prefers-reduced-motion:reduce){.sh-ring .fg{transition:none}}
+.shop-hero{flex-wrap:wrap}.shop-hero .eyebrow{margin-right:0}.shop-hero .grow{flex:1 1 180px}
+.sh-cost{position:static;width:100%;display:flex;justify-content:space-between;align-items:center;padding-top:12px;margin-top:2px;border-top:1px solid var(--line);text-align:left}
+.sh-cost small{font-size:13px}.sh-cost b{font-size:17px}
 /* ===== Macros (cores validadas para daltonismo, claro e escuro) ===== */
 :root{--prot:#D9546E;--carb:#D9A23B;--fat:#4F8FD6}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prot:#D65C74;--carb:#BB8A34;--fat:#5290D6}}
@@ -769,6 +816,23 @@ body:has(#toast.on) .talk{display:none}
 .alt span{flex:1;display:flex;flex-direction:column;gap:2px}.alt b{font:600 16px var(--fd)}.alt small{color:var(--muted);font-size:13px}
 .alt>.ic{color:var(--brand)}
 .alt .th,.alt .art-tile{border-radius:14px}
+/* Treino: escolher plano */
+.tp-feat{display:flex;flex-direction:column;align-items:flex-start;gap:6px;width:100%;margin-top:14px;padding:20px;border-radius:var(--r-lg);text-align:left;color:#F4F7F2;background:radial-gradient(110% 90% at 90% 0%,#3E7A4C,transparent 60%),linear-gradient(160deg,#1F4A2B,#122B19);box-shadow:var(--sh-2);transition:transform .15s}
+.tp-feat:active{transform:scale(.98)}
+.tp-feat b{font:700 22px var(--fd);letter-spacing:-.01em;color:#F4F7F2}
+.tp-feat small{font-size:14px;line-height:1.45;color:#C9D8CC}
+.tp-tag{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:#E9C46A;color:#2B2108;font-size:11px;font-weight:800;letter-spacing:.04em}.tp-tag .ic{color:#2B2108}
+.tp-go{display:inline-flex;align-items:center;gap:4px;margin-top:8px;padding:10px 14px;border-radius:12px;background:#F4F7F2;color:#1F4A2B;font-weight:700;font-size:14px}
+.tp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tp-card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);text-align:left;box-shadow:var(--sh-1);position:relative;overflow:hidden;transition:transform .15s}
+.tp-card::before{content:"";position:absolute;inset:0 0 auto;height:4px;background:var(--tc)}
+.tp-card:active{transform:scale(.97)}
+.tp-ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:var(--tc);background:color-mix(in srgb,var(--tc) 14%,transparent);margin-top:4px}
+.tp-card b{font:600 15px/1.25 var(--fd)}
+.tp-card small{font-size:12px;line-height:1.4;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tp-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:auto;padding-top:6px;font-size:11px;font-weight:700;color:var(--ink-2)}
+.tp-meta>span:not(.lvl){padding:3px 7px;border-radius:7px;background:var(--surface-2)}
+@media (max-width:340px){.tp-grid{grid-template-columns:1fr}}
 /* ===== Ilustrações, refeições do dia, desafios e grelha de gosto ===== */
 .art-tile{display:grid;place-items:center;flex:none;border-radius:16px;background:linear-gradient(145deg,var(--a1),var(--a2));box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
 .art{display:block;overflow:visible}
@@ -2466,7 +2530,11 @@ function renderTreino(){
   const el = $("#p-treino"), p = progOf();
   const minorNote = isMinor() ? `<div class="note warn" style="margin-top:14px">${icon("info","sm")}<span>Se tens menos de 18 anos, mostra estes planos a um adulto ou treinador e começa sempre pela versão mais leve.</span></div>` : "";
   if (!p) { el.innerHTML = `<div class="card row" style="margin-top:18px;gap:14px">${abi({ mood:"happy", size:64 })}<div><h3>Escolhe um plano</h3><p class="small muted">Começa pelo que te parece fácil. Podes mudar quando quiseres.</p></div></div>${minorNote}
-    <div class="list" style="margin-top:14px"><button class="prog" data-p="custom"><div class="badge">${icon("sparkle")}</div><div class="lt"><b>Plano feito para ti</b><small>Feito com as tuas respostas: dias de treino, objetivo, sítio, tempo e experiência.</small></div>${icon("right","sm")}</button>${PROGRAMS.map(x => `<button class="prog" data-p="${x.id}"><div class="badge acc">${icon("dumbbell")}</div><div class="lt"><b>${esc(x.n)}</b><small>${esc(x.d)}</small><small>${x.days.length}× por semana · ${x.min} min</small><span class="lvl" aria-label="Nível ${x.lvl} de 3">${[1,2,3].map(i => `<i class="${i <= x.lvl ? "on" : ""}"></i>`).join("")}</span></div>${icon("right","sm")}</button>`).join("")}</div>
+    <button class="tp-feat" data-p="custom"><span class="tp-tag">${icon("sparkle","xs")} Recomendado</span><b>Plano feito para ti</b>
+      <small>${(() => { const P2 = planPrefs(); return P2.tdays.length ? `${P2.tdays.length}× por semana, nos dias que escolheste` : "Com os dias, o objetivo, o sítio e o tempo que indicaste"; })()}. Muda sozinho a cada 4 semanas.</small><span class="tp-go">Criar o meu plano ${icon("right","sm")}</span></button>
+    <p class="small muted" style="margin:20px 2px 10px">Ou começa por um destes</p>
+    <div class="tp-grid">${PROGRAMS.map((x, i) => `<button class="tp-card" data-p="${x.id}" style="--tc:${["#2F6B3A","#C4584A","#3C7FC0","#B07D2A","#7A6FB0","#2E7D7A"][i % 6]}"><span class="tp-ic">${icon("dumbbell")}</span><b>${esc(x.n)}</b><small>${esc(x.d)}</small>
+      <span class="tp-meta"><span>${x.days.length}× semana</span><span>${x.min} min</span><span class="lvl" aria-label="Nível ${x.lvl} de 3">${[1,2,3].map(j => `<i class="${j <= x.lvl ? "on" : ""}"></i>`).join("")}</span></span></button>`).join("")}</div>
     <p class="tiny muted" style="margin:12px 4px">Se tens lesões, dores ou alguma condição de saúde, fala com um profissional antes de começar. Para de imediato se sentires dor.</p>`;
     $$("[data-p]", el).forEach(b => b.onclick = () => b.dataset.p === "custom" ? customFromAnswers() : openProgram(b.dataset.p)); return; }
   const k = today(), mon = mondayOf(k), se = sessionFor(k);
@@ -2513,27 +2581,35 @@ function openProgram(id){
 }
 const CATS = ["Frutas e legumes","Carne e peixe","Laticínios e ovos","Mercearia","Outros"];
 const guessCat = n => /frango|peru|vaca|atum|salmão|pescada|carne/i.test(n) ? "Carne e peixe" : /ovo|iogurte|leite|queijo|requeijão/i.test(n) ? "Laticínios e ovos" : /legume|fruta|salada|banana|batata/i.test(n) ? "Frutas e legumes" : "Mercearia";
-function shopHead(){ const st = staples(), mon = mondayOf(today()), n = S.plan.filter(x => x.date >= mon && x.date <= addDays(mon, 6) && x.r).length;
-  return `<div class="card" style="margin-top:18px"><div class="row">${abi({ mood:"think", size:44 })}<div class="grow"><b>Lista feita a partir do teu plano</b><p class="small muted">${n ? `${n} refeições planeadas esta semana. As quantidades já vêm somadas.` : "Ainda não tens refeições planeadas esta semana."}</p></div></div>
-    <p class="tiny muted" style="margin-top:10px">Atualiza-se sozinha sempre que o plano muda. O que juntares à mão fica.</p></div>`
-    + (st && st.L.length ? `<div class="card" style="margin-top:12px"><h3>${esc(st.t)}</h3><p class="small muted" style="margin-top:2px">${esc(st.why)}</p><div class="row" style="flex-wrap:wrap;gap:8px;margin-top:12px">${st.L.map(x => `<button class="chip" data-st="${esc(x)}">${icon("plus","xs")}${esc(x)}</button>`).join("")}</div></div>` : ""); }
+const CAT_UI = { "Frutas e legumes":["leaf","#3E8E4F"], "Carne e peixe":["bowl","#C4584A"], "Laticínios e ovos":["drop","#3C7FC0"], "Mercearia":["cart","#B07D2A"], "Outros":["star","#7A6FB0"] };
+function shopHead(){ const st = staples(), mon = mondayOf(today()), E = S.plan.filter(x => x.date >= mon && x.date <= addDays(mon, 6) && x.r), n = E.length, P = planPrefs();
+  const tot = S.shop.length, got = S.shop.filter(x => x.k).length, pc = tot ? Math.round(got / tot * 100) : 0, R = 30, C = 2 * Math.PI * R, cost = E.length ? planCost(E, P.home, P.people) : 0;
+  return `<div class="card shop-hero" style="margin-top:18px"><div class="sh-ring"><svg viewBox="0 0 72 72"><circle class="tr" cx="36" cy="36" r="${R}"/><circle class="fg" cx="36" cy="36" r="${R}" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - pc / 100)}" transform="rotate(-90 36 36)"/></svg><b>${got}<small>/${tot}</small></b></div>
+      <div class="grow"><p class="eyebrow">Lista da semana</p><h3>${tot ? (got === tot ? "Tudo no carrinho" : `Faltam ${pl(tot - got, "produto", "produtos")}`) : "Lista vazia"}</h3>
+        <p class="small muted">${n ? `Feita a partir de ${pl(n, "refeição planeada", "refeições planeadas")}, com as quantidades somadas.` : "Ainda não há refeições planeadas esta semana."}</p></div>
+      ${cost ? `<div class="sh-cost"><small>Custo estimado da semana</small><b>≈ ${eur(cost)}</b></div>` : ""}</div>
+    <div class="sh-add"><input id="sh-n" maxlength="60" placeholder="Juntar produto, ex.: café" aria-label="Produto"><input id="sh-q" maxlength="20" placeholder="Qtd." aria-label="Quantidade"><button class="btn" id="sh-a" aria-label="Adicionar">${icon("plus","sm")}</button></div>`
+    + (st && st.L.length ? `<div class="sh-sug"><p class="small"><b>${esc(st.t)}</b> <span class="muted">· toca para juntar</span></p><div class="sh-sugr">${st.L.map(x => `<button class="chip ${S.shop.some(y => y.n.toLowerCase() === x.toLowerCase()) ? "on" : ""}" data-st="${esc(x)}">${icon(S.shop.some(y => y.n.toLowerCase() === x.toLowerCase()) ? "check" : "plus","xs")}${esc(x)}</button>`).join("")}</div></div>` : ""); }
 function bindShopHead(el){ const g = $("#sh-gen", el); if (g) g.onclick = () => { const mon = mondayOf(today()); let made = 0; if (!S.plan.some(x => x.date >= mon && x.date <= addDays(mon, 6) && x.r)) made = buildWeekPlan(mon, false); const n = genShop(mon); save(); renderCompras(); toast(made ? `Plano criado e ${n} produtos na lista` : `${n} produtos na lista, com as quantidades da semana`); };
   $$("[data-st]", el).forEach(b => b.onclick = () => { if (addShop(b.dataset.st, "", guessCat(b.dataset.st))) { save(); renderCompras(); toast("Adicionado à lista"); } else toast("Já está na lista"); }); }
 function addShop(n, q, c){ if (S.shop.some(x => x.n.toLowerCase() === n.toLowerCase())) return 0; S.shop.push({ n, q, c:CATS.includes(c) ? c : "Outros", k:0 }); return 1; }
 function renderCompras(){
   const el = $("#p-compras"); syncShop();
-  el.innerHTML = shopHead() + `<div class="card stack" style="margin-top:14px"><div class="g2"><input id="sh-n" maxlength="60" placeholder="Produto" aria-label="Produto"><input id="sh-q" maxlength="20" placeholder="Quantidade" aria-label="Quantidade"></div>
-    <div class="row"><select id="sh-c" class="grow" aria-label="Categoria">${CATS.map(c => `<option>${c}</option>`).join("")}</select><button class="btn" id="sh-a">Adicionar</button></div></div>
-    <div id="sh-l"></div>
-    ${S.shop.length ? `<div class="row" style="margin-top:14px"><button class="btn ghost grow sm" id="sh-clr">Limpar comprados</button><button class="btn ghost grow sm" id="sh-sv">Guardar e nova lista</button></div>` : ""}
-    ${S.shopH.length ? `<div class="sec"><div class="sec-h"><h2>Listas anteriores</h2></div><div class="list">${S.shopH.map((h, i) => `<div class="li"><div class="lt"><b>${esc(h.d)}</b><small>${(h.it||[]).length} produtos</small></div><button class="btn soft sm" data-h="${i}">Restaurar</button></div>`).join("")}</div></div>` : ""}`;
-  $("#sh-l", el).innerHTML = S.shop.length ? CATS.map(c => { const it = S.shop.map((x, i) => [x, i]).filter(([x]) => (CATS.includes(x.c) ? x.c : "Outros") === c); if (!it.length) return "";
-    return `<p class="shop-cat">${c}</p><div class="list">${it.map(([x, i]) => `<div class="shop-item ${x.k ? "k" : ""}"><input type="checkbox" id="si${i}" data-t="${i}" ${x.k ? "checked" : ""} style="width:22px;height:22px;accent-color:var(--brand);flex:none"><label for="si${i}" class="nm">${esc(x.n)}</label><span class="small muted">${esc(x.q || "")}</span><button class="iconbtn" data-del="${i}" aria-label="Remover ${esc(x.n)}">${icon("x","xs")}</button></div>`).join("")}</div>`; }).join("")
-    : `<div class="empty">${abi({ mood:"think", size:80 })}<p>A lista está vazia. Junta produtos aqui ou gera a lista a partir do plano da semana.</p></div>`;
-  $("#sh-a", el).onclick = () => { const n = $("#sh-n", el).value.trim().slice(0,60); if (!n) { toast("Escreve o produto"); return; } if (!addShop(n, $("#sh-q", el).value.trim().slice(0,20), $("#sh-c", el).value)) toast("Já está na lista"); save(); renderCompras(); };
-  $("#sh-n", el).onkeydown = e => { if (e.key === "Enter") $("#sh-a", el).click(); };
-  $$("[data-t]", el).forEach(c => c.onchange = () => { S.shop[+c.dataset.t].k = c.checked ? 1 : 0; save(); renderCompras(); });
+  const row = ([x, i]) => `<div class="shop-item ${x.k ? "k" : ""}"><input type="checkbox" class="sh-ck" id="si${i}" data-t="${i}" ${x.k ? "checked" : ""}><label for="si${i}" class="nm">${esc(x.n)}</label>${x.q ? `<span class="sh-q">${esc(x.q)}</span>` : ""}<button class="iconbtn sh-del" data-del="${i}" aria-label="Remover ${esc(x.n)}">${icon("x","xs")}</button></div>`;
+  const all = S.shop.map((x, i) => [x, i]), open = all.filter(([x]) => !x.k), done = all.filter(([x]) => x.k);
+  el.innerHTML = shopHead() + `<div id="sh-l"></div>
+    ${S.shop.length ? `<div class="sh-act"><button class="btn ghost sm" id="sh-cp">${icon("copy","sm")} Copiar lista</button><button class="btn ghost sm" id="sh-clr" ${done.length ? "" : "disabled"}>${icon("trash","sm")} Limpar comprados</button><button class="btn ghost sm" id="sh-sv">${icon("download","sm")} Guardar e nova</button></div>` : ""}
+    ${S.shopH.length ? `<div class="sec"><div class="sec-h"><h2>Listas anteriores</h2></div><div class="list">${S.shopH.map((h, i) => `<div class="li"><div class="lt"><b>${esc(h.d)}</b><small>${pl((h.it||[]).length, "produto", "produtos")}</small></div><button class="btn soft sm" data-h="${i}">Restaurar</button></div>`).join("")}</div></div>` : ""}`;
+  $("#sh-l", el).innerHTML = S.shop.length ? CATS.map(c => { const it = open.filter(([x]) => (CATS.includes(x.c) ? x.c : "Outros") === c); if (!it.length) return ""; const [ic, col] = CAT_UI[c];
+      return `<div class="sh-sec" style="--cc:${col}"><div class="sh-h"><span class="sh-ic">${icon(ic,"sm")}</span><b>${c}</b><span class="sh-n">${it.length}</span></div><div class="sh-box">${it.map(row).join("")}</div></div>`; }).join("")
+      + (done.length ? `<details class="sh-sec sh-done" ${open.length ? "" : "open"}><summary class="sh-h"><span class="sh-ic">${icon("check","sm")}</span><b>No carrinho</b><span class="sh-n">${done.length}</span></summary><div class="sh-box">${done.map(row).join("")}</div></details>` : "")
+    : `<div class="empty">${abi({ mood:"think", size:80 })}<p>A lista está vazia. Junta produtos aqui ou planeia refeições e ela enche-se sozinha.</p></div>`;
+  const add = () => { const n = $("#sh-n", el).value.trim().slice(0,60); if (!n) { toast("Escreve o produto"); $("#sh-n", el).focus(); return; } if (!addShop(n, $("#sh-q", el).value.trim().slice(0,20), guessCat(n))) toast("Já está na lista"); save(); renderCompras(); const i2 = $("#sh-n"); if (i2) i2.focus(); };
+  $("#sh-a", el).onclick = add; $("#sh-n", el).onkeydown = e => { if (e.key === "Enter") add(); }; $("#sh-q", el).onkeydown = e => { if (e.key === "Enter") add(); };
+  $$("[data-t]", el).forEach(c => c.onchange = () => { S.shop[+c.dataset.t].k = c.checked ? 1 : 0; save(); setTimeout(renderCompras, 180); });
   $$("[data-del]", el).forEach(b => b.onclick = () => { S.shop.splice(+b.dataset.del, 1); save(); renderCompras(); });
+  const cp = $("#sh-cp", el); if (cp) cp.onclick = async () => { const txt = CATS.map(c => { const L = S.shop.filter(x => !x.k && (CATS.includes(x.c) ? x.c : "Outros") === c); return L.length ? c + ":\n" + L.map(x => "- " + x.n + (x.q ? " (" + x.q + ")" : "")).join("\n") : ""; }).filter(Boolean).join("\n\n");
+    try { await navigator.clipboard.writeText(txt || "Lista vazia"); toast("Lista copiada. Cola no WhatsApp ou nas notas."); } catch(e) { toast("Não foi possível copiar aqui"); } };
   const clr = $("#sh-clr", el); if (clr) clr.onclick = () => { S.shop = S.shop.filter(x => !x.k); save(); renderCompras(); };
   const sv = $("#sh-sv", el); if (sv) sv.onclick = async () => { if (!await confirmDlg("Guardar esta lista e começar uma nova?", "Guardar")) return; S.shopH.unshift({ d:new Date().toLocaleDateString("pt-PT"), it:S.shop }); S.shopH = S.shopH.slice(0,20); S.shop = []; save(); renderCompras(); };
   $$("[data-h]", el).forEach(b => b.onclick = async () => { if (!await confirmDlg("Substituir a lista atual por esta?", "Restaurar")) return; S.shop = structuredClone(S.shopH[+b.dataset.h].it || []); save(); renderCompras(); });

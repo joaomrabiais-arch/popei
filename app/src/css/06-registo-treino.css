@@ -207,3 +207,20 @@
 .alt span{flex:1;display:flex;flex-direction:column;gap:2px}.alt b{font:600 16px var(--fd)}.alt small{color:var(--muted);font-size:13px}
 .alt>.ic{color:var(--brand)}
 .alt .th,.alt .art-tile{border-radius:14px}
+/* Treino: escolher plano */
+.tp-feat{display:flex;flex-direction:column;align-items:flex-start;gap:6px;width:100%;margin-top:14px;padding:20px;border-radius:var(--r-lg);text-align:left;color:#F4F7F2;background:radial-gradient(110% 90% at 90% 0%,#3E7A4C,transparent 60%),linear-gradient(160deg,#1F4A2B,#122B19);box-shadow:var(--sh-2);transition:transform .15s}
+.tp-feat:active{transform:scale(.98)}
+.tp-feat b{font:700 22px var(--fd);letter-spacing:-.01em;color:#F4F7F2}
+.tp-feat small{font-size:14px;line-height:1.45;color:#C9D8CC}
+.tp-tag{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:#E9C46A;color:#2B2108;font-size:11px;font-weight:800;letter-spacing:.04em}.tp-tag .ic{color:#2B2108}
+.tp-go{display:inline-flex;align-items:center;gap:4px;margin-top:8px;padding:10px 14px;border-radius:12px;background:#F4F7F2;color:#1F4A2B;font-weight:700;font-size:14px}
+.tp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tp-card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px;border-radius:var(--r-md);background:var(--surface);border:1px solid var(--line);text-align:left;box-shadow:var(--sh-1);position:relative;overflow:hidden;transition:transform .15s}
+.tp-card::before{content:"";position:absolute;inset:0 0 auto;height:4px;background:var(--tc)}
+.tp-card:active{transform:scale(.97)}
+.tp-ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:var(--tc);background:color-mix(in srgb,var(--tc) 14%,transparent);margin-top:4px}
+.tp-card b{font:600 15px/1.25 var(--fd)}
+.tp-card small{font-size:12px;line-height:1.4;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tp-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:auto;padding-top:6px;font-size:11px;font-weight:700;color:var(--ink-2)}
+.tp-meta>span:not(.lvl){padding:3px 7px;border-radius:7px;background:var(--surface-2)}
+@media (max-width:340px){.tp-grid{grid-template-columns:1fr}}
