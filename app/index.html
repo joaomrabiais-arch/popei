@@ -3236,7 +3236,7 @@ function withU(A, fn){ const o = S.u; S.u = Object.assign({}, o || {}, A, { age:
 
 function openOnboarding(edit, startKey, single){
   const prevAge = S.u && S.u.age === "18 ou mais" ? (S.prof.age >= 18 ? S.prof.age : 30) : S.u && S.u.age === "Menos de 18" ? Math.min(S.prof.age, 17) : 0;
-  const A = Object.assign({ name:"", goal:"", act:String(S.prof.act || ""), diet:[], al:[], dislikes:[], pmeals:[], portion:"", cstyle:"", ctime:"", cuis:[], home:[], tdays:null, budget:"", market:"", people:1, weMore:true, strict:"", novelty:"", taste:{},
+  const A = Object.assign({ name:"", goal:"", act: S.ob ? String(S.prof.act || "") : "", /* na 1.ª vez nada vem marcado: o valor por defeito do perfil não é uma resposta */ diet:[], al:[], dislikes:[], pmeals:[], portion:"", cstyle:"", ctime:"", cuis:[], home:[], tdays:null, budget:"", market:"", people:1, weMore:true, strict:"", novelty:"", taste:{},
     gym:"", place:"", gmin:"", lvl:"", lim:[], tw:"", pace:"0.5", equip:[], gdaysSel:[], focus:"", cardio:"" }, structuredClone(S.u || {}));
   A.ageN = S.ob ? prevAge : 0; A._b = Object.assign({}, S.prof);
   if (!S.ob || (S.u || {}).age !== "18 ou mais" || !validBody(A._b)) A._noBody = true; // na primeira vez o corpo por omissão não conta: só o que a pessoa indicar

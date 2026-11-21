@@ -33,6 +33,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   // Refeições, porções, alimentação, cozinha, em casa, treino; orçamento e supermercado saltados
   const steps = ["1.375", "normal", "PEOPLE", "Nenhuma", "Como de tudo", "Cogumelos", ["Pequeno-almoço","Almoço","Lanche","Jantar"], "dobro", "30", "portuguesa", "equilibrado", "TASTE",
     "DIAS", "sim", "casa", "Nenhum", "30", "zero", "todo", "caminhar", "Joelhos", "SKIP", ["Arroz","Azeite"], "SKIP"];
+  ok((await page.$$(".opts .opt.on")).length === 0, "perguntas: nenhuma resposta vem marcada antes de tocar (nada herdado da pergunta anterior)");
   for (const opt of steps) {
     if (opt === "DIAS") { for (const d of [0, 2, 4]) await page.click(`#ob-days [data-i="${d}"]`); await shot("02d-dias"); }
     else if (opt === "SKIP") { await page.click("#ob-skip"); continue; }
@@ -52,7 +53,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   let st = await state();
   ok(st.u.name === "Joana" && st.spins === 3, "perfil e 3 giros guardados");
   ok(st.goal >= 1800 && st.goal <= 2400 && st.macro && st.macro.p > 0 && st.u.age === "18 ou mais", "referência e macros calculados (" + st.goal + " kcal, " + JSON.stringify(st.macro) + ")");
-  ok(JSON.stringify(st.u.tdays) === "[0,2,4]" && st.u.cstyle === "dobro" && st.u.pmeals.length === 4 && !st.u.budget && st.u.people === 2 && Object.keys(st.u.taste).length === 3, "respostas da personalização guardadas (pessoas e gosto incluídos)");
+  ok(JSON.stringify(st.u.tdays) === "[0,2,4]" && st.u.cstyle === "dobro" && st.u.pmeals.length === 4 && !st.u.budget && st.u.people === 2 && Object.keys(st.u.taste).length === 3, "respostas da personalização guardadas (pessoas e gosto incluídos) " + JSON.stringify({ t:st.u.tdays, c:st.u.cstyle, m:(st.u.pmeals || []).length, b:st.u.budget, p:st.u.people, g:Object.keys(st.u.taste || {}).length }));
   ok(await page.evaluate(() => { const bad = +Object.keys(S.u.taste).find(k => S.u.taste[k] === -1); return !S.plan.some(x => x.r === bad); }), "o prato que a pessoa passou não aparece no plano");
   ok(st.plan.length >= 4 && st.plan.every(x => x.a) && (st.plan.some(x => x.lo) || new Set(st.plan.map(x => x.date)).size < 2), "plano criado logo, com sobras do jantar no almoço seguinte");
   ok(!st.plan.some(x => x.r === 9), "plano sem o que a pessoa não gosta (cogumelos)");
