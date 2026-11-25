@@ -226,7 +226,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
   ok(await page.evaluate(() => !sheetOpen() && curTab === "receitas" && /index\.html/.test(location.href)), "voltar fecha a folha aberta e fica na app");
   await page.goBack(); await page.waitForTimeout(400);
   ok(await page.evaluate(() => curTab === "hoje" && /index\.html/.test(location.href)), "voltar noutro separador leva ao Hoje");
-  ok(await page.evaluate(() => !document.querySelector("link[href*='fonts.g']") && document.fonts.check("16px 'DM Sans'")), "tipos de letra dentro da app, sem pedidos à Google");
+  ok(await page.evaluate(() => !document.querySelector("link[href*='fonts.g']") && document.fonts.check("24px 'Bricolage Grotesque'")), "tipos de letra dentro da app, sem pedidos à Google");
 
   // 7c. O dia em detalhe
   await page.click('.nav [data-tab="hoje"]'); await page.waitForTimeout(300); await page.click("#h-detail"); await page.waitForTimeout(400); await shot("04b-dia-detalhe");

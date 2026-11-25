@@ -21,7 +21,9 @@ const ART = {
 const ART_BG = { cafe:["#FFF1D6","#FBD9A0"], almoco:["#E6F2DC","#C5E1B0"], lanche:["#FFE4DC","#FBC1B0"], jantar:["#E2E6F7","#C3CBEF"], sopa:["#FFEBCF","#F8CF97"] };
 const MEAL_ART = { "Pequeno-almoço":"cafe", "Almoço":"almoco", "Lanche":"lanche", "Jantar":"jantar" };
 const artKind = r => /^(sopa|creme|canja|caldo|gaspacho)/i.test(r.n) ? "sopa" : r.c === "Pequeno-almoço" ? "cafe" : r.c === "Lanche" ? "lanche" : r.c === "Jantar" ? "jantar" : "almoco";
-const artSVG = (kind, size = 44) => `<svg class="art" viewBox="0 0 64 64" width="${size}" height="${size}" aria-hidden="true">${ART[kind] || ART.almoco}</svg>`;
+/* Sem fotografia: um ícone de linha discreto, não um desenho. As ilustrações coloridas pareciam clip-art ao lado das fotos. */
+const ART_IC = { cafe:"coffee", almoco:"bowl", lanche:"apple", jantar:"bowl", sopa:"bowl" };
+const artSVG = (kind, size = 44) => `<svg class="art ic" width="${Math.round(size * .42)}" height="${Math.round(size * .42)}" aria-hidden="true"><use href="#i-${ART_IC[kind] || "bowl"}"/></svg>`;
 // Mosaico com fundo em degradê: usado nas refeições e nos cartões das receitas sem fotografia.
 const artTile = (kind, size = 48, cls = "") => { const [a, b] = ART_BG[kind] || ART_BG.almoco;
   return `<span class="art-tile ${cls}" style="--a1:${a};--a2:${b};width:${size}px;height:${size}px">${artSVG(kind, Math.round(size * .82))}</span>`; };
