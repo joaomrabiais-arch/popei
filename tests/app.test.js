@@ -199,6 +199,9 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
     && document.querySelector(".wd.td.dn") !== null, swapTo), "depois de recarregar: plano, troca e treino feito continuam guardados");
   await page.click('#p-seg [data-s="compras"]'); await page.waitForTimeout(300); await shot("12-compras");
   ok((await page.$$(".shop-item")).length >= 3, "lista de compras com ingredientes da receita");
+  ok(await page.evaluate(() => { syncShop(); const L = () => S.shop.map(x => x.n.toLowerCase()), a = L(); const e = S.plan.find(x => x.a && x.date >= today() && x.r); if (!e) return true;
+    swapPlanEntry(e.id); syncShop(); const b = L(), R = RECIPES.find(q => q.id === e.r), ing = R.i.map(x => String(Array.isArray(x) ? x[0] : x.n || x).toLowerCase().split(" ")[0]);
+    return new Set(a).size === a.length && new Set(b).size === b.length && ing.every(w => b.some(n => n.includes(w))); }), "lista de compras sem repetidos e atualizada depois de trocar um prato");
 
   // 7b. Receitas com filas para descobrir; Hoje com sequência e peso rápido
   await page.click('.nav [data-tab="receitas"]'); await page.waitForTimeout(400); await shot("12b-receitas-descobrir");
@@ -214,6 +217,16 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.error("  ✗ " +
     ok(Math.abs(await page.evaluate(() => S.weights[today()]) - (w0 + .2)) < .01, "Hoje: peso rápido com −/+ e guardar");
     await page.locator("#h-wt").scrollIntoViewIfNeeded(); await shot("04f-hoje-peso");
   } else ok(await page.evaluate(() => $("#h-wt").parentElement.hidden), "menores: sem cartão de peso");
+  if (await page.evaluate(() => !isMinor())) ok(await page.evaluate(() => { const W = S.weights; S.weights = { [addDays(today(), -3)]: 70 }; renderHoje(); const h = $("#h-wt").parentElement.hidden;
+    S.weights = { [addDays(today(), -8)]: 70 }; renderHoje(); const v = !$("#h-wt").parentElement.hidden; S.weights = W; save(); renderHoje(); return h && v; }), "peso sem pressão: só pede de 7 em 7 dias");
+  // Botão de voltar do telemóvel: fecha a folha, depois volta ao Hoje, sem sair da app
+  await page.click('.nav [data-tab="receitas"]'); await page.waitForTimeout(300);
+  await page.click("#r-disc .rcard >> nth=0"); await page.waitForTimeout(400);
+  await page.goBack(); await page.waitForTimeout(400);
+  ok(await page.evaluate(() => !sheetOpen() && curTab === "receitas" && /index\.html/.test(location.href)), "voltar fecha a folha aberta e fica na app");
+  await page.goBack(); await page.waitForTimeout(400);
+  ok(await page.evaluate(() => curTab === "hoje" && /index\.html/.test(location.href)), "voltar noutro separador leva ao Hoje");
+  ok(await page.evaluate(() => !document.querySelector("link[href*='fonts.g']") && document.fonts.check("16px 'DM Sans'")), "tipos de letra dentro da app, sem pedidos à Google");
 
   // 7c. O dia em detalhe
   await page.click('.nav [data-tab="hoje"]'); await page.waitForTimeout(300); await page.click("#h-detail"); await page.waitForTimeout(400); await shot("04b-dia-detalhe");

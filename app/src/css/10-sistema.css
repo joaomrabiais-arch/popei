@@ -2,7 +2,7 @@
    Uma só cor de destaque (o verde da marca, ou o tema que a pessoa escolher) para botões principais,
    separador ativo e progresso. O resto é neutro: fundo liso, cartões um tom acima, ícones em tinta.
    A cor vem das fotografias. O azul só aparece no enchimento da água. Sem brilhos nem fundos animados. */
-:root{--bg:#F3F4F1;--surface:#FFFFFF;--surface-2:#EDEEEA;--line:#E2E4DF;--ink:#151A17;--ink-2:#3A423D;--muted:#5D6661;--faint:#6A726D;--deep:#1E3527;--deep-ink:#F2F5F1;--deep-muted:#B8C6BC}
+:root{--bg:#F3F4F1;--surface:#FFFFFF;--surface-2:#EDEEEA;--line:#E2E4DF;--ink:#151A17;--ink-2:#3A423D;--muted:#5D6661;--faint:#626A65;--deep:#1E3527;--deep-ink:#F2F5F1;--deep-muted:#B8C6BC}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101211;--surface:#1A1D1B;--surface-2:#242826;--line:#2C312E;--ink:#EEF1EE;--ink-2:#C8CEC9;--muted:#9AA39D;--faint:#8C958F;--deep:#1E3527;--deep-ink:#F2F5F1;--deep-muted:#B8C6BC}}
 :root[data-theme="dark"]{--bg:#101211;--surface:#1A1D1B;--surface-2:#242826;--line:#2C312E;--ink:#EEF1EE;--ink-2:#C8CEC9;--muted:#9AA39D;--faint:#8C958F;--deep:#1E3527;--deep-ink:#F2F5F1;--deep-muted:#B8C6BC}
 body{background:var(--bg)}
@@ -256,3 +256,15 @@ body{background:var(--bg)}
 .ex-var small{font-size:12px;color:var(--muted);font-weight:600}.ex-var b{font-weight:600;font-size:14px;line-height:1.3}
 .ex-var.off{cursor:default;background:transparent}.ex-var.off b{color:var(--muted);font-weight:500}
 .ob-week .ow-d i.on:empty{background:var(--brand)}
+
+/* Teclado aberto (iPhone): a folha sobe acima dele */
+.sheet{bottom:var(--kb,0px);max-height:calc(92vh - var(--kb,0px))}
+/* Abertura: o Abi assenta no chão, o nome sobe por trás de uma linha, a frase aparece. Cerca de 1 s, sem brilhos. */
+#splash .mwrap,#splash .mwrap:nth-child(2){animation:sp-land .7s cubic-bezier(.22,.9,.3,1) both}
+#splash h1{animation:sp-word .6s cubic-bezier(.2,.8,.2,1) .3s both}
+#splash p{animation:sp-fade .5s ease .62s both}
+#splash.out .mwrap{transform:translateY(-6px) scale(1.03);transition:transform .4s ease}
+@keyframes sp-land{0%{opacity:0;transform:translateY(-36px)}55%{opacity:1;transform:translateY(0) scale(1.03,.96)}78%{transform:translateY(-3px) scale(.99,1.01)}100%{transform:none}}
+@keyframes sp-word{from{clip-path:inset(0 0 100% 0);transform:translateY(.45em)}to{clip-path:inset(0 0 -10% 0);transform:none}}
+@keyframes sp-fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#splash .mwrap,#splash h1,#splash p{animation:none}}

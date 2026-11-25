@@ -64,7 +64,10 @@ function renderHoje(){
   $("#h-streak").setAttribute("aria-label", `${st} dias seguidos com registos`);
 
   // Peso rápido (só adultos): −/+ 0,1 kg e guardar.
-  const wt = $("#h-wt"); wt.parentElement.hidden = isMinor();
+  const wt = $("#h-wt"), W = S.weights || {};
+  /* sem pressão: só pede o peso de 7 em 7 dias; no dia em que o guardas, fica visível com "Guardado" */
+  const recentW = !W[today()] && Object.keys(W).some(d => d < today() && d > addDays(today(), -7));
+  wt.parentElement.hidden = isMinor() || recentW;
   if (!isMinor()) {
     const lastW = (S.weights || {})[today()] || S.prof.w || 70; let v = lastW;
     const draw = () => { $("#wt-v", wt).textContent = v.toFixed(1).replace(".", ",") + " kg"; $("#wt-ok", wt).hidden = v === ((S.weights || {})[today()] || null); };
@@ -107,7 +110,7 @@ function coach(){
   if (curDay !== k) return { t:"Estás a ver outro dia. Queres voltar a hoje?", b:"Voltar a hoje", fn:() => { curDay = k; renderHoje(); }, m:"think" };
   if (!has("Pequeno-almoço") && hr >= 6 && hr < 11) return { t:"Bom dia! Já tomaste o pequeno-almoço? Regista-o em 10 segundos.", b:"Registar", fn:() => openAdd("Pequeno-almoço"), m:"wave" };
   if (!has("Almoço") && hr >= 12 && hr < 16) return { t:"Hora de almoço. O que vai ser hoje?", b:"Registar almoço", fn:() => openAdd("Almoço"), m:"happy" };
-  if (w < Math.min(S.wg, Math.floor((hr - 7) / 2))) return { who:"abi", t:`Bebeste ${w} copo${w === 1 ? "" : "s"} de água. Que tal mais um agora?`, b:"Bebi um copo", fn:() => setWater(k, w + 1), m:"think" };
+  if (w < Math.min(S.wg, Math.floor((hr - 7) / 2))) return { who:"abi", t: w ? `Bebeste ${w} copo${w === 1 ? "" : "s"} de água. Que tal mais um agora?` : "Ainda não bebeste água hoje. Que tal um copo agora?", b:"Bebi um copo", fn:() => setWater(k, w + 1), m:"think" };
   if ((u.hard || []).includes("Petiscar entre refeições") && hr >= 15 && hr < 18 && !has("Lanche")) return { t:"Um lanche a horas ajuda a não petiscar ao fim da tarde. Já tens um?", b:"Registar lanche", fn:() => openAdd("Lanche"), m:"think" };
   if (se && !workoutDone(k)) return { who:"abi", t:`Hoje há treino: ${se.sess.n}, ${se.prog.min} minutos. Vamos?`, b:"Ver treino", fn:() => { planSub = "treino"; go("planos"); }, m:"wave" };
   if (!has("Jantar") && hr >= 19 && hr < 23) return { t:"E o jantar? Regista para fechares o dia.", b:"Registar jantar", fn:() => openAdd("Jantar"), m:"happy" };
@@ -123,7 +126,7 @@ let lastCoach = "";
 function renderCoach(){
   const c = coach(), who = c.who || "abi", el = $("#h-tip");
   el.className = "tip2";
-  el.innerHTML = `<span class="tip2-m">${face(who, { mood:c.m, size:46 })}</span><p class="tip2-t">${esc(c.t)}</p>${c.b ? `<button class="btn sm tip2-b">${esc(c.b)}</button>` : ""}`;
+  el.innerHTML = `<span class="tip2-m">${face(who, { mood:c.m, size:46 })}</span><p class="tip2-t">${esc(c.t)}</p>${c.b ? `<button class="btn sm ghost tip2-b">${esc(c.b)}</button>` : ""}`;
   lastCoach = c.t;
   const b = $(".tip2-b", el); if (b) b.onclick = () => c.fn();
 }

@@ -3,7 +3,7 @@ let toastT;
 function toast(m){ const t = $("#toast"); t.textContent = m; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 2600); }
 let lastFocus = null;
 function openSheet(title, html, mount){
-  lastFocus = document.activeElement;
+  lastFocus = document.activeElement; setTimeout(backGuard, 0);
   $("#sheet-t").textContent = title; const b = $("#sheet-b"); b.innerHTML = html; b.scrollTop = 0; b.onclick = null;
   const sc = $("#scrim"); sc.classList.remove("hide"); requestAnimationFrame(() => { sc.classList.add("on"); $("#sheet").classList.add("on"); });
   if (mount) mount(b);
@@ -13,6 +13,26 @@ function closeSheet(){ $("#sheet").classList.remove("on"); const sc = $("#scrim"
   if (lastFocus && lastFocus.isConnected && lastFocus.focus) lastFocus.focus({ preventScroll:true }); }
 const sheetOpen = () => $("#sheet").classList.contains("on");
 $("#scrim").onclick = closeSheet; $("#sheet-x").onclick = closeSheet;
+/* Botão (ou gesto) de voltar do telemóvel: fecha a camada de cima em vez de sair da app.
+   Enquanto há alguma coisa aberta, fica uma entrada nossa no histórico; ao voltar, fecha-se o que está por cima. */
+const obOpen = () => { const o = $("#ob"); return !!o && !o.classList.contains("hide"); };
+const atRoot = () => !$(".dialog") && !$(".celebrate") && !$("#tour") && !$(".wk-play") && !obOpen() && !sheetOpen() && curTab === "hoje";
+let backSkip = false;
+function backGuard(){ const ours = !!(history.state && history.state.av);
+  if (!atRoot() && !ours) history.pushState({ av:1 }, "");
+  else if (atRoot() && ours) { backSkip = true; history.back(); } } // fechado por um botão: tira a entrada que sobrou
+function backAction(){ const c = sel => { const b = $(sel); if (b) b.click(); return !!b; };
+  if (c(".dialog [data-n]") || c(".celebrate [data-x]") || c("#tour-skip") || c(".wk-play #wk-x")) return true;
+  if (obOpen()) return c("#ob-b") || c("#ob-x");
+  if (sheetOpen()) { closeSheet(); return true; }
+  if (curTab !== "hoje") { go("hoje"); return true; }
+  return false; }
+addEventListener("popstate", () => { if (backSkip) { backSkip = false; return; } if (backAction()) setTimeout(backGuard, 60); });
+document.addEventListener("click", () => setTimeout(backGuard, 0), true);
+/* Teclado: o campo onde se escreve fica sempre à vista, mesmo dentro de uma folha. */
+document.addEventListener("focusin", e => { if (e.target.matches("input:not([type=checkbox]):not([type=radio]),textarea,select")) setTimeout(() => e.target.isConnected && e.target.scrollIntoView({ block:"center", behavior:"smooth" }), 320); });
+if (window.visualViewport) { const kb = () => document.documentElement.style.setProperty("--kb", Math.max(0, innerHeight - visualViewport.height - visualViewport.offsetTop) + "px");
+  visualViewport.addEventListener("resize", kb); visualViewport.addEventListener("scroll", kb); }
 document.addEventListener("keydown", e => { if (e.key === "Escape" && sheetOpen() && !$(".dialog") && !$(".celebrate")) closeSheet(); });
 function confirmDlg(msg, yes="Confirmar"){ return new Promise(res => { const d = document.createElement("div"); d.className = "dialog";
   d.innerHTML = `<div class="card stack" role="alertdialog" aria-modal="true"><p>${esc(msg)}</p><div class="row"><button class="btn ghost grow" data-n>Cancelar</button><button class="btn grow" data-y>${esc(yes)}</button></div></div>`;
